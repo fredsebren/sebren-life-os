@@ -2488,8 +2488,12 @@ Examples: "Haircut Thursday at 2" → [SCHEDULE:2026-4-2|2:00p|Haircut]
 LOG A MEAL:
 [MEAL:CALORIES|PROTEIN|MEAL NAME]
 Trigger: Fred says what he ate, is eating, or had for a meal.
-Examples: "Had a protein shake" → [MEAL:180|30|Protein shake]
-"Turkey sandwich with chips" → [MEAL:620|35|Turkey sandwich with chips]
+IMPORTANT: Log each distinct food item as its OWN separate [MEAL:] tag. Do NOT combine multiple items into one tag.
+Examples:
+"Had a protein shake" → [MEAL:180|30|Protein shake]
+"Turkey sandwich with chips" → [MEAL:480|32|Turkey sandwich] [MEAL:150|2|Jalapeño chips]
+"Mozzarella sticks and an M&M sonic blast" → [MEAL:350|14|Mozzarella sticks] [MEAL:580|12|M&M Sonic Blast small]
+"2 eggs, toast, and a coffee" → [MEAL:180|12|2 scrambled eggs] [MEAL:130|4|Toast with butter] [MEAL:5|0|Black coffee]
 Use realistic nutrition estimates. His goal is ${calGoal} cal / ${protGoal}g protein.
 
 LOG STEPS:
@@ -2543,10 +2547,12 @@ Examples: "We need chicken and rice" → [GROCERY:chicken,rice]
 "Add protein powder to the list" → [GROCERY:protein powder]
 
 RULES:
-1. You can include MULTIPLE tags in one response. If Fred says "I did Hotworx, got 9000 steps, and had a protein shake" → include [HOTWORX:done] AND [STEPS:9000] AND [MEAL:180|30|Protein shake]
-2. ALWAYS include tags immediately. Never say "would you like me to log that?" — just do it.
-3. After any action, briefly confirm what you logged and give him relevant context (remaining calories, weight trend, streak count, etc.)
-4. Tags are stripped from what Fred sees/hears — he only sees your conversational response.
+1. ALWAYS put ALL action tags at the VERY BEGINNING of your response, before any conversational text. This is critical — if you put tags at the end, they may get cut off.
+2. You can include MULTIPLE tags. If Fred says "I did Hotworx, got 9000 steps, and had a protein shake" → start with [HOTWORX:done] [STEPS:9000] [MEAL:180|30|Protein shake] then write your response.
+3. NEVER say "would you like me to log that?" — just include the tag and do it.
+4. After the tags, briefly confirm what you logged and give context (remaining calories, weight trend, etc.)
+5. Tags are invisible to Fred — the system strips them before display.
+6. When Fred mentions ANYTHING with a date, time, appointment, event, or person's name + activity → ALWAYS include a [SCHEDULE:] tag. This is the most commonly missed tag. Do not skip it.
 
 When suggesting times for scheduling, consider: kids schedule, Hotworx, work blocks, sunrise/sunset anchors. Morning before 8am = Bible time (protect it). Deep work 9am-3pm. Dinner before 7:40pm sunset.
 
@@ -2617,7 +2623,7 @@ window.setMood = function(n){
 
   var msgs = sheenaConversation.length > 0 ? sheenaConversation : [{role:"user",content:context+"\n\n"+moodExtra+"\n\nGive a 2-4 sentence morning response. Natural, like a friend. Reference their actual data."}];
 
-  callClaude({max_tokens:200,messages:msgs})
+  callClaude({max_tokens:500,messages:msgs})
   .then(function(data){
     var text = data.content&&data.content[0]&&data.content[0].text;
     if(text){
@@ -2694,7 +2700,7 @@ function sendToSheena(userMessage){
     msgs = sheenaConversation.concat([{role:'user',content:userMessage}]);
   }
 
-  callClaude({max_tokens:250,messages:msgs})
+  callClaude({max_tokens:500,messages:msgs})
   .then(function(data){
     var text=data.content&&data.content[0]&&data.content[0].text;
     if(text){
@@ -2814,22 +2820,28 @@ function processVoiceForActions(userMsg, sheenaReply){
     }
   }
 
-  // ── MEAL ──────────────────────────────────────────
-  var mealMatch=sheenaReply.match(/\[MEAL:([^\]]+)\]/);
-  if(mealMatch){
-    try{
-      var mp=mealMatch[1].split('|');
-      if(mp.length>=3){
-        var mcal=parseInt(mp[0].trim());
-        var mprot=parseInt(mp[1].trim());
-        var mname=mp[2].trim();
-        if(mcal>0&&mname){
-          window.meal(mname,String(mcal),mprot);
-          var tc=(S.meals||[]).reduce(function(a,m){return a+m.cal;},0);
-          actions.push('🍽 '+mname+' ('+mcal+' cal) — Day: '+tc+'/'+CONFIG.calGoal);
+  // ── MEAL (supports multiple) ────────────────────────
+  var mealMatches=sheenaReply.match(/\[MEAL:[^\]]+\]/g);
+  if(mealMatches){
+    mealMatches.forEach(function(mm){
+      try{
+        var mp=mm.replace('[MEAL:','').replace(']','').split('|');
+        if(mp.length>=3){
+          var mcal=parseInt(mp[0].trim());
+          var mprot=parseInt(mp[1].trim());
+          var mname=mp[2].trim();
+          if(mcal>0&&mname){
+            window.meal(mname,String(mcal),mprot);
+            actions.push('🍽 '+mname+' ('+mcal+' cal, '+mprot+'g)');
+          }
         }
-      }
-    }catch(e){}
+      }catch(e){}
+    });
+    if(mealMatches.length){
+      var tc=(S.meals||[]).reduce(function(a,m){return a+m.cal;},0);
+      var tp=(S.meals||[]).reduce(function(a,m){return a+m.prot;},0);
+      actions.push('Day: '+tc+'/'+CONFIG.calGoal+' cal, '+tp+'/'+(CONFIG.protGoal||150)+'g protein');
+    }
   }
 
   // ── SCHEDULE ──────────────────────────────────────
@@ -2872,7 +2884,7 @@ function processVoiceForActions(userMsg, sheenaReply){
       .then(function(d){try{var p=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());if(p&&p.meal&&p.calories>0){window.meal(p.meal,String(p.calories),p.protein||0);var tc=(S.meals||[]).reduce(function(a,m){return a+m.cal;},0);if(transcript)transcript.textContent='🍽 '+p.meal+' ('+p.calories+' cal) — Day: '+tc;}}catch(e){}}).catch(function(){});
     }
     // Schedule fallback
-    var schedWords=['schedule','appointment','haircut','dentist','doctor','meeting','add to calendar','book a'];
+    var schedWords=['schedule','appointment','haircut','dentist','doctor','meeting','add to calendar','book a','has a','at 10','at 11','at 12','at 1','at 2','at 3','at 4','at 5','at 6','at 7','at 8','at 9','april','may','june','july','august','monday','tuesday','wednesday','thursday','friday','saturday','sunday','tomorrow','next week','this week'];
     var schedHit=false;schedWords.forEach(function(t){if(lower.includes(t))schedHit=true;});
     if(schedHit){
       var td=new Date();var tds=td.getFullYear()+'-'+(td.getMonth()+1)+'-'+td.getDate();
