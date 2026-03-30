@@ -3642,6 +3642,9 @@ window.selectCalDate=function(dateStr){
 };
 
 function getEventsForDate(dateStr){
+  // Normalize date key
+  var np=dateStr.split('-');
+  if(np.length===3)dateStr=parseInt(np[0])+'-'+parseInt(np[1])+'-'+parseInt(np[2]);
   var events=(calEvents[dateStr]||[]).slice();
   // Add recurring events for this day of week
   var parts=dateStr.split('-');
@@ -3774,6 +3777,11 @@ function getWeekCalendarContext(){
 // Called by Sheena when she confirms a calendar event
 function sheenaAddCalEvent(dateStr, time, title){
   loadCalData();
+  // Normalize date: strip zero-padding so 2026-04-03 becomes 2026-4-3
+  var parts=dateStr.split('-');
+  if(parts.length===3){
+    dateStr=parseInt(parts[0])+'-'+parseInt(parts[1])+'-'+parseInt(parts[2]);
+  }
   if(!calEvents[dateStr])calEvents[dateStr]=[];
   calEvents[dateStr].push({time:time||'',title:title,id:'s'+Date.now()});
   saveCalData();
