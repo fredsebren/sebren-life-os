@@ -22,6 +22,18 @@
 .edit-row input{flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;background:var(--bg);color:var(--txt)}
 .del-btn{font-size:18px;color:var(--txt3);cursor:pointer;background:transparent;border:none;padding:0 4px;line-height:1;font-family:inherit}
 
+
+.fav-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);cursor:pointer;font-family:inherit;margin-bottom:6px;text-align:left}
+.fav-btn:active{background:var(--bg2)}
+.fav-name{font-size:13px;font-weight:500;color:var(--txt)}
+.fav-macros{font-size:11px;color:var(--txt2)}
+.fav-del{font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0 0 0 8px;line-height:1;font-family:inherit}
+.recent-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 12px;border:0.5px solid var(--border);border-radius:var(--radius);background:transparent;cursor:pointer;font-family:inherit;margin-bottom:5px;text-align:left}
+.recent-btn:active{background:var(--bg2)}
+.ai-confirm-btn{padding:8px 14px;border-radius:var(--radius);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-right:6px;margin-top:6px}
+.ai-confirm-btn.primary{background:var(--txt);color:var(--bg);border-color:var(--txt)}
+.ai-confirm-btn.secondary{background:transparent;color:var(--txt2)}
+
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg2);min-height:100vh;color:var(--txt)}
 .app{max-width:430px;margin:0 auto;background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
 .hdr{padding:1rem 1rem 0.5rem;background:var(--bg);border-bottom:1px solid var(--border)}
@@ -684,6 +696,8 @@ function init(){
   buildKids(dow);
   applyState();
   renderMealQuickBtns();
+  renderFavs();
+  renderRecentMeals();
   initFirebase();
 }
 
@@ -1011,23 +1025,6 @@ window.resetAll=function(){
 };
 
 
-window.showCustomMealEntry = function(){
-  var f = document.getElementById('custom-meal-form');
-  if(f) f.style.display = f.style.display==='none' ? 'block' : 'none';
-};
-
-window.logCustomMeal = function(){
-  var name = document.getElementById('custom-meal-name').value.trim();
-  var cal = parseInt(document.getElementById('custom-meal-cal').value) || 0;
-  var prot = parseInt(document.getElementById('custom-meal-prot').value) || 0;
-  if(!name) return;
-  meal(name, String(cal), prot);
-  document.getElementById('custom-meal-name').value='';
-  document.getElementById('custom-meal-cal').value='';
-  document.getElementById('custom-meal-prot').value='';
-  document.getElementById('custom-meal-form').style.display='none';
-};
-
 
 // Pull to refresh
 (function(){
@@ -1062,6 +1059,192 @@ window.logCustomMeal = function(){
   });
 })();
 
+
+// ── FOOD TAB ─────────────────────────────────────────
+var favorites = [];
+var recentMeals = [];
+
+function loadFoodData(){
+  try{
+    var f=localStorage.getItem('sebren-favs');
+    if(f)favorites=JSON.parse(f);
+    var r=localStorage.getItem('sebren-recent');
+    if(r)recentMeals=JSON.parse(r);
+  }catch(e){}
+}
+
+function saveFoodData(){
+  try{
+    localStorage.setItem('sebren-favs',JSON.stringify(favorites));
+    localStorage.setItem('sebren-recent',JSON.stringify(recentMeals.slice(0,15)));
+  }catch(e){}
+}
+
+function renderFavs(){
+  var el=document.getElementById('fav-list');
+  if(!el)return;
+  if(!favorites.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:4px 0 8px">No favorites yet — add your go-to meals above</div>';
+    return;
+  }
+  el.innerHTML=favorites.map((f,i)=>`
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+      <button class="fav-btn" onclick="logFavorite(${i})" style="flex:1">
+        <span class="fav-name">${f.name}</span>
+        <span class="fav-macros">${f.cal} cal · ${f.prot}g protein</span>
+      </button>
+      <button class="fav-del" onclick="deleteFavorite(${i})">×</button>
+    </div>
+  `).join('');
+}
+
+function renderRecentMeals(){
+  var el=document.getElementById('recent-meals-list');
+  if(!el)return;
+  if(!recentMeals.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:4px 0 8px">Meals you log will appear here for quick re-logging</div>';
+    return;
+  }
+  // Show unique recent meals (last 5)
+  var seen={};
+  var unique=recentMeals.filter(m=>{
+    if(seen[m.name])return false;
+    seen[m.name]=true;return true;
+  }).slice(0,5);
+  el.innerHTML=unique.map((m,i)=>`
+    <button class="recent-btn" onclick="logRecentMeal(${i})">
+      <span style="font-size:13px;color:var(--txt)">${m.name}</span>
+      <span style="font-size:11px;color:var(--txt2)">${m.cal} cal · ${m.prot}g</span>
+    </button>
+  `).join('');
+  window._recentUnique=unique;
+}
+
+window.logFavorite=function(i){
+  var f=favorites[i];
+  if(!f)return;
+  meal(f.name,String(f.cal),f.prot);
+};
+
+window.logRecentMeal=function(i){
+  var m=window._recentUnique&&window._recentUnique[i];
+  if(!m)return;
+  meal(m.name,String(m.cal),m.prot);
+};
+
+window.deleteFavorite=function(i){
+  favorites.splice(i,1);
+  saveFoodData();renderFavs();
+};
+
+window.toggleAddFav=function(){
+  var el=document.getElementById('fav-add-form');
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+};
+
+window.saveFavorite=function(){
+  var name=document.getElementById('fav-name').value.trim();
+  var cal=parseInt(document.getElementById('fav-cal').value)||0;
+  var prot=parseInt(document.getElementById('fav-prot').value)||0;
+  if(!name)return;
+  favorites.push({name,cal,prot});
+  saveFoodData();
+  document.getElementById('fav-name').value='';
+  document.getElementById('fav-add-form').style.display='none';
+  renderFavs();
+};
+
+// AI Meal Lookup
+window.aiLookupMeal=function(){
+  var inp=document.getElementById('ai-meal-input');
+  var query=inp.value.trim();
+  if(!query)return;
+  var btn=document.getElementById('ai-meal-btn');
+  var result=document.getElementById('ai-meal-result');
+  btn.textContent='Looking up macros...';
+  btn.disabled=true;
+  result.style.display='none';
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:300,
+      system:'You are a nutrition expert. When given a meal or food item, return ONLY a JSON object with these exact fields: {"meal":"full meal name","calories":number,"protein":number,"carbs":number,"fat":number,"notes":"brief note"}. Use realistic nutrition data. No markdown, no explanation, just the JSON object.',
+      messages:[{role:'user',content:'What are the macros for: '+query}]
+    })
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    btn.textContent='Look up macros with AI';
+    btn.disabled=false;
+    try{
+      var text=data.content[0].text;
+      var clean=text.replace(/```json|```/g,'').trim();
+      var parsed=JSON.parse(clean);
+      window._aiMealParsed=parsed;
+      result.style.display='block';
+      result.innerHTML=`
+        <div style="font-weight:600;font-size:14px;color:var(--txt);margin-bottom:6px">${parsed.meal}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.calories}</div><div style="font-size:10px;color:var(--txt2)">cal</div></div>
+          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.protein}g</div><div style="font-size:10px;color:var(--txt2)">protein</div></div>
+          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.carbs}g</div><div style="font-size:10px;color:var(--txt2)">carbs</div></div>
+          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.fat}g</div><div style="font-size:10px;color:var(--txt2)">fat</div></div>
+        </div>
+        ${parsed.notes?`<div style="font-size:11px;color:var(--txt2);margin-bottom:10px">${parsed.notes}</div>`:''}
+        <div style="display:flex;flex-wrap:wrap;gap:0">
+          <button class="ai-confirm-btn primary" onclick="confirmAIMeal()">Log this meal</button>
+          <button class="ai-confirm-btn secondary" onclick="confirmAIMealAndSave()">Log + save as favorite</button>
+        </div>
+      `;
+    }catch(e){
+      result.style.display='block';
+      result.innerHTML='<div style="color:var(--danger);font-size:13px">Could not parse response — try rephrasing your meal</div>';
+    }
+  })
+  .catch(err=>{
+    btn.textContent='Look up macros with AI';
+    btn.disabled=false;
+    result.style.display='block';
+    result.innerHTML='<div style="color:var(--danger);font-size:13px">Connection error — check your internet and try again</div>';
+  });
+};
+
+window.confirmAIMeal=function(){
+  var p=window._aiMealParsed;
+  if(!p)return;
+  meal(p.meal,String(p.calories),p.protein);
+  document.getElementById('ai-meal-input').value='';
+  document.getElementById('ai-meal-result').style.display='none';
+};
+
+window.confirmAIMealAndSave=function(){
+  var p=window._aiMealParsed;
+  if(!p)return;
+  meal(p.meal,String(p.calories),p.protein);
+  // Save as favorite if not already there
+  if(!favorites.find(f=>f.name===p.meal)){
+    favorites.push({name:p.meal,cal:p.calories,prot:p.protein});
+    saveFoodData();renderFavs();
+  }
+  document.getElementById('ai-meal-input').value='';
+  document.getElementById('ai-meal-result').style.display='none';
+};
+
+// Override meal() to also add to recent
+const _origMeal=window.meal;
+window.meal=function(name,cal,prot){
+  if(typeof _origMeal==='function')_origMeal(name,cal,prot);
+  // Add to recent
+  recentMeals.unshift({name,cal:parseInt(cal),prot:parseInt(prot)});
+  recentMeals=recentMeals.slice(0,15);
+  saveFoodData();
+  renderRecentMeals();
+};
+
+loadFoodData();
 init();
 
 // EDIT / SETTINGS
