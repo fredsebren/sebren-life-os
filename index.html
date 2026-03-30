@@ -1297,19 +1297,30 @@ window.meal=function(name,cal,prot){
 };
 
 function renderMeals(){
-  if(!S.meals||!S.meals.length)return;
+  const ml=document.getElementById('meal-list');
+  if(!S.meals||!S.meals.length){
+    document.getElementById('cal-val').textContent='0';
+    document.getElementById('prot-val').textContent='0g';
+    if(ml)ml.innerHTML='<div class="empty-state">Nothing logged yet — add below</div>';
+    return;
+  }
   const tc=S.meals.reduce((a,m)=>a+m.cal,0);
   const tp=S.meals.reduce((a,m)=>a+m.prot,0);
   document.getElementById('cal-val').textContent=tc;
   document.getElementById('prot-val').textContent=tp+'g';
-  const ml=document.getElementById('meal-list');
   ml.innerHTML='';
-  S.meals.forEach(m=>{
+  S.meals.forEach((m,i)=>{
     const r=document.createElement('div');r.className='meal-row';
-    r.innerHTML=`<span style="color:var(--txt)">${m.name}</span><span style="color:var(--txt2)">${m.cal} cal / ${m.prot}g</span>`;
+    r.innerHTML=`<span style="color:var(--txt);flex:1">${m.name}</span><span style="color:var(--txt2);white-space:nowrap">${m.cal} cal / ${m.prot}g</span><button onclick="deleteMeal(${i})" style="font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0 0 0 8px;line-height:1;font-family:inherit">×</button>`;
     ml.appendChild(r);
   });
 }
+
+window.deleteMeal=function(i){
+  S.meals.splice(i,1);
+  renderMeals();
+  saveLocal();
+};
 
 // Steps
 window.logSteps=function(){
