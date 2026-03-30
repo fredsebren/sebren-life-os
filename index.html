@@ -380,6 +380,7 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
       </div>
     </div>
   </div>
+  <div id="cal-debug" style="margin-top:12px;font-size:10px;color:var(--txt3);text-align:center;padding:8px"></div>
 </div>
 
 <!-- POWER LIST -->
@@ -2704,6 +2705,9 @@ function sendToSheena(userMessage){
   .then(function(data){
     var text=data.content&&data.content[0]&&data.content[0].text;
     if(text){
+      // DEBUG: log raw response to see if tags are present
+      console.log('SHEENA RAW:', text);
+      var tagCount=(text.match(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY):[^\]]+\]/g)||[]).length;
       // Strip all action tags from display/speech
       var cleanText=text.replace(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY):[^\]]+\]/g,'').trim();
       responseEl.textContent=cleanText;
@@ -3576,11 +3580,21 @@ function saveCalData(){
 function initCalTab(){
   loadCalData();
   var d=new Date();
-  if(!calViewYear){calViewYear=d.getFullYear();calViewMonth=d.getMonth();}
+  if(!calViewYear||!calViewMonth&&calViewMonth!==0){
+    calViewYear=d.getFullYear();
+    calViewMonth=d.getMonth();
+  }
   if(!calSelectedDate)calSelectedDate=getTodayStr();
   renderCalGrid();
   renderCalEvents();
   renderCalRecurring();
+  // Debug: show stored event count
+  var dbg=document.getElementById('cal-debug');
+  if(dbg){
+    var totalEvents=0;
+    Object.keys(calEvents).forEach(function(k){totalEvents+=calEvents[k].length;});
+    dbg.textContent='Debug: '+totalEvents+' events stored across '+Object.keys(calEvents).length+' days | Keys: '+Object.keys(calEvents).join(', ');
+  }
 }
 
 window.calNav=function(dir){
@@ -3797,6 +3811,7 @@ function sheenaAddCalEvent(dateStr, time, title){
   if(!calEvents[dateStr])calEvents[dateStr]=[];
   calEvents[dateStr].push({time:time||'',title:title,id:'s'+Date.now()});
   saveCalData();
+  console.log('CAL EVENT SAVED:', dateStr, time, title, 'All events:', JSON.stringify(calEvents));
   return true;
 }
 
