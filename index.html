@@ -1004,6 +1004,57 @@ const KIDS={
   0:[]
 };
 
+// ── API KEY MANAGEMENT ──────────────────────────────
+const API_KEY_STORAGE='sebren-anthropic-key';
+
+function getApiKey(){
+  try{return localStorage.getItem(API_KEY_STORAGE)||'';}catch(e){return '';}
+}
+
+function promptForApiKey(){
+  var key=prompt('Enter your Anthropic API key to enable AI features.\n\nYou only need to do this once — it\'s stored locally on your device.\n\nFind your key at console.anthropic.com/settings/keys');
+  if(key&&key.trim()){
+    key=key.trim();
+    try{localStorage.setItem(API_KEY_STORAGE,key);}catch(e){}
+    return key;
+  }
+  return '';
+}
+
+function getOrPromptApiKey(){
+  var key=getApiKey();
+  if(!key)key=promptForApiKey();
+  return key;
+}
+
+function callClaude(opts){
+  var key=getOrPromptApiKey();
+  if(!key)return Promise.reject(new Error('No API key'));
+  var body={
+    model:opts.model||'claude-sonnet-4-20250514',
+    max_tokens:opts.max_tokens||300,
+    messages:opts.messages||[]
+  };
+  if(opts.system)body.system=opts.system;
+  return fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify(body)
+  }).then(function(r){
+    if(r.status===401){
+      // Bad key — clear it so they get prompted again
+      try{localStorage.removeItem(API_KEY_STORAGE);}catch(e){}
+      throw new Error('Invalid API key — try again');
+    }
+    return r.json();
+  });
+}
+
 // State
 let S={checks:{},pips:[],meals:[],water:[],weights:[],hxDays:{},stepCount:0};
 let grocItems=[];
@@ -1637,17 +1688,11 @@ window.aiLookupMeal=function(){
   btn.disabled=true;
   result.style.display='none';
 
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:300,
-      system:'You are a nutrition expert. When given a meal or food item, return ONLY a JSON object with these exact fields: {"meal":"full meal name","calories":number,"protein":number,"carbs":number,"fat":number,"notes":"brief note"}. Use realistic nutrition data. No markdown, no explanation, just the JSON object.',
-      messages:[{role:'user',content:'What are the macros for: '+query}]
-    })
+  callClaude({
+    max_tokens:300,
+    system:'You are a nutrition expert. When given a meal or food item, return ONLY a JSON object with these exact fields: {"meal":"full meal name","calories":number,"protein":number,"carbs":number,"fat":number,"notes":"brief note"}. Use realistic nutrition data. No markdown, no explanation, just the JSON object.',
+    messages:[{role:'user',content:'What are the macros for: '+query}]
   })
-  .then(r=>r.json())
   .then(data=>{
     btn.textContent='Look up macros with AI';
     btn.disabled=false;
@@ -2311,16 +2356,10 @@ function generateBriefing(){
 
   var context = buildBriefingContext();
 
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:300,
-      messages:[{role:'user',content:context}]
-    })
+  callClaude({
+    max_tokens:300,
+    messages:[{role:'user',content:context}]
   })
-  .then(r=>r.json())
   .then(data=>{
     var response = data.content&&data.content[0]&&data.content[0].text;
     if(response){
@@ -2509,12 +2548,7 @@ window.setMood = function(n){
 
   var msgs = sheenaConversation.length > 0 ? sheenaConversation : [{role:"user",content:context+"\n\n"+moodExtra+"\n\nGive a 2-4 sentence morning response. Natural, like a friend. Reference their actual data."}];
 
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:msgs})
-  })
-  .then(function(r){return r.json();})
+  callClaude({max_tokens:200,messages:msgs})
   .then(function(data){
     var text = data.content&&data.content[0]&&data.content[0].text;
     if(text){
@@ -2590,12 +2624,7 @@ function sendToSheena(userMessage){
     msgs = sheenaConversation.concat([{role:'user',content:userMessage}]);
   }
 
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:250,messages:msgs})
-  })
-  .then(function(r){return r.json();})
+  callClaude({max_tokens:250,messages:msgs})
   .then(function(data){
     var text=data.content&&data.content[0]&&data.content[0].text;
     if(text){
@@ -2640,17 +2669,11 @@ function processVoiceForActions(userMsg, sheenaReply){
     if(lower.includes(t))groceryMatched=true;
   });
   if(groceryMatched){
-    fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:100,
-        system:'Extract grocery items from this message. Return ONLY a JSON array of item names, or empty array if none. Example: ["chicken","milk"]. No other text.',
-        messages:[{role:'user',content:userMsg}]
-      })
+    callClaude({
+      max_tokens:100,
+      system:'Extract grocery items from this message. Return ONLY a JSON array of item names, or empty array if none. Example: ["chicken","milk"]. No other text.',
+      messages:[{role:'user',content:userMsg}]
     })
-    .then(function(r){return r.json();})
     .then(function(data){
       try{
         var items=JSON.parse(data.content[0].text);
