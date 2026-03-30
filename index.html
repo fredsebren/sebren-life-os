@@ -406,13 +406,13 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
 
   <div class="sec">Daily schedule</div>
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="day-selector">
-    <button class="filt on" onclick="selectDay(0,this)">Sun</button>
-    <button class="filt" onclick="selectDay(1,this)">Mon</button>
-    <button class="filt" onclick="selectDay(2,this)">Tue</button>
-    <button class="filt" onclick="selectDay(3,this)">Wed</button>
-    <button class="filt" onclick="selectDay(4,this)">Thu</button>
-    <button class="filt" onclick="selectDay(5,this)">Fri</button>
-    <button class="filt" onclick="selectDay(6,this)">Sat</button>
+    <button id="ds-0" class="filt" onclick="selectDay(0,this)">Sun</button>
+    <button id="ds-1" class="filt on" onclick="selectDay(1,this)">Mon</button>
+    <button id="ds-2" class="filt" onclick="selectDay(2,this)">Tue</button>
+    <button id="ds-3" class="filt" onclick="selectDay(3,this)">Wed</button>
+    <button id="ds-4" class="filt" onclick="selectDay(4,this)">Thu</button>
+    <button id="ds-5" class="filt" onclick="selectDay(5,this)">Fri</button>
+    <button id="ds-6" class="filt" onclick="selectDay(6,this)">Sat</button>
   </div>
   <div class="card">
     <div id="kids-edit-rows"></div>
@@ -1265,7 +1265,7 @@ loadFoodData();
 init();
 
 // EDIT / SETTINGS
-let editDay = 0;
+let editDay = 1;
 let CONFIG = {
   sunTimes: [
     {label:'Daybreak', time:'6:48am', icon:'🌙'},
@@ -1376,8 +1376,11 @@ window.addTask = function(){
 // KIDS
 function selectDay(day, btn){
   editDay = day;
-  document.querySelectorAll('#day-selector .filt').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
+  for(var d=0;d<7;d++){
+    var b=document.getElementById('ds-'+d);
+    if(b)b.classList.remove('on');
+  }
+  if(btn)btn.classList.add('on');
   renderKidsEdit(day);
 }
 window.selectDay = selectDay;
@@ -1398,13 +1401,25 @@ function renderKidsEdit(day){
   events.forEach((e,i) => {
     const tEl = document.getElementById('kids-t-'+i);
     const nEl = document.getElementById('kids-n-'+i);
-    if(tEl) tEl.onchange = () => { KIDS[editDay][i].t = tEl.value; buildKids(new Date().getDay()); };
-    if(nEl) nEl.onchange = () => { KIDS[editDay][i].n = nEl.value; buildKids(new Date().getDay()); };
+    if(tEl) tEl.onchange = () => { KIDS[editDay][i].t = tEl.value; saveKids(); buildKids(new Date().getDay()); };
+    if(nEl) nEl.onchange = () => { KIDS[editDay][i].n = nEl.value; saveKids(); buildKids(new Date().getDay()); };
   });
+}
+
+function saveKids(){
+  try{localStorage.setItem('sebren-kids',JSON.stringify(KIDS));}catch(e){}
+}
+
+function loadKids(){
+  try{
+    var s=localStorage.getItem('sebren-kids');
+    if(s){var k=JSON.parse(s);Object.assign(KIDS,k);}
+  }catch(e){}
 }
 
 window.deleteKidsEvent = function(i){
   KIDS[editDay].splice(i, 1);
+  saveKids();
   renderKidsEdit(editDay);
   buildKids(new Date().getDay());
 };
@@ -1417,6 +1432,7 @@ window.addKidsEvent = function(){
   KIDS[editDay].push({t:t||'', n});
   document.getElementById('new-kids-time').value = '';
   document.getElementById('new-kids-event').value = '';
+  saveKids();
   renderKidsEdit(editDay);
   buildKids(new Date().getDay());
 };
@@ -1486,6 +1502,7 @@ window.resetChecks = function(){
 };
 
 loadConfig();
+loadKids();
 
 // ── STREAK ──────────────────────────────────────────
 function getTodayStr(){
