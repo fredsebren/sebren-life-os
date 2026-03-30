@@ -892,16 +892,18 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <div class="card"><div id="prev-reviews" style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">No reviews yet — complete your first one above</div></div>
 </div>
 <!-- SHEENA FLOATING BUTTON -->
-<div id="sheena-overlay" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:100;min-height:100vh">
-  <div style="max-width:400px;margin:0 auto;padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh">
-    <div style="text-align:center;margin-bottom:2rem">
+<div id="sheena-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:100;overflow-y:auto;-webkit-overflow-scrolling:touch">
+  <div style="max-width:400px;margin:0 auto;padding:1.5rem 1.5rem 2rem;display:flex;flex-direction:column;align-items:center;min-height:100vh">
+    <div style="text-align:center;margin-bottom:1rem;padding-top:env(safe-area-inset-top,20px)">
       <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:4px">Sheena</div>
       <div style="font-size:12px;color:rgba(255,255,255,0.5)">Named by Braxton</div>
     </div>
 
+    <!-- Response area (shared between mood and voice) -->
+    <div id="sheena-response" style="width:100%;font-size:15px;color:#fff;line-height:1.7;margin-bottom:1rem;min-height:40px;text-align:left"></div>
+
     <!-- Mood check-in -->
-    <div id="sheena-mood-section" style="width:100%;margin-bottom:1.5rem;text-align:center">
-      <div id="sheena-response" style="font-size:15px;color:#fff;line-height:1.7;margin-bottom:1.5rem;min-height:60px;text-align:left"></div>
+    <div id="sheena-mood-section" style="width:100%;margin-bottom:1rem;text-align:center">
       <div id="sheena-mood-prompt" style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:1rem">How are you feeling today? Tap a number.</div>
       <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap" id="mood-btns">
         <button onclick="setMood(1)" class="mood-btn">1</button>
@@ -919,7 +921,7 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
 
     <!-- Voice input area -->
     <div id="sheena-voice-section" style="width:100%;display:none;text-align:center">
-      <div id="sheena-transcript" style="font-size:13px;color:rgba(255,255,255,0.6);min-height:40px;margin-bottom:1rem;font-style:italic;text-align:left;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px"></div>
+      <div id="sheena-transcript" style="font-size:13px;color:rgba(255,255,255,0.6);min-height:30px;margin-bottom:1rem;font-style:italic;text-align:left;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px"></div>
       <button id="sheena-mic-btn" onclick="toggleListening()" style="width:72px;height:72px;border-radius:50%;background:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
         <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="10" y="2" width="8" height="14" rx="4" fill="#1a1a1a"/><path d="M5 14c0 4.97 4.03 9 9 9s9-4.03 9-9" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" fill="none"/><line x1="14" y1="23" x2="14" y2="27" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
@@ -2474,12 +2476,79 @@ function buildSheenaContext(extra){
 
 FRED'S PROFILE: Fred Sebren, The Woodlands TX. Married to Dana (18-yr accountant, runs The Bookkeeping HQ). Kids: Parker (12, baseball), Braxton (9), Tyler (4). Building Clasifi (AI bookkeeping SaaS), launching cold email April 21. Weight goal: 195 lbs by June 1 (started 223). Goes to Hotworx. Has a sweet tooth. Faith-driven. Hates the gym. Loves his family.
 
-SCHEDULING: You can add events to Fred's calendar. When he wants to schedule something:
-1. Look at his week below and suggest the best open time slot
-2. When he confirms, respond with EXACTLY this format on its own line: [SCHEDULE:YYYY-M-D|TIME|TITLE] — e.g. [SCHEDULE:2026-4-2|2:00p|Haircut at Sport Clips]
-3. The system will automatically add it to his calendar. Confirm it's locked in.
-4. Consider kids schedule conflicts, Hotworx, work blocks, sunrise/sunset anchors, and meals when suggesting times.
-5. Morning (before 8am) is Bible/outside time. Protect it. Deep work blocks are best 9am-3pm. Evenings after 7:40pm are wind-down.
+ACTION TAGS — CRITICAL INSTRUCTIONS:
+You can control Fred's entire Life OS through action tags. When Fred tells you something actionable, you MUST include the appropriate tag on its own line in your response. The system reads these tags and performs the action automatically. ALWAYS include tags when applicable — do NOT wait for confirmation.
+
+SCHEDULE AN EVENT:
+[SCHEDULE:YYYY-M-D|TIME|TITLE]
+Trigger: Fred mentions an appointment, event, date, or asks to schedule something.
+Examples: "Haircut Thursday at 2" → [SCHEDULE:2026-4-2|2:00p|Haircut]
+"Parker has a game Saturday at 9am" → [SCHEDULE:2026-4-4|9:00a|Parker baseball game]
+
+LOG A MEAL:
+[MEAL:CALORIES|PROTEIN|MEAL NAME]
+Trigger: Fred says what he ate, is eating, or had for a meal.
+Examples: "Had a protein shake" → [MEAL:180|30|Protein shake]
+"Turkey sandwich with chips" → [MEAL:620|35|Turkey sandwich with chips]
+Use realistic nutrition estimates. His goal is ${calGoal} cal / ${protGoal}g protein.
+
+LOG STEPS:
+[STEPS:NUMBER]
+Trigger: Fred mentions his step count.
+Examples: "I got 8200 steps" → [STEPS:8200]
+"Hit 12k steps today" → [STEPS:12000]
+
+LOG WEIGHT:
+[WEIGHT:NUMBER]
+Trigger: Fred mentions his weight or weighing in.
+Examples: "I weigh 218.4" → [WEIGHT:218.4]
+"Weighed in at 216 this morning" → [WEIGHT:216]
+
+LOG HOTWORX:
+[HOTWORX:done]
+Trigger: Fred says he did Hotworx, worked out, went to the gym, or did his session.
+Examples: "Did Hotworx today" → [HOTWORX:done]
+"Just finished Hot ISO" → [HOTWORX:done]
+
+LOG FAITH:
+[FAITH:READING|GRATITUDE]
+Trigger: Fred mentions Bible reading, prayer, devotional, or time with God.
+Examples: "Read Psalm 23 this morning" → [FAITH:Psalm 23|]
+"Read John 3 and I'm grateful for my family, health, and this journey" → [FAITH:John 3|My family, health, and this journey]
+
+LOG WORK:
+[WORK:MINUTES|TASK DESCRIPTION]
+Trigger: Fred mentions Clasifi work, deep work, or how long he worked on something.
+Examples: "Did 2 hours on cold email copy" → [WORK:120|Cold email copy]
+"Spent 45 min on landing page" → [WORK:45|Landing page]
+
+CHECK OFF TASK:
+[CHECK:TASK_ID]
+Trigger: Fred says he completed a daily checklist item.
+Valid IDs: t-wake, t-sunrise, t-spirit, t-bfast, t-hotworx, t-steps, t-noon, t-work, t-sunset, t-dinner, t-blue
+Examples: "I watched the sunrise" → [CHECK:t-sunrise]
+"Had breakfast outside" → [CHECK:t-bfast]
+"Did my Bible time" → [CHECK:t-spirit]
+"I did my morning routine" → [CHECK:t-wake] [CHECK:t-sunrise] [CHECK:t-spirit] [CHECK:t-bfast] (multiple tags OK)
+
+POWER LIST:
+[POWERLIST:TASK1|TASK2|TASK3|TASK4|TASK5]
+Trigger: Fred lists his 5 critical tasks for the day.
+Example: "My 5 tasks today are finish email copy, do Hotworx, call the dentist, review landing page, and read 2 chapters" → [POWERLIST:Finish email copy|Do Hotworx|Call the dentist|Review landing page|Read 2 chapters]
+
+ADD GROCERY ITEM:
+[GROCERY:ITEM1,ITEM2,ITEM3]
+Trigger: Fred says they need groceries or to add something to the list.
+Examples: "We need chicken and rice" → [GROCERY:chicken,rice]
+"Add protein powder to the list" → [GROCERY:protein powder]
+
+RULES:
+1. You can include MULTIPLE tags in one response. If Fred says "I did Hotworx, got 9000 steps, and had a protein shake" → include [HOTWORX:done] AND [STEPS:9000] AND [MEAL:180|30|Protein shake]
+2. ALWAYS include tags immediately. Never say "would you like me to log that?" — just do it.
+3. After any action, briefly confirm what you logged and give him relevant context (remaining calories, weight trend, streak count, etc.)
+4. Tags are stripped from what Fred sees/hears — he only sees your conversational response.
+
+When suggesting times for scheduling, consider: kids schedule, Hotworx, work blocks, sunrise/sunset anchors. Morning before 8am = Bible time (protect it). Deep work 9am-3pm. Dinner before 7:40pm sunset.
 
 TODAY'S DATA:
 - Day: ${DAYS[dow]}, ${timeOfDay}
@@ -2562,6 +2631,7 @@ window.setMood = function(n){
 };
 
 function showVoiceSection(){
+  document.getElementById('sheena-mood-section').style.display='none';
   document.getElementById('sheena-voice-section').style.display='block';
 }
 
@@ -2628,69 +2698,206 @@ function sendToSheena(userMessage){
   .then(function(data){
     var text=data.content&&data.content[0]&&data.content[0].text;
     if(text){
-      // Strip scheduling tags from display/speech
-      var cleanText=text.replace(/\[SCHEDULE:[^\]]+\]/g,'').trim();
+      // Strip all action tags from display/speech
+      var cleanText=text.replace(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY):[^\]]+\]/g,'').trim();
       responseEl.textContent=cleanText;
+      responseEl.scrollIntoView({behavior:'smooth',block:'start'});
       sheenaConversation=msgs.concat([{role:'assistant',content:text}]);
       if(sheenaConversation.length>10)sheenaConversation=sheenaConversation.slice(-10);
       speakText(cleanText);
       // Auto-process: check for calendar scheduling + grocery items
       processVoiceForActions(userMessage, text);
+    } else {
+      responseEl.textContent='Got a response but no text — try again.';
     }
   })
-  .catch(function(){responseEl.textContent='Having trouble connecting.';});
+  .catch(function(err){responseEl.textContent='Error: '+(err.message||'connection failed');});
 }
 
 function processVoiceForActions(userMsg, sheenaReply){
-  // Check Sheena's reply for calendar scheduling tags
-  var schedMatch=sheenaReply.match(/\[SCHEDULE:([^\]]+)\]/);
-  if(schedMatch){
+  var transcript=document.getElementById('sheena-transcript');
+  var actions=[];
+  var lower=userMsg.toLowerCase();
+
+  // ── STEPS ─────────────────────────────────────────
+  var stepsMatch=sheenaReply.match(/\[STEPS:(\d+)\]/);
+  if(stepsMatch){
+    var steps=parseInt(stepsMatch[1]);
+    if(steps>0){
+      S.stepCount=Math.min(steps,99999);
+      var pct=Math.min(100,Math.round(S.stepCount/10000*100));
+      var sf=document.getElementById('step-fill');if(sf)sf.style.width=pct+'%';
+      var sl=document.getElementById('steps-lbl');if(sl)sl.textContent=S.stepCount.toLocaleString()+' / 10,000 steps';
+      if(S.stepCount>=10000){var c=document.querySelector('#t-steps .chk');if(c&&!c.classList.contains('on')){c.classList.add('on');S.checks['t-steps']=true;}}
+      updateProg();saveLocal();
+      actions.push('👟 '+S.stepCount.toLocaleString()+' steps');
+    }
+  }
+
+  // ── WEIGHT ────────────────────────────────────────
+  var wtMatch=sheenaReply.match(/\[WEIGHT:([\d.]+)\]/);
+  if(wtMatch){
+    var wt=parseFloat(wtMatch[1]);
+    if(wt>100&&wt<500){
+      if(!S.weights)S.weights=[];
+      var wd=new Date();
+      S.weights.unshift({date:(wd.getMonth()+1)+'/'+wd.getDate(),val:wt});
+      renderWeights();saveLocal();
+      actions.push('⚖️ '+wt+' lbs');
+    }
+  }
+
+  // ── HOTWORX ───────────────────────────────────────
+  var hxMatch=sheenaReply.match(/\[HOTWORX:done\]/i);
+  if(hxMatch){
+    var hdow=new Date().getDay();
+    if(!S.hxDays)S.hxDays={};
+    S.hxDays[hdow]=true;
+    var hxEl=document.getElementById('hx-'+hdow);if(hxEl)hxEl.classList.add('on');
+    saveLocal();
+    actions.push('🔥 Hotworx logged');
+  }
+
+  // ── FAITH ─────────────────────────────────────────
+  var faithMatch=sheenaReply.match(/\[FAITH:([^\]]*)\]/);
+  if(faithMatch){
+    var fParts=faithMatch[1].split('|');
+    var reading=(fParts[0]||'').trim();
+    var gratitude=(fParts[1]||'').trim();
+    var ftoday=getTodayStr();
+    if(!faithData.entries[ftoday])faithData.entries[ftoday]={};
+    faithData.entries[ftoday].spent=true;
+    if(reading)faithData.entries[ftoday].read=reading;
+    if(gratitude)faithData.entries[ftoday].gratitude=gratitude;
+    faithData.entries[ftoday].date=ftoday;
+    saveFaithData();
+    actions.push('🙏 Faith'+(reading?' — '+reading:''));
+  }
+
+  // ── WORK ──────────────────────────────────────────
+  var workMatch=sheenaReply.match(/\[WORK:(\d+)\|([^\]]+)\]/);
+  if(workMatch){
+    var wmins=parseInt(workMatch[1]);
+    var wtask=workMatch[2].trim();
+    if(wmins>0&&wtask){
+      workBlocks.unshift({date:getTodayStr(),task:wtask,mins:wmins,ts:Date.now()});
+      saveWork();
+      actions.push('💻 '+wtask+' ('+wmins+' min)');
+    }
+  }
+
+  // ── CHECK OFF TASKS ───────────────────────────────
+  var checkMatches=sheenaReply.match(/\[CHECK:[^\]]+\]/g);
+  if(checkMatches){
+    var checked=0;
+    checkMatches.forEach(function(cm){
+      var cid=cm.replace('[CHECK:','').replace(']','').trim();
+      var cel=document.querySelector('#'+cid+' .chk');
+      if(cel&&!cel.classList.contains('on')){
+        cel.classList.add('on');
+        S.checks[cid]=true;
+        checked++;
+      }
+    });
+    if(checked){updateProg();saveLocal();actions.push('✅ '+checked+' task'+(checked>1?'s':''));}
+  }
+
+  // ── POWER LIST ────────────────────────────────────
+  var plMatch=sheenaReply.match(/\[POWERLIST:([^\]]+)\]/);
+  if(plMatch){
+    var plTasks=plMatch[1].split('|').map(function(t){return t.trim();}).filter(Boolean);
+    if(plTasks.length>0){
+      loadPowerList();
+      for(var pi=0;pi<5;pi++){powerList.tasks[pi]=plTasks[pi]||'';}
+      savePowerList();
+      actions.push('📋 Power List — '+plTasks.length+' tasks');
+    }
+  }
+
+  // ── MEAL ──────────────────────────────────────────
+  var mealMatch=sheenaReply.match(/\[MEAL:([^\]]+)\]/);
+  if(mealMatch){
     try{
-      var parts=schedMatch[1].split('|');
-      if(parts.length>=3){
-        var dateStr=parts[0].trim();
-        var time=parts[1].trim();
-        var title=parts[2].trim();
-        sheenaAddCalEvent(dateStr, time, title);
-        // Update the transcript to confirm
-        var transcript=document.getElementById('sheena-transcript');
-        if(transcript) transcript.textContent='📅 Added to calendar: '+time+' — '+title+' ('+dateStr+')';
-        // Rebuild today tab schedule if it's today
-        if(dateStr===getTodayStr()) buildKids(new Date().getDay());
+      var mp=mealMatch[1].split('|');
+      if(mp.length>=3){
+        var mcal=parseInt(mp[0].trim());
+        var mprot=parseInt(mp[1].trim());
+        var mname=mp[2].trim();
+        if(mcal>0&&mname){
+          window.meal(mname,String(mcal),mprot);
+          var tc=(S.meals||[]).reduce(function(a,m){return a+m.cal;},0);
+          actions.push('🍽 '+mname+' ('+mcal+' cal) — Day: '+tc+'/'+CONFIG.calGoal);
+        }
       }
     }catch(e){}
   }
 
-  // Simple keyword detection for grocery items
-  var groceryTriggers=['we need','out of','add to grocery','get some','pick up','buy'];
-  var lower=userMsg.toLowerCase();
-  var groceryMatched=false;
-  groceryTriggers.forEach(function(t){
-    if(lower.includes(t))groceryMatched=true;
-  });
-  if(groceryMatched){
-    callClaude({
-      max_tokens:100,
-      system:'Extract grocery items from this message. Return ONLY a JSON array of item names, or empty array if none. Example: ["chicken","milk"]. No other text.',
-      messages:[{role:'user',content:userMsg}]
-    })
-    .then(function(data){
-      try{
-        var items=JSON.parse(data.content[0].text);
-        if(items&&items.length){
-          items.forEach(function(item){
-            var id='v'+Date.now()+Math.random().toString(36).slice(2,5);
-            grocItems.push({id:id,name:item,cat:guessCategory(item),type:'weekly',done:false});
-          });
-          saveGroc();
-          if(items.length>0){
-            document.getElementById('sheena-transcript').textContent='Added to grocery list: '+items.join(', ');
-          }
-        }
-      }catch(e){}
+  // ── SCHEDULE ──────────────────────────────────────
+  var schedMatch=sheenaReply.match(/\[SCHEDULE:([^\]]+)\]/);
+  if(schedMatch){
+    try{
+      var sp=schedMatch[1].split('|');
+      if(sp.length>=3){
+        sheenaAddCalEvent(sp[0].trim(),sp[1].trim(),sp[2].trim());
+        if(sp[0].trim()===getTodayStr())buildKids(new Date().getDay());
+        actions.push('📅 '+sp[2].trim()+' — '+sp[1].trim());
+      }
+    }catch(e){}
+  }
+
+  // ── GROCERY ───────────────────────────────────────
+  var grocMatch=sheenaReply.match(/\[GROCERY:([^\]]+)\]/);
+  if(grocMatch){
+    var gitems=grocMatch[1].split(',').map(function(s){return s.trim();}).filter(Boolean);
+    gitems.forEach(function(item){
+      var gid='v'+Date.now()+Math.random().toString(36).slice(2,5);
+      grocItems.push({id:gid,name:item,cat:guessCategory(item),type:'weekly',done:false});
     });
+    if(gitems.length)saveGroc();
+    actions.push('🛒 '+gitems.join(', '));
+  }
+
+  // ── SHOW ACTIONS ──────────────────────────────────
+  if(actions.length&&transcript){
+    transcript.textContent=actions.join(' · ');
+  }
+
+  // ── FALLBACKS (no tags found) ─────────────────────
+  if(!actions.length){
+    // Food fallback
+    var foodWords=['i ate','i had','i just ate','i just had','just ate','just had','for breakfast','for lunch','for dinner','eating','i grabbed','had some','had a'];
+    var foodHit=false;foodWords.forEach(function(t){if(lower.includes(t))foodHit=true;});
+    if(foodHit){
+      callClaude({max_tokens:100,system:'Extract a meal and estimate macros. Return ONLY JSON: {"meal":"name","calories":number,"protein":number} or null. No other text.',messages:[{role:'user',content:userMsg}]})
+      .then(function(d){try{var p=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());if(p&&p.meal&&p.calories>0){window.meal(p.meal,String(p.calories),p.protein||0);var tc=(S.meals||[]).reduce(function(a,m){return a+m.cal;},0);if(transcript)transcript.textContent='🍽 '+p.meal+' ('+p.calories+' cal) — Day: '+tc;}}catch(e){}}).catch(function(){});
+    }
+    // Schedule fallback
+    var schedWords=['schedule','appointment','haircut','dentist','doctor','meeting','add to calendar','book a'];
+    var schedHit=false;schedWords.forEach(function(t){if(lower.includes(t))schedHit=true;});
+    if(schedHit){
+      var td=new Date();var tds=td.getFullYear()+'-'+(td.getMonth()+1)+'-'+td.getDate();
+      callClaude({max_tokens:100,system:'Extract calendar event. Today is '+tds+'. Return ONLY JSON: {"date":"YYYY-M-D","time":"H:MMa","title":"name"} or null. Year is 2026.',messages:[{role:'user',content:userMsg}]})
+      .then(function(d){try{var e=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());if(e&&e.date&&e.title){sheenaAddCalEvent(e.date,e.time||'',e.title);if(transcript)transcript.textContent='📅 '+(e.time?e.time+' — ':'')+e.title;if(e.date===getTodayStr())buildKids(new Date().getDay());}}catch(e){}}).catch(function(){});
+    }
+    // Steps fallback
+    var stepsHit=lower.match(/(\d[\d,]*)\s*steps/);
+    if(stepsHit){var sv=parseInt(stepsHit[1].replace(/,/g,''));if(sv>0&&sv<100000){S.stepCount=sv;var spct=Math.min(100,Math.round(sv/10000*100));var sef=document.getElementById('step-fill');if(sef)sef.style.width=spct+'%';var sel=document.getElementById('steps-lbl');if(sel)sel.textContent=sv.toLocaleString()+' / 10,000 steps';if(sv>=10000){var sc=document.querySelector('#t-steps .chk');if(sc&&!sc.classList.contains('on')){sc.classList.add('on');S.checks['t-steps']=true;updateProg();}}saveLocal();if(transcript)transcript.textContent='👟 '+sv.toLocaleString()+' steps';}}
+    // Weight fallback
+    var wtHit=lower.match(/(?:weigh|weight|weighed|scale).*?(\d{3}\.?\d?)/);
+    if(wtHit){var wv=parseFloat(wtHit[1]);if(wv>100&&wv<500){if(!S.weights)S.weights=[];var wdd=new Date();S.weights.unshift({date:(wdd.getMonth()+1)+'/'+wdd.getDate(),val:wv});renderWeights();saveLocal();if(transcript)transcript.textContent='⚖️ '+wv+' lbs';}}
+    // Hotworx fallback
+    if(lower.includes('hotworx')||lower.includes('hot iso')||lower.includes('hot cycle')){var hdd=new Date().getDay();if(!S.hxDays)S.hxDays={};if(!S.hxDays[hdd]){S.hxDays[hdd]=true;var hhe=document.getElementById('hx-'+hdd);if(hhe)hhe.classList.add('on');saveLocal();if(transcript)transcript.textContent='🔥 Hotworx logged';}}
+    // Grocery fallback
+    var grocWords=['we need','out of','add to grocery','get some','pick up','buy some'];
+    var grocHit=false;grocWords.forEach(function(t){if(lower.includes(t))grocHit=true;});
+    if(grocHit){
+      callClaude({max_tokens:100,system:'Extract grocery items. Return ONLY a JSON array of names or []. No other text.',messages:[{role:'user',content:userMsg}]})
+      .then(function(d){try{var it=JSON.parse(d.content[0].text);if(it&&it.length){it.forEach(function(item){grocItems.push({id:'v'+Date.now()+Math.random().toString(36).slice(2,5),name:item,cat:guessCategory(item),type:'weekly',done:false});});saveGroc();if(transcript)transcript.textContent='🛒 '+it.join(', ');}}catch(e){}}).catch(function(){});
+    }
   }
 }
+
+
 
 function speakText(text){
   if(!('speechSynthesis' in window))return;
