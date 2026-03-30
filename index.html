@@ -2481,10 +2481,12 @@ ACTION TAGS — CRITICAL INSTRUCTIONS:
 You can control Fred's entire Life OS through action tags. When Fred tells you something actionable, you MUST include the appropriate tag on its own line in your response. The system reads these tags and performs the action automatically. ALWAYS include tags when applicable — do NOT wait for confirmation.
 
 SCHEDULE AN EVENT:
-[SCHEDULE:YYYY-M-D|TIME|TITLE]
+[SCHEDULE:2026-M-D|TIME|TITLE]
+The year is ALWAYS 2026. Do not use any other year.
 Trigger: Fred mentions an appointment, event, date, or asks to schedule something.
 Examples: "Haircut Thursday at 2" → [SCHEDULE:2026-4-2|2:00p|Haircut]
 "Parker has a game Saturday at 9am" → [SCHEDULE:2026-4-4|9:00a|Parker baseball game]
+"Dentist next Tuesday" → [SCHEDULE:2026-4-7|9:00a|Dentist]
 
 LOG A MEAL:
 [MEAL:CALORIES|PROTEIN|MEAL NAME]
@@ -2642,6 +2644,24 @@ function showVoiceSection(){
   document.getElementById('sheena-voice-section').style.display='block';
 }
 
+// ── AUDIO TONES ─────────────────────────────────────
+var _audioCtx=null;
+function playTone(freq, duration, delay, volume){
+  try{
+    if(!_audioCtx) _audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    var osc=_audioCtx.createOscillator();
+    var gain=_audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(_audioCtx.destination);
+    osc.type='sine';
+    osc.frequency.value=freq;
+    gain.gain.value=volume||0.12;
+    var start=_audioCtx.currentTime+(delay||0);
+    osc.start(start);
+    osc.stop(start+(duration||0.1));
+  }catch(e){}
+}
+
 window.toggleListening = function(){
   if(sheenaListening){
     if(sheenaRecognition)sheenaRecognition.stop();
@@ -2655,6 +2675,10 @@ window.toggleListening = function(){
     document.getElementById('sheena-transcript').textContent='Voice not supported in this browser. Try Chrome.';
     return;
   }
+
+  // Play "listening" tone — two quick ascending notes
+  playTone(600, 0.08, 0, 0.15);
+  playTone(900, 0.08, 0.1, 0.15);
 
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   sheenaRecognition = new SR();
@@ -2671,7 +2695,10 @@ window.toggleListening = function(){
     if(e.results[e.results.length-1].isFinal){
       sheenaListening=false;
       document.getElementById('sheena-mic-btn').classList.remove('listening');
-      document.getElementById('sheena-mic-label').textContent='Tap to speak';
+      document.getElementById('sheena-mic-label').textContent='Thinking...';
+      // Play "thinking" tone — soft descending note
+      playTone(700, 0.12, 0, 0.1);
+      playTone(500, 0.12, 0.1, 0.1);
       sendToSheena(transcript);
     }
   };
@@ -2715,6 +2742,9 @@ function sendToSheena(userMessage){
       sheenaConversation=msgs.concat([{role:'assistant',content:text}]);
       if(sheenaConversation.length>10)sheenaConversation=sheenaConversation.slice(-10);
       speakText(cleanText);
+      // Reset mic label
+      var micLabel=document.getElementById('sheena-mic-label');
+      if(micLabel)micLabel.textContent='Tap to speak';
       // Auto-process: check for calendar scheduling + grocery items
       processVoiceForActions(userMessage, text);
     } else {
@@ -3806,7 +3836,13 @@ function sheenaAddCalEvent(dateStr, time, title){
   // Normalize date: strip zero-padding so 2026-04-03 becomes 2026-4-3
   var parts=dateStr.split('-');
   if(parts.length===3){
-    dateStr=parseInt(parts[0])+'-'+parseInt(parts[1])+'-'+parseInt(parts[2]);
+    var yr=parseInt(parts[0]);
+    var mo=parseInt(parts[1]);
+    var dy=parseInt(parts[2]);
+    // Force current year if AI hallucinated wrong year
+    var currentYear=new Date().getFullYear();
+    if(yr!==currentYear) yr=currentYear;
+    dateStr=yr+'-'+mo+'-'+dy;
   }
   if(!calEvents[dateStr])calEvents[dateStr]=[];
   calEvents[dateStr].push({time:time||'',title:title,id:'s'+Date.now()});
