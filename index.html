@@ -35,7 +35,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .prog-lbl{font-size:11px;color:var(--txt3);margin-top:4px;text-align:right}
 .nav{display:flex;background:var(--bg);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch}
 .nav::-webkit-scrollbar{display:none}
-.nb{flex-shrink:0;padding:11px 14px;font-size:12px;font-weight:500;border:none;background:transparent;cursor:pointer;color:var(--txt2);border-bottom:2px solid transparent;white-space:nowrap}
+.nb{flex-shrink:0;padding:9px 10px;font-size:11px;font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--txt2);border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:-0.01em}
 .nb.on{color:var(--txt);border-bottom:2px solid var(--txt);font-weight:600}
 .tab{display:none;padding:1rem;flex:1;overflow-y:auto}
 .tab.on{display:block}
@@ -167,14 +167,15 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <button class="nb on" onclick="tab('today',this)">Today</button>
   <button class="nb" onclick="tab('sun',this)">Sun</button>
   <button class="nb" onclick="tab('food',this)">Food</button>
-  <button class="nb" onclick="tab('progress',this)">Progress</button>
-  <button class="nb" onclick="tab('grocery',this)">Groceries</button>
+  <button class="nb" onclick="tab('progress',this)">Weight</button>
+  <button class="nb" onclick="tab('grocery',this)">Shop</button>
   <button class="nb" onclick="tab('summary',this)">Summary</button>
   <button class="nb" onclick="tab('work',this)">Work</button>
   <button class="nb" onclick="tab('settings',this)">Edit</button>
 </div>
 
 <!-- TODAY -->
+<div id="ptr-ind" style="text-align:center;height:0;overflow:hidden;font-size:12px;color:var(--txt3);background:var(--bg2);transition:height 0.15s">Pull down to refresh</div>
 <div id="tab-today" class="tab on">
   <div class="sec">Morning — do in order</div>
   <div class="card" id="t-wake"><div class="row"><div class="chk" onclick="chk(this,'t-wake')"></div><div class="ct"><div class="ct-title">Wake up — no phone</div><div class="ct-sub">16 oz water immediately</div></div><span class="tag t-sun">6:30a</span></div></div>
@@ -1026,6 +1027,40 @@ window.logCustomMeal = function(){
   document.getElementById('custom-meal-prot').value='';
   document.getElementById('custom-meal-form').style.display='none';
 };
+
+
+// Pull to refresh
+(function(){
+  var sy=0,pulling=false,T=75;
+  var ind=document.getElementById('ptr-ind');
+  document.addEventListener('touchstart',function(e){
+    if(window.scrollY===0)sy=e.touches[0].clientY;
+  },{passive:true});
+  document.addEventListener('touchmove',function(e){
+    if(!sy)return;
+    var d=e.touches[0].clientY-sy;
+    if(d>15&&window.scrollY===0){
+      pulling=true;
+      if(ind){
+        ind.style.height='36px';
+        ind.style.padding='10px 0';
+        ind.textContent=d>T?'Release to refresh ↑':'Pull down to refresh ↓';
+      }
+    }
+  },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(pulling&&sy){
+      var d=e.changedTouches[0].clientY-sy;
+      if(d>T){
+        if(ind){ind.textContent='Refreshing...';ind.style.height='36px';}
+        setTimeout(function(){window.location.reload();},300);
+      } else {
+        if(ind){ind.style.height='0';ind.style.padding='0';}
+      }
+    }
+    sy=0;pulling=false;
+  });
+})();
 
 init();
 
