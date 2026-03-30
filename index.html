@@ -34,6 +34,26 @@
 .ai-confirm-btn.primary{background:var(--txt);color:var(--bg);border-color:var(--txt)}
 .ai-confirm-btn.secondary{background:transparent;color:var(--txt2)}
 
+
+.prayer-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.prayer-item:last-child{border-bottom:none}
+.prayer-chk{width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.prayer-chk.answered{background:var(--success);border-color:var(--success)}
+.prayer-chk.answered::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block}
+.dana-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.dana-item:last-child{border-bottom:none}
+.dana-del{font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0;line-height:1;font-family:inherit}
+.faith-history-item{padding:8px 0;border-bottom:1px solid var(--border)}
+.faith-history-item:last-child{border-bottom:none}
+
+
+.mood-btn{width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);background:transparent;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.mood-btn:hover,.mood-btn.selected{background:#fff;color:#1a1a1a}
+.sheena-quick-btn{padding:10px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;text-align:center}
+.sheena-quick-btn:active{background:rgba(255,255,255,0.15)}
+#sheena-mic-btn.listening{background:#E24B4A;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg2);min-height:100vh;color:var(--txt)}
 .app{max-width:430px;margin:0 auto;background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
 .hdr{padding:1rem 1rem 0.5rem;background:var(--bg);border-bottom:1px solid var(--border)}
@@ -183,12 +203,40 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <button class="nb" onclick="tab('grocery',this)">Shop</button>
   <button class="nb" onclick="tab('summary',this)">Summary</button>
   <button class="nb" onclick="tab('work',this)">Work</button>
+  <button class="nb" onclick="tab('faith',this)">Faith</button>
+  <button class="nb" onclick="tab('dana',this)">Dana</button>
+  <button class="nb" onclick="tab('faith',this)">Faith</button>
+  <button class="nb" onclick="tab('dana',this)">Dana</button>
+  <button class="nb" onclick="tab('review',this)">Review</button>
   <button class="nb" onclick="tab('settings',this)">Edit</button>
 </div>
 
 <!-- TODAY -->
+<div id="weather-bar" style="display:flex;align-items:center;gap:10px;padding:8px 1rem;background:var(--bg2);border-bottom:1px solid var(--border);font-size:13px;cursor:pointer" onclick="fetchWeather()">
+  <span id="weather-icon" style="font-size:20px">⛅</span>
+  <div style="flex:1">
+    <span id="weather-temp" style="font-weight:600;color:var(--txt)">--°F</span>
+    <span id="weather-desc" style="color:var(--txt2);margin-left:6px">The Woodlands, TX</span>
+  </div>
+  <span id="weather-feels" style="font-size:11px;color:var(--txt3)">tap to load</span>
+</div>
 <div id="ptr-ind" style="text-align:center;height:0;overflow:hidden;font-size:12px;color:var(--txt3);background:var(--bg2);transition:height 0.15s">Pull down to refresh</div>
 <div id="tab-today" class="tab on">
+  <div id="ai-briefing-card" style="margin-bottom:12px;display:none">
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--txt);display:flex;align-items:center;justify-content:center">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="white" stroke-width="1.5"/><path d="M7 4v3.5l2 1.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <span style="font-size:12px;font-weight:600;color:var(--txt)">Good morning, Fred</span>
+        </div>
+        <button onclick="refreshBriefing()" id="briefing-refresh-btn" style="font-size:11px;color:var(--txt3);background:transparent;border:none;cursor:pointer;font-family:inherit">Refresh</button>
+      </div>
+      <div id="ai-briefing-text" style="font-size:13px;color:var(--txt);line-height:1.7"></div>
+      <div id="ai-briefing-loading" style="font-size:13px;color:var(--txt2);line-height:1.7">Pulling your day together...</div>
+    </div>
+  </div>
   <div class="sec">Morning — do in order</div>
   <div class="card" id="t-wake"><div class="row"><div class="chk" onclick="chk(this,'t-wake')"></div><div class="ct"><div class="ct-title">Wake up — no phone</div><div class="ct-sub">16 oz water immediately</div></div><span class="tag t-sun">6:30a</span></div></div>
   <div class="card" id="t-sunrise"><div class="row"><div class="chk" onclick="chk(this,'t-sunrise')"></div><div class="ct"><div class="ct-title">Outside for sunrise</div><div class="ct-sub">7:12 — eyes to horizon, no sunglasses</div></div><span class="tag t-sun">7:12a</span></div></div>
@@ -219,6 +267,22 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <div class="card" id="t-dinner"><div class="row"><div class="chk" onclick="chk(this,'t-dinner')"></div><div class="ct"><div class="ct-title">Dinner before sunset — eat outside</div><div class="ct-sub">Aim 7pm. No eating after sunset.</div></div><span class="tag t-food">before 7:40p</span></div></div>
   <div class="card" id="t-blue"><div class="row"><div class="chk" onclick="chk(this,'t-blue')"></div><div class="ct"><div class="ct-title">Blue light blockers + no screens</div><div class="ct-sub">Screens off 1 hr before bed. Bible instead of TV.</div></div><span class="tag t-spirit">9:30p</span></div></div>
 
+  <div id="weather-widget" style="margin-bottom:8px;display:none">
+    <div class="card" style="display:flex;align-items:center;gap:12px;padding:0.75rem 1rem">
+      <div id="wx-icon" style="font-size:28px;line-height:1">--</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <span id="wx-temp" style="font-size:22px;font-weight:700;color:var(--txt)">--°</span>
+          <span id="wx-desc" style="font-size:12px;color:var(--txt2)">Loading weather...</span>
+        </div>
+        <div id="wx-detail" style="font-size:11px;color:var(--txt3);margin-top:2px"></div>
+      </div>
+      <div style="text-align:right">
+        <div id="wx-high-low" style="font-size:11px;color:var(--txt2)"></div>
+        <div id="wx-feels" style="font-size:11px;color:var(--txt3);margin-top:2px"></div>
+      </div>
+    </div>
+  </div>
   <div class="sec" id="kids-sec" style="display:none">Daily schedule</div>
   <div id="kids-block"></div>
 </div>
@@ -250,6 +314,30 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
 
   <div class="sec">Meals today</div>
   <div class="card"><div id="meal-list"><div class="empty-state">Nothing logged yet — add below</div></div></div>
+
+  <div class="sec">AI coach — right now</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+    <button onclick="coachPrompt('craving')" style="padding:12px 8px;border-radius:var(--radius-lg);border:1.5px solid #E24B4A;background:#FCEBEB;cursor:pointer;font-family:inherit;text-align:center">
+      <div style="font-size:18px;margin-bottom:4px">🆘</div>
+      <div style="font-size:12px;font-weight:700;color:#A32D2D">I'm craving...</div>
+      <div style="font-size:10px;color:#A32D2D;margin-top:2px;opacity:0.8">Talk me off the edge</div>
+    </button>
+    <button onclick="coachPrompt('eating-out')" style="padding:12px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border);background:var(--bg);cursor:pointer;font-family:inherit;text-align:center">
+      <div style="font-size:18px;margin-bottom:4px">🍽️</div>
+      <div style="font-size:12px;font-weight:700;color:var(--txt)">Eating out</div>
+      <div style="font-size:10px;color:var(--txt2);margin-top:2px">Best options anywhere</div>
+    </button>
+    <button onclick="coachPrompt('starving')" style="padding:12px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border);background:var(--bg);cursor:pointer;font-family:inherit;text-align:center">
+      <div style="font-size:18px;margin-bottom:4px">😤</div>
+      <div style="font-size:12px;font-weight:700;color:var(--txt)">Nothing to eat</div>
+      <div style="font-size:10px;color:var(--txt2);margin-top:2px">Emergency meal ideas</div>
+    </button>
+    <button onclick="coachPrompt('slipped')" style="padding:12px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border);background:var(--bg);cursor:pointer;font-family:inherit;text-align:center">
+      <div style="font-size:18px;margin-bottom:4px">💪</div>
+      <div style="font-size:12px;font-weight:700;color:var(--txt)">I slipped up</div>
+      <div style="font-size:10px;color:var(--txt2);margin-top:2px">Get back on track</div>
+    </button>
+  </div>
 
   <div class="sec">AI macro lookup</div>
   <div class="card" style="margin-bottom:8px">
@@ -545,6 +633,263 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   </div>
 </div>
 
+
+<!-- FAITH TAB -->
+<div id="tab-faith" class="tab">
+  <div class="sec">Morning devotional</div>
+  <div class="card" style="background:var(--purple-bg);border-color:#AFA9EC">
+    <div id="daily-verse-ref" style="font-size:11px;font-weight:600;color:var(--purple-txt);margin-bottom:4px">Verse of the day</div>
+    <div id="daily-verse-text" style="font-size:14px;color:var(--purple-txt);line-height:1.6;font-style:italic">Loading...</div>
+  </div>
+
+  <div class="sec">Today's faith check-in</div>
+  <div class="card">
+    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:10px">Did you spend time with God this morning?</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button id="faith-yes-btn" onclick="logFaithDay(true)" style="flex:1;padding:9px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Yes</button>
+      <button id="faith-no-btn" onclick="logFaithDay(false)" style="flex:1;padding:9px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--txt2)">Not yet</button>
+    </div>
+    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:6px">What I read today</div>
+    <input type="text" id="faith-reading" placeholder="e.g. John 3, Psalm 23..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:12px">
+    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:6px">What I'm grateful for today</div>
+    <textarea id="faith-gratitude" placeholder="3 things you're grateful for..." style="width:100%;min-height:70px;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;resize:none;line-height:1.5;margin-bottom:0"></textarea>
+    <button class="log-btn" style="margin-top:8px;margin-bottom:0" onclick="saveFaithEntry()">Save today's entry</button>
+  </div>
+
+  <div class="sec">Prayer list</div>
+  <div class="card">
+    <div id="prayer-list-items"></div>
+    <div class="inp-row" style="margin-top:8px">
+      <input type="text" id="new-prayer" placeholder="Add a prayer request...">
+      <button onclick="addPrayer()">Add</button>
+    </div>
+  </div>
+
+  <div class="sec">Faith streak</div>
+  <div class="met" style="text-align:center;border-radius:var(--radius);padding:1rem;margin-bottom:8px">
+    <div class="met-val" id="faith-streak-count">0</div>
+    <div class="met-lbl">days with God this week</div>
+    <div class="met-sub" id="faith-streak-sub">Keep showing up</div>
+  </div>
+
+  <div class="sec">Recent entries</div>
+  <div class="card" id="faith-history"></div>
+</div>
+
+<!-- DANA / MARRIAGE TAB -->
+<div id="tab-dana" class="tab">
+  <div class="sec">Marriage intentionality</div>
+  <div class="card" style="background:#FBEAF0;border-color:#ED93B1;margin-bottom:8px">
+    <div style="font-size:13px;font-weight:600;color:#72243E;margin-bottom:4px">A great marriage doesn't happen by accident.</div>
+    <div style="font-size:12px;color:#993556;line-height:1.5">Use this space to stay intentional about Dana — small consistent actions matter more than grand gestures.</div>
+  </div>
+
+  <div class="sec">This week's date night</div>
+  <div class="card">
+    <input type="text" id="date-night-plan" placeholder="What's the plan this week?" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:6px">
+    <button class="log-btn" style="margin-bottom:0" onclick="saveDateNight()">Save plan</button>
+    <div id="date-night-saved" style="font-size:12px;color:var(--txt2);margin-top:8px"></div>
+  </div>
+
+  <div class="sec">Things I want to do for Dana</div>
+  <div class="card">
+    <div id="dana-acts-list"></div>
+    <div class="inp-row" style="margin-top:8px">
+      <input type="text" id="new-dana-act" placeholder="Something thoughtful...">
+      <button onclick="addDanaAct()">Add</button>
+    </div>
+  </div>
+
+  <div class="sec">What I love about Dana</div>
+  <div class="card">
+    <div id="dana-love-list"></div>
+    <div class="inp-row" style="margin-top:8px">
+      <input type="text" id="new-dana-love" placeholder="Something you appreciate...">
+      <button onclick="addDanaLove()">Add</button>
+    </div>
+  </div>
+
+  <div class="sec">Shared goals</div>
+  <div class="card">
+    <div id="shared-goals-list"></div>
+    <div class="inp-row" style="margin-top:8px">
+      <input type="text" id="new-shared-goal" placeholder="A goal for you both...">
+      <button onclick="addSharedGoal()">Add</button>
+    </div>
+  </div>
+
+  <div class="sec">Notes for Dana</div>
+  <div class="card">
+    <textarea id="dana-notes" placeholder="Things you want to tell her, ideas, thoughts..." style="width:100%;min-height:80px;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;resize:none;line-height:1.5"></textarea>
+    <button class="log-btn" style="margin-top:8px;margin-bottom:0" onclick="saveDanaNotes()">Save notes</button>
+  </div>
+</div>
+
+
+<!-- FAITH TAB -->
+<div id="tab-faith" class="tab">
+  <div style="background:#EEEDFE;border:1px solid #AFA9EC;border-radius:var(--radius-lg);padding:1rem;margin-bottom:12px">
+    <div id="daily-verse-ref" style="font-size:11px;font-weight:600;color:#3C3489;margin-bottom:4px">Daily verse</div>
+    <div id="daily-verse-text" style="font-size:14px;color:#26215C;line-height:1.6;font-style:italic">Loading...</div>
+  </div>
+
+  <div class="sec">Today's faith check-in</div>
+  <div class="card">
+    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:10px">Did I spend time with God this morning?</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button id="faith-yes" onclick="setFaithDone(true)" style="flex:1;padding:10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--txt)">Yes</button>
+      <button id="faith-no" onclick="setFaithDone(false)" style="flex:1;padding:10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--txt)">Not yet</button>
+    </div>
+
+    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:6px">What I read today</div>
+    <input type="text" id="bible-passage" placeholder="e.g. Psalm 23, John 3:16-21, Proverbs 4..." style="width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:12px">
+
+    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:6px">Gratitude — 3 things today</div>
+    <input type="text" id="gratitude-1" placeholder="1. I'm grateful for..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:6px">
+    <input type="text" id="gratitude-2" placeholder="2. I'm grateful for..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:6px">
+    <input type="text" id="gratitude-3" placeholder="3. I'm grateful for..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:12px">
+
+    <button onclick="saveFaithCheckin()" style="width:100%;padding:10px;background:var(--txt);color:var(--bg);border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Save today's check-in</button>
+  </div>
+
+  <div class="sec">Prayer list</div>
+  <div class="card">
+    <div id="prayer-list-render"></div>
+    <div class="inp-row" style="margin-top:10px">
+      <input type="text" id="prayer-inp" placeholder="Add prayer request...">
+      <button onclick="addPrayer()">Add</button>
+    </div>
+  </div>
+
+  <div class="sec">Reading history</div>
+  <div class="card">
+    <div id="faith-history" style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">Check in daily to build your history</div>
+  </div>
+</div>
+
+<!-- DANA TAB -->
+<div id="tab-dana" class="tab">
+  <div style="background:#FAECE7;border:1px solid #F0997B;border-radius:var(--radius-lg);padding:1rem;margin-bottom:12px">
+    <div style="font-size:13px;font-weight:600;color:#712B13;margin-bottom:2px">Dana & Fred</div>
+    <div style="font-size:12px;color:#993C1D;line-height:1.5">Small intentional moments make the biggest marriages.</div>
+  </div>
+
+  <div class="sec">This week's intention</div>
+  <div class="card">
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:8px">What's one thing you want to do for Dana this week?</div>
+    <input type="text" id="dana-intention" placeholder="e.g. Plan a date night, write her a note, cook her favorite meal..." style="width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:8px">
+    <button onclick="saveDanaIntention()" style="width:100%;padding:9px;background:var(--txt);color:var(--bg);border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Set intention</button>
+    <div id="dana-intention-display" style="margin-top:10px;font-size:13px;color:var(--txt2);font-style:italic"></div>
+  </div>
+
+  <div class="sec">Things Dana would love</div>
+  <div class="card">
+    <div id="dana-ideas-list"></div>
+    <div class="inp-row" style="margin-top:10px">
+      <input type="text" id="dana-idea-inp" placeholder="Date idea, gift, gesture...">
+      <button onclick="addDanaIdea()">Add</button>
+    </div>
+  </div>
+
+  <div class="sec">Last date night</div>
+  <div class="card">
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:8px">When was your last intentional date?</div>
+    <input type="date" id="last-date-inp" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:8px">
+    <input type="text" id="last-date-note" placeholder="What did you do?" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:8px">
+    <button onclick="saveLastDate()" style="width:100%;padding:9px;background:var(--txt);color:var(--bg);border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Save</button>
+    <div id="last-date-display" style="margin-top:10px;font-size:12px;color:var(--txt2)"></div>
+  </div>
+
+  <div class="sec">Notes about Dana</div>
+  <div class="card">
+    <textarea id="dana-notes" placeholder="Things she mentioned wanting, things that made her smile, things to remember..." style="width:100%;min-height:80px;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:transparent;color:var(--txt);font-family:inherit;resize:vertical;line-height:1.5"></textarea>
+    <button onclick="saveDanaNotes()" style="width:100%;margin-top:8px;padding:9px;background:transparent;color:var(--txt);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Save notes</button>
+  </div>
+</div>
+
+<!-- WEEKLY REVIEW TAB -->
+<div id="tab-review" class="tab">
+  <div class="sec">Week of <span id="review-week-label"></span></div>
+
+  <div class="met-grid" style="margin-bottom:12px">
+    <div class="met"><div class="met-val" id="rev-hotworx">0</div><div class="met-lbl">Hotworx sessions</div><div class="met-sub">goal: 4</div></div>
+    <div class="met"><div class="met-val" id="rev-faith">0</div><div class="met-lbl">faith check-ins</div><div class="met-sub">goal: 7</div></div>
+    <div class="met"><div class="met-val" id="rev-wt">—</div><div class="met-lbl">current weight</div><div class="met-sub">goal: 195</div></div>
+    <div class="met"><div class="met-val" id="rev-work">0h</div><div class="met-lbl">work hours</div><div class="met-sub">goal: 20+</div></div>
+  </div>
+
+  <div class="sec">Weekly reflection</div>
+  <div class="card">
+    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:6px">Biggest win this week</div>
+    <textarea id="rev-win" placeholder="What went really well?" style="width:100%;min-height:60px;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:transparent;color:var(--txt);font-family:inherit;resize:none;line-height:1.5;margin-bottom:12px"></textarea>
+
+    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:6px">What I want to improve next week</div>
+    <textarea id="rev-improve" placeholder="One honest thing to work on..." style="width:100%;min-height:60px;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:transparent;color:var(--txt);font-family:inherit;resize:none;line-height:1.5;margin-bottom:12px"></textarea>
+
+    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:6px">Focus for next week</div>
+    <input type="text" id="rev-focus" placeholder="One word or phrase..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:12px">
+
+    <button onclick="saveWeeklyReview()" style="width:100%;padding:10px;background:var(--txt);color:var(--bg);border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Save this week's review</button>
+  </div>
+
+  <div class="sec">Previous reviews</div>
+  <div class="card"><div id="prev-reviews" style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">No reviews yet — complete your first one above</div></div>
+</div>
+
+
+<!-- SHEENA FLOATING BUTTON -->
+<div id="sheena-overlay" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:100;min-height:100vh">
+  <div style="max-width:400px;margin:0 auto;padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:4px">Sheena</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5)">Named by Braxton</div>
+    </div>
+
+    <!-- Mood check-in -->
+    <div id="sheena-mood-section" style="width:100%;margin-bottom:1.5rem;text-align:center">
+      <div id="sheena-response" style="font-size:15px;color:#fff;line-height:1.7;margin-bottom:1.5rem;min-height:60px;text-align:left"></div>
+      <div id="sheena-mood-prompt" style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:1rem">How are you feeling today? Tap a number.</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap" id="mood-btns">
+        <button onclick="setMood(1)" class="mood-btn">1</button>
+        <button onclick="setMood(2)" class="mood-btn">2</button>
+        <button onclick="setMood(3)" class="mood-btn">3</button>
+        <button onclick="setMood(4)" class="mood-btn">4</button>
+        <button onclick="setMood(5)" class="mood-btn">5</button>
+        <button onclick="setMood(6)" class="mood-btn">6</button>
+        <button onclick="setMood(7)" class="mood-btn">7</button>
+        <button onclick="setMood(8)" class="mood-btn">8</button>
+        <button onclick="setMood(9)" class="mood-btn">9</button>
+        <button onclick="setMood(10)" class="mood-btn">10</button>
+      </div>
+    </div>
+
+    <!-- Voice input area -->
+    <div id="sheena-voice-section" style="width:100%;display:none;text-align:center">
+      <div id="sheena-transcript" style="font-size:13px;color:rgba(255,255,255,0.6);min-height:40px;margin-bottom:1rem;font-style:italic;text-align:left;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px"></div>
+      <button id="sheena-mic-btn" onclick="toggleListening()" style="width:72px;height:72px;border-radius:50%;background:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="10" y="2" width="8" height="14" rx="4" fill="#1a1a1a"/><path d="M5 14c0 4.97 4.03 9 9 9s9-4.03 9-9" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" fill="none"/><line x1="14" y1="23" x2="14" y2="27" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div id="sheena-mic-label" style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:1.5rem">Tap to speak</div>
+
+      <!-- Quick action buttons -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-bottom:1rem">
+        <button onclick="sheenaQuick('bored')" class="sheena-quick-btn">I'm bored</button>
+        <button onclick="sheenaQuick('craving')" class="sheena-quick-btn">I'm craving junk</button>
+        <button onclick="sheenaQuick('schedule')" class="sheena-quick-btn">My schedule today</button>
+        <button onclick="sheenaQuick('debrief')" class="sheena-quick-btn">Evening debrief</button>
+        <button onclick="sheenaQuick('haircut')" class="sheena-quick-btn">Find me a time for...</button>
+        <button onclick="sheenaQuick('traffic')" class="sheena-quick-btn">Check my route</button>
+      </div>
+    </div>
+
+    <button onclick="closeSheena()" style="font-size:13px;color:rgba(255,255,255,0.4);background:transparent;border:none;cursor:pointer;font-family:inherit;margin-top:0.5rem">Close</button>
+  </div>
+</div>
+
+<!-- SHEENA TRIGGER BUTTON -->
+<button onclick="openSheena()" id="sheena-btn" style="position:fixed;bottom:24px;right:20px;width:56px;height:56px;border-radius:50%;background:#1a1a1a;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;box-shadow:0 2px 12px rgba(0,0,0,0.3)">
+  <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="8" y="1" width="6" height="11" rx="3" fill="white"/><path d="M3 11c0 4.42 3.58 8 8 8s8-3.58 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/><line x1="11" y1="19" x2="11" y2="22" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
 </div><!-- end app -->
 
 <!-- Firebase -->
@@ -1077,6 +1422,39 @@ window.resetAll=function(){
 })();
 
 
+
+// ── FOOD COACH PROMPTS ───────────────────────────────
+window.coachPrompt = function(type){
+  var tc = (S.meals||[]).reduce((a,m)=>a+m.cal, 0);
+  var tp = (S.meals||[]).reduce((a,m)=>a+m.prot, 0);
+  var calGoal = CONFIG.calGoal||1800;
+  var protGoal = CONFIG.protGoal||150;
+  var calLeft = calGoal - tc;
+  var protLeft = protGoal - tp;
+  var currentWt = S.weights&&S.weights.length ? S.weights[0].val : null;
+  var wtLeft = currentWt ? (currentWt-195).toFixed(1) : '28';
+  var now = new Date();
+  var hour = now.getHours();
+  var timeStr = hour<12 ? 'morning' : hour<17 ? 'afternoon' : 'evening';
+  var daysToGoal = Math.ceil((new Date('2026-06-01')-now)/(1000*60*60*24));
+
+  var context = 'My stats right now: '+tc+' calories eaten today (goal: '+calGoal+'), '+tp+'g protein (goal: '+protGoal+'g), '+calLeft+' calories left for today, '+protLeft+'g protein still needed. '+
+    (currentWt?'Current weight: '+currentWt+' lbs, '+wtLeft+' lbs from my 195 lb goal with '+daysToGoal+' days left (June 1 deadline). ':'Target: 195 lbs by June 1. ')+
+    'It is the '+timeStr+'. I have a sweet tooth and tend to crave junk when hungry or stressed. I eat mostly whole foods and try to hit high protein. ';
+
+  var prompts = {
+    'craving': context + "I am RIGHT NOW craving something sweet or junk food and I need you to talk me off the edge in a friendly but firm way. Tell me exactly why this craving is happening based on my numbers, give me 2-3 specific alternatives I can grab right now that will actually satisfy me and fit my goals, and remind me of my June 1 deadline in a way that motivates not shames. Be real with me like a trusted friend would be.",
+    'eating-out': context + "I am about to eat at a restaurant. Ask me where I am eating and then give me the 2-3 best specific menu items I can order that will hit high protein, fit my calorie budget for the rest of the day, and still taste good. Be specific with menu item names and estimated macros.",
+    'starving': context + "I am really hungry right now and feel like there is nothing good to eat at home. Based on common healthy whole foods that someone like me would typically have (eggs, chicken, greek yogurt, protein powder, spinach, sweet potatoes, rice, etc), give me 3 quick meal ideas I can make in under 15 minutes right now. Include estimated calories and protein for each.",
+    'slipped': context + "I just ate something I should not have and I feel guilty about it. Do not shame me. Tell me honestly how bad the damage is based on my day so far, what I should do for the rest of today to minimize the impact, and remind me that one slip does not ruin everything. Help me get back on track immediately with a specific plan for my next meal."
+  };
+
+  var finalPrompt = prompts[type] || prompts['craving'];
+  var url = 'https://claude.ai/new?q=' + encodeURIComponent(finalPrompt);
+  window.open(url, '_blank');
+};
+
+
 // ── FOOD TAB ─────────────────────────────────────────
 var favorites = [];
 var recentMeals = [];
@@ -1262,6 +1640,8 @@ window.meal=function(name,cal,prot){
 };
 
 loadFoodData();
+loadFaithData();
+initWeather();
 init();
 
 // EDIT / SETTINGS
@@ -1502,7 +1882,826 @@ window.resetChecks = function(){
 };
 
 loadConfig();
+
+
+// ── AI MORNING BRIEFING ──────────────────────────────
+var briefingGenerated = false;
+
+function buildBriefingContext(){
+  var d = new Date();
+  var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var dow = d.getDay();
+  var dayName = DAYS[dow];
+  var dateStr = (d.getMonth()+1)+'/'+d.getDate();
+
+  // Kids schedule today
+  var kidsToday = (KIDS[dow]||[]).map(e=>e.t+' — '+e.n).join('; ');
+
+  // Hotworx this week
+  var hxDone = Object.values(S.hxDays||{}).filter(Boolean).length;
+
+  // Weight
+  var currentWt = S.weights&&S.weights.length ? S.weights[0].val : null;
+  var wtLost = currentWt ? (223 - currentWt).toFixed(1) : null;
+  var wtLeft = currentWt ? (currentWt - 195).toFixed(1) : 28;
+
+  // Steps yesterday
+  var steps = S.stepCount || 0;
+
+  // Faith streak
+  var faithDays = 0;
+  var fd = new Date();
+  for(var i=0;i<7;i++){
+    var fs = fd.getFullYear()+'-'+(fd.getMonth()+1)+'-'+fd.getDate();
+    if(faithData.entries&&faithData.entries[fs]&&faithData.entries[fs].spent) faithDays++;
+    fd.setDate(fd.getDate()-1);
+  }
+
+  // Grocery day
+  var isGroceryDay = (dow===1||dow===5);
+
+  // Launch countdown
+  var launch = new Date('2026-04-21');
+  var daysToLaunch = Math.ceil((launch-d)/(1000*60*60*24));
+
+  // Work focus today
+  var workFocus = '';
+  try{ workFocus = localStorage.getItem('work-focus-'+getTodayStr())||''; }catch(e){}
+
+  // Date night plan
+  var dateNight = '';
+  try{ var dn=localStorage.getItem('date-night'); if(dn) dateNight=JSON.parse(dn).plan||''; }catch(e){}
+
+  // Prayer count
+  var prayerCount = (faithData.prayers||[]).filter(p=>!p.answered).length;
+
+  // Sun times
+  var sunTimes = CONFIG.sunTimes||[];
+  var sunriseTime = sunTimes[1]&&sunTimes[1].time ? sunTimes[1].time : '7:12am';
+  var uvaTime = sunTimes[2]&&sunTimes[2].time ? sunTimes[2].time : '8-9:30am';
+  var sunsetTime = sunTimes[4]&&sunTimes[4].time ? sunTimes[4].time : '7:40pm';
+
+  return `Today is ${dayName}, ${dateStr}.
+
+USER CONTEXT (Fred Sebren, The Woodlands TX):
+- Kids schedule today: ${kidsToday||'Nothing scheduled'}
+- Hotworx sessions this week: ${hxDone} (goal is 4/week)
+- Current weight: ${currentWt ? currentWt+' lbs (lost '+wtLost+' lbs, '+wtLeft+' lbs from 195 goal by June 1)' : 'not logged yet'}
+- Steps logged: ${steps.toLocaleString()} today
+- Faith time this week: ${faithDays}/7 days
+- Is grocery day: ${isGroceryDay ? 'YES — '+dayName+' is a grocery run day' : 'No'}
+- Clasifi launch countdown: ${daysToLaunch} days until April 21
+- Top work focus today: ${workFocus||'not set'}
+- Date night plan: ${dateNight||'not planned'}
+- Active prayer requests: ${prayerCount}
+- Circadian anchors: sunrise ${sunriseTime}, UVA window ${uvaTime}, sunset ${sunsetTime}
+- Dinner must be before sunset (${sunsetTime}), breakfast before 8am
+
+INSTRUCTIONS:
+Write a 3-5 sentence morning briefing as Fred's trusted personal assistant. Sound like a real friend who knows his life — not a robot, not a life coach. Be specific and practical. Reference his actual schedule and numbers. Tell him what matters most today and where his best time windows are. If he has Hotworx sessions to catch up on, mention it. If it's grocery day, remind him. Keep faith and family woven in naturally. End with one specific encouragement. No bullet points. No headers. Just natural conversational sentences.`;
+}
+
+function generateBriefing(){
+  var card = document.getElementById('ai-briefing-card');
+  var text = document.getElementById('ai-briefing-text');
+  var loading = document.getElementById('ai-briefing-loading');
+  if(!card) return;
+
+  card.style.display = 'block';
+  if(text) text.style.display = 'none';
+  if(loading) loading.style.display = 'block';
+
+  var context = buildBriefingContext();
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:300,
+      messages:[{role:'user',content:context}]
+    })
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    var response = data.content&&data.content[0]&&data.content[0].text;
+    if(response){
+      if(text){text.textContent=response;text.style.display='block';}
+      if(loading)loading.style.display='none';
+      briefingGenerated = true;
+      // Cache for 1 hour
+      try{localStorage.setItem('briefing-cache',JSON.stringify({text:response,ts:Date.now()}));}catch(e){}
+    }
+  })
+  .catch(()=>{
+    if(loading)loading.textContent="Couldn't connect — check your internet.";
+  });
+}
+
+window.refreshBriefing = function(){
+  briefingGenerated = false;
+  var text = document.getElementById('ai-briefing-text');
+  var loading = document.getElementById('ai-briefing-loading');
+  if(text){text.textContent='';text.style.display='none';}
+  if(loading){loading.textContent='Pulling your day together...';loading.style.display='block';}
+  generateBriefing();
+};
+
+function initBriefing(){
+  // Check cache first — only regenerate if older than 1 hour
+  try{
+    var cached = localStorage.getItem('briefing-cache');
+    if(cached){
+      var c = JSON.parse(cached);
+      var age = Date.now() - c.ts;
+      if(age < 60*60*1000 && c.text){ // less than 1 hour old
+        var card = document.getElementById('ai-briefing-card');
+        var text = document.getElementById('ai-briefing-text');
+        var loading = document.getElementById('ai-briefing-loading');
+        if(card) card.style.display='block';
+        if(text){text.textContent=c.text;text.style.display='block';}
+        if(loading) loading.style.display='none';
+        briefingGenerated = true;
+        return;
+      }
+    }
+  }catch(e){}
+  generateBriefing();
+}
+
+
+
+// ── SHEENA AI ASSISTANT ──────────────────────────────
+var IMPORTANT_DATES = [{"name": "Dana's birthday", "month": 4, "day": 5, "year": 1983, "type": "birthday", "person": "Dana"}, {"name": "Your birthday", "month": 7, "day": 29, "year": 1982, "type": "birthday", "person": "Fred"}, {"name": "Mom's birthday", "month": 6, "day": 7, "year": 1962, "type": "birthday", "person": "Mom"}, {"name": "Wedding anniversary", "month": 5, "day": 25, "year": 2013, "type": "anniversary", "person": "Dana"}, {"name": "Parker's birthday", "month": 3, "day": 27, "year": 2014, "type": "birthday", "person": "Parker"}, {"name": "Braxton's birthday", "month": 7, "day": 28, "year": 2016, "type": "birthday", "person": "Braxton"}, {"name": "Tyler's birthday", "month": 9, "day": 27, "year": 2021, "type": "birthday", "person": "Tyler"}];
+var sheenaMood = null;
+var sheenaListening = false;
+var sheenaRecognition = null;
+var sheenaConversation = [];
+
+function getDaysUntil(month, day){
+  var now = new Date();
+  var next = new Date(now.getFullYear(), month-1, day);
+  if(next < now) next.setFullYear(now.getFullYear()+1);
+  return Math.ceil((next-now)/(1000*60*60*24));
+}
+
+function getUpcomingDates(){
+  var upcoming = [];
+  IMPORTANT_DATES.forEach(function(d){
+    var days = getDaysUntil(d.month, d.day);
+    if(days <= 14){
+      var age = null;
+      if(d.year && d.type==='birthday'){
+        age = new Date().getFullYear() - d.year;
+        if(getDaysUntil(d.month,d.day) > 0 && new Date().getMonth()+1===d.month && new Date().getDate() > d.day) age++;
+      } else if(d.year && d.type==='anniversary'){
+        age = new Date().getFullYear() - d.year;
+      }
+      upcoming.push({name:d.name, days:days, type:d.type, person:d.person, age:age});
+    }
+  });
+  return upcoming.sort(function(a,b){return a.days-b.days;});
+}
+
+function buildSheenaContext(extra){
+  var d = new Date();
+  var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var dow = d.getDay();
+  var hour = d.getHours();
+  var timeOfDay = hour<12?'morning':hour<17?'afternoon':'evening';
+
+  var kidsToday = (KIDS[dow]||[]).map(function(e){return e.t+' — '+e.n;}).join('; ');
+  var hxDone = Object.values(S.hxDays||{}).filter(Boolean).length;
+  var currentWt = S.weights&&S.weights.length ? S.weights[0].val : null;
+  var tc = (S.meals||[]).reduce(function(a,m){return a+m.cal;},0);
+  var tp = (S.meals||[]).reduce(function(a,m){return a+m.prot;},0);
+  var calGoal = CONFIG.calGoal||1800;
+  var protGoal = CONFIG.protGoal||150;
+  var daysToLaunch = Math.ceil((new Date('2026-04-21')-d)/(1000*60*60*24));
+  var faithDays = 0;
+  var fd = new Date();
+  for(var i=0;i<7;i++){
+    var fs=fd.getFullYear()+'-'+(fd.getMonth()+1)+'-'+fd.getDate();
+    if(faithData.entries&&faithData.entries[fs]&&faithData.entries[fs].spent)faithDays++;
+    fd.setDate(fd.getDate()-1);
+  }
+  var upcoming = getUpcomingDates();
+  var upcomingStr = upcoming.map(function(u){
+    return u.name+' in '+u.days+' days'+(u.age?' (turning '+u.age+')':'');
+  }).join('; ');
+  var workFocus='';
+  try{workFocus=localStorage.getItem('work-focus-'+getTodayStr())||'';}catch(e){}
+  var isGrocery = (dow===1||dow===5);
+  var moodStr = sheenaMood ? 'Mood today: '+sheenaMood+'/10' : 'Mood not yet logged';
+
+  return `You are Sheena, Fred's personal AI assistant. You were named by his son Braxton. You know Fred's entire life and speak like a trusted friend — warm, direct, real. Never robotic, never preachy. Short sentences. Natural tone.
+
+FRED'S PROFILE: Fred Sebren, The Woodlands TX. Married to Dana (18-yr accountant, runs The Bookkeeping HQ). Kids: Parker (12, baseball), Braxton (9), Tyler (4). Building Clasifi (AI bookkeeping SaaS), launching cold email April 21. Weight goal: 195 lbs by June 1 (started 223). Goes to Hotworx. Has a sweet tooth. Faith-driven. Hates the gym. Loves his family.
+
+TODAY'S DATA:
+- Day: ${DAYS[dow]}, ${timeOfDay}
+- Kids today: ${kidsToday||'nothing scheduled'}
+- Hotworx this week: ${hxDone}/4 sessions
+- Weight: ${currentWt?currentWt+' lbs ('+(currentWt-195).toFixed(1)+' from goal)':'not logged'}
+- Calories: ${tc}/${calGoal} | Protein: ${tp}g/${protGoal}g
+- ${moodStr}
+- Faith streak this week: ${faithDays}/7
+- Clasifi launch: ${daysToLaunch} days
+- Work focus: ${workFocus||'not set'}
+- Grocery day: ${isGrocery?'YES':'No'}
+- Upcoming dates: ${upcomingStr||'none in next 14 days'}
+- Extra context: ${extra||'none'}`
+}
+
+function openSheena(){
+  var overlay = document.getElementById('sheena-overlay');
+  if(overlay) overlay.style.display='block';
+  document.body.style.overflow='hidden';
+
+  // Check if mood already set today
+  var cachedMood = null;
+  try{
+    var cm = localStorage.getItem('sheena-mood-'+getTodayStr());
+    if(cm) cachedMood = parseInt(cm);
+  }catch(e){}
+
+  if(cachedMood){
+    sheenaMood = cachedMood;
+    showVoiceSection();
+    document.getElementById('sheena-response').textContent='';
+  } else {
+    document.getElementById('sheena-mood-section').style.display='block';
+    document.getElementById('sheena-voice-section').style.display='none';
+    document.getElementById('sheena-mood-prompt').textContent='Hey Fred. How are you feeling today? Tap a number.';
+    document.getElementById('sheena-response').textContent='';
+  }
+}
+
+function closeSheena(){
+  var overlay = document.getElementById('sheena-overlay');
+  if(overlay) overlay.style.display='none';
+  document.body.style.overflow='';
+  if(sheenaRecognition&&sheenaListening){sheenaRecognition.stop();sheenaListening=false;}
+}
+
+window.setMood = function(n){
+  sheenaMood = n;
+  try{localStorage.setItem('sheena-mood-'+getTodayStr(), n);}catch(e){}
+  // Update mood buttons
+  document.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('selected');});
+  event.target.classList.add('selected');
+  document.getElementById('sheena-mood-prompt').textContent='';
+
+  // Generate mood-aware response
+  var responseEl = document.getElementById('sheena-response');
+  responseEl.textContent='Give me a sec...';
+
+  var context = buildSheenaContext('User just rated their mood '+n+'/10');
+  var moodExtra = n<=3 ? 'Their mood is low ('+n+'/10). Acknowledge it warmly, do not push hard. Give them one small manageable thing to do. Be gentle and encouraging. Weave in faith if it feels natural.' :
+    n<=6 ? 'Their mood is okay ('+n+'/10). Give them a practical morning briefing. What matters most today, where their best window is, one thing to prioritize.' :
+    'Their mood is great ('+n+'/10). Lean in. Capitalize on the energy. Challenge them to make today count. Be fired up with them.';
+
+  var msgs = sheenaConversation.length > 0 ? sheenaConversation : [{role:'user',content:context+'
+
+'+moodExtra+'
+
+Give a 2-4 sentence morning response. Natural, like a friend. Reference their actual data.'}];
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:msgs})
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var text = data.content&&data.content[0]&&data.content[0].text;
+    if(text){
+      responseEl.textContent = text;
+      sheenaConversation = [{role:'user',content:context+'
+
+'+moodExtra},{role:'assistant',content:text}];
+      speakText(text);
+      setTimeout(showVoiceSection, 500);
+    }
+  })
+  .catch(function(){responseEl.textContent='Having trouble connecting. Try again.';});
+};
+
+function showVoiceSection(){
+  document.getElementById('sheena-voice-section').style.display='block';
+}
+
+window.toggleListening = function(){
+  if(sheenaListening){
+    if(sheenaRecognition)sheenaRecognition.stop();
+    sheenaListening=false;
+    document.getElementById('sheena-mic-btn').classList.remove('listening');
+    document.getElementById('sheena-mic-label').textContent='Tap to speak';
+    return;
+  }
+
+  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
+    document.getElementById('sheena-transcript').textContent='Voice not supported in this browser. Try Chrome.';
+    return;
+  }
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  sheenaRecognition = new SR();
+  sheenaRecognition.continuous = false;
+  sheenaRecognition.interimResults = true;
+  sheenaRecognition.lang = 'en-US';
+
+  sheenaRecognition.onresult = function(e){
+    var transcript = '';
+    for(var i=e.resultIndex;i<e.results.length;i++){
+      transcript += e.results[i][0].transcript;
+    }
+    document.getElementById('sheena-transcript').textContent=transcript;
+    if(e.results[e.results.length-1].isFinal){
+      sheenaListening=false;
+      document.getElementById('sheena-mic-btn').classList.remove('listening');
+      document.getElementById('sheena-mic-label').textContent='Tap to speak';
+      sendToSheena(transcript);
+    }
+  };
+
+  sheenaRecognition.onerror = function(){
+    sheenaListening=false;
+    document.getElementById('sheena-mic-btn').classList.remove('listening');
+    document.getElementById('sheena-mic-label').textContent='Tap to speak';
+  };
+
+  sheenaRecognition.start();
+  sheenaListening=true;
+  document.getElementById('sheena-mic-btn').classList.add('listening');
+  document.getElementById('sheena-mic-label').textContent='Listening...';
+  document.getElementById('sheena-transcript').textContent='';
+};
+
+function sendToSheena(userMessage){
+  var responseEl = document.getElementById('sheena-response');
+  responseEl.textContent='...';
+
+  var context = buildSheenaContext('');
+  var msgs;
+  if(sheenaConversation.length===0){
+    msgs=[{role:'user',content:context+'
+
+User says: '+userMessage}];
+  } else {
+    msgs = sheenaConversation.concat([{role:'user',content:userMessage}]);
+  }
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:250,messages:msgs})
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var text=data.content&&data.content[0]&&data.content[0].text;
+    if(text){
+      responseEl.textContent=text;
+      sheenaConversation=msgs.concat([{role:'assistant',content:text}]);
+      if(sheenaConversation.length>10)sheenaConversation=sheenaConversation.slice(-10);
+      speakText(text);
+      // Auto-process: check for grocery items
+      processVoiceForActions(userMessage, text);
+    }
+  })
+  .catch(function(){responseEl.textContent='Having trouble connecting.';});
+}
+
+function processVoiceForActions(userMsg, sheenaReply){
+  // Simple keyword detection for grocery items
+  var groceryTriggers=['we need','out of','add','get some','pick up','buy'];
+  var lower=userMsg.toLowerCase();
+  groceryTriggers.forEach(function(t){
+    if(lower.includes(t)){
+      // Ask Claude to extract grocery items
+      fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          model:'claude-sonnet-4-20250514',
+          max_tokens:100,
+          system:'Extract grocery items from this message. Return ONLY a JSON array of item names, or empty array if none. Example: ["chicken","milk"]. No other text.',
+          messages:[{role:'user',content:userMsg}]
+        })
+      })
+      .then(function(r){return r.json();})
+      .then(function(data){
+        try{
+          var items=JSON.parse(data.content[0].text);
+          if(items&&items.length){
+            items.forEach(function(item){
+              var id='v'+Date.now()+Math.random().toString(36).slice(2,5);
+              grocItems.push({id:id,name:item,cat:guessCategory(item),type:'weekly',done:false});
+            });
+            saveGroc();
+            if(items.length>0){
+              document.getElementById('sheena-transcript').textContent='Added to grocery list: '+items.join(', ');
+            }
+          }
+        }catch(e){}
+      });
+    }
+  });
+}
+
+function speakText(text){
+  if(!('speechSynthesis' in window))return;
+  window.speechSynthesis.cancel();
+  var utt=new SpeechSynthesisUtterance(text);
+  utt.rate=1.05;utt.pitch=1.1;utt.volume=1;
+  // Try to get a female voice
+  var voices=window.speechSynthesis.getVoices();
+  var femaleVoice=voices.find(function(v){return v.name.includes('Samantha')||v.name.includes('Karen')||v.name.includes('Victoria')||v.name.includes('Female')||v.gender==='female';});
+  if(femaleVoice)utt.voice=femaleVoice;
+  window.speechSynthesis.speak(utt);
+}
+
+window.sheenaQuick = function(type){
+  var prompts={
+    'bored': "I'm bored and feeling like opening a time-wasting app. What should I do instead?",
+    'craving': "I'm craving something sweet or junky right now. Talk me off the edge.",
+    'schedule': "What does my day look like? Walk me through it.",
+    'debrief': "Let's do my evening debrief. Ask me how my day went.",
+    'haircut': "I need to schedule something — help me find the best time in my schedule this week.",
+    'traffic': "I need to leave for an appointment soon. Check traffic conditions for The Woodlands area and tell me if I should leave early."
+  };
+  document.getElementById('sheena-transcript').textContent=prompts[type]||'';
+  sendToSheena(prompts[type]||type);
+};
+
+// Load voices when available
+if('speechSynthesis' in window){
+  window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices();};
+}
+
+// ── IMPORTANT DATES CHECK ────────────────────────────
+function checkImportantDates(){
+  var upcoming = getUpcomingDates();
+  if(!upcoming.length)return;
+  var soon = upcoming.filter(function(u){return u.days<=3;});
+  if(!soon.length)return;
+  // Surface on Today tab
+  var todayTab=document.getElementById('tab-today');
+  if(!todayTab||document.getElementById('dates-banner'))return;
+  var banner=document.createElement('div');
+  banner.id='dates-banner';
+  banner.style.cssText='background:#FBEAF0;border:1px solid #ED93B1;border-radius:12px;padding:0.875rem 1rem;margin-bottom:8px';
+  var items=soon.map(function(u){
+    if(u.days===0)return u.name+' is TODAY'+(u.age?' — '+u.age+' years':'')+'!';
+    if(u.days===1)return u.name+' is TOMORROW'+(u.age?' — turning '+u.age:'');
+    return u.name+' in '+u.days+' days'+(u.age?' — turning '+u.age:'');
+  }).join(' · ');
+  banner.innerHTML='<div style="font-size:12px;font-weight:700;color:#72243E;margin-bottom:3px">Upcoming dates</div><div style="font-size:13px;color:#993556;line-height:1.5">'+items+'</div>';
+  var firstCard=todayTab.querySelector('.card');
+  if(firstCard)todayTab.insertBefore(banner,firstCard);
+}
+
+
+// ── WEATHER ──────────────────────────────────────────
+function fetchWeather(){
+  // The Woodlands TX coords
+  var lat=30.1658,lon=-95.4613;
+  fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,weathercode,apparent_temperature&temperature_unit=fahrenheit&wind_speed_unit=mph')
+  .then(r=>r.json())
+  .then(d=>{
+    var temp=Math.round(d.current.temperature_2m);
+    var feels=Math.round(d.current.apparent_temperature);
+    var code=d.current.weathercode;
+    var icons={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'❄️',73:'❄️',75:'❄️',80:'🌦',81:'🌧',82:'⛈',95:'⛈',96:'⛈',99:'⛈'};
+    var desc={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',51:'Light drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',80:'Showers',95:'Thunderstorm'};
+    document.getElementById('weather-icon').textContent=icons[code]||'🌡';
+    document.getElementById('weather-temp').textContent=temp+'°F';
+    document.getElementById('weather-desc').textContent=desc[code]||'The Woodlands';
+    document.getElementById('weather-feels').textContent='Feels '+feels+'°';
+    try{localStorage.setItem('sebren-weather',JSON.stringify({temp,feels,code,ts:Date.now()}));}catch(e){}
+  })
+  .catch(()=>{
+    document.getElementById('weather-feels').textContent='offline';
+  });
+}
+
+function initWeather(){
+  try{
+    var s=localStorage.getItem('sebren-weather');
+    if(s){
+      var d=JSON.parse(s);
+      if(Date.now()-d.ts<3600000){
+        var icons={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',51:'🌦',61:'🌧',80:'🌦',95:'⛈'};
+        document.getElementById('weather-icon').textContent=icons[d.code]||'🌡';
+        document.getElementById('weather-temp').textContent=d.temp+'°F';
+        document.getElementById('weather-feels').textContent='Feels '+d.feels+'°';
+        return;
+      }
+    }
+  }catch(e){}
+  fetchWeather();
+}
+
+// ── FAITH TAB ────────────────────────────────────────
+var prayerList=[];
+var faithHistory=[];
+
+function loadFaithData(){
+  try{
+    var p=localStorage.getItem('sebren-prayers');if(p)prayerList=JSON.parse(p);
+    var h=localStorage.getItem('sebren-faith-history');if(h)faithHistory=JSON.parse(h);
+  }catch(e){}
+}
+
+function saveFaithData(){
+  try{
+    localStorage.setItem('sebren-prayers',JSON.stringify(prayerList));
+    localStorage.setItem('sebren-faith-history',JSON.stringify(faithHistory.slice(0,30)));
+  }catch(e){}
+}
+
+function loadDailyVerse(){
+  var verses=[
+    {ref:'Philippians 4:13',text:'I can do all things through Christ who strengthens me.'},
+    {ref:'Proverbs 3:5-6',text:'Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.'},
+    {ref:'Isaiah 40:31',text:'But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.'},
+    {ref:'Joshua 1:9',text:'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.'},
+    {ref:'Romans 8:28',text:'And we know that in all things God works for the good of those who love him, who have been called according to his purpose.'},
+    {ref:'Jeremiah 29:11',text:'For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.'},
+    {ref:'Matthew 6:33',text:'But seek first his kingdom and his righteousness, and all these things will be given to you as well.'},
+    {ref:'Psalm 23:1',text:'The Lord is my shepherd, I lack nothing.'},
+    {ref:'Proverbs 16:3',text:'Commit to the Lord whatever you do, and he will establish your plans.'},
+    {ref:'Psalm 46:10',text:'Be still, and know that I am God.'},
+    {ref:'2 Timothy 1:7',text:'For God has not given us a spirit of fear, but of power and of love and of a sound mind.'},
+    {ref:'Lamentations 3:22-23',text:'The steadfast love of the Lord never ceases; his mercies never come to an end; they are new every morning; great is your faithfulness.'},
+    {ref:'Matthew 11:28',text:'Come to me, all you who are weary and burdened, and I will give you rest.'},
+    {ref:'Psalm 119:105',text:'Your word is a lamp for my feet, a light on my path.'}
+  ];
+  var idx=new Date().getDate()%verses.length;
+  var v=verses[idx];
+  var ref=document.getElementById('daily-verse-ref');
+  var text=document.getElementById('daily-verse-text');
+  if(ref)ref.textContent=v.ref;
+  if(text)text.textContent=v.text;
+}
+
+function renderPrayerList(){
+  var el=document.getElementById('prayer-list-render');
+  if(!el)return;
+  if(!prayerList.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px 0">No prayer requests yet — add one below</div>';return;}
+  el.innerHTML=prayerList.map((p,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div onclick="togglePrayer(${i})" style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;${p.answered?'background:var(--success);border-color:var(--success)':''}">
+        ${p.answered?'<div style="width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px)"></div>':''}
+      </div>
+      <span style="flex:1;font-size:13px;color:var(--txt);${p.answered?'text-decoration:line-through;color:var(--txt3)':''}">${p.text}</span>
+      <button onclick="deletePrayer(${i})" style="font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0;line-height:1">×</button>
+    </div>
+  `).join('');
+}
+
+window.addPrayer=function(){
+  var inp=document.getElementById('prayer-inp');
+  var val=inp?inp.value.trim():'';
+  if(!val)return;
+  prayerList.unshift({text:val,answered:false,date:getTodayStr()});
+  saveFaithData();renderPrayerList();
+  inp.value='';
+};
+
+window.togglePrayer=function(i){
+  prayerList[i].answered=!prayerList[i].answered;
+  saveFaithData();renderPrayerList();
+};
+
+window.deletePrayer=function(i){
+  prayerList.splice(i,1);
+  saveFaithData();renderPrayerList();
+};
+
+window.setFaithDone=function(done){
+  var yBtn=document.getElementById('faith-yes');
+  var nBtn=document.getElementById('faith-no');
+  if(done){
+    if(yBtn){yBtn.style.background='var(--txt)';yBtn.style.color='var(--bg)';}
+    if(nBtn){nBtn.style.background='transparent';nBtn.style.color='var(--txt)';}
+  } else {
+    if(nBtn){nBtn.style.background='var(--txt)';nBtn.style.color='var(--bg)';}
+    if(yBtn){yBtn.style.background='transparent';yBtn.style.color='var(--txt)';}
+  }
+  try{localStorage.setItem('faith-done-'+getTodayStr(),done?'1':'0');}catch(e){}
+};
+
+window.saveFaithCheckin=function(){
+  var passage=document.getElementById('bible-passage').value.trim();
+  var g1=document.getElementById('gratitude-1').value.trim();
+  var g2=document.getElementById('gratitude-2').value.trim();
+  var g3=document.getElementById('gratitude-3').value.trim();
+  var entry={date:getTodayStr(),passage,gratitude:[g1,g2,g3].filter(Boolean)};
+  faithHistory=faithHistory.filter(h=>h.date!==getTodayStr());
+  faithHistory.unshift(entry);
+  saveFaithData();
+  renderFaithHistory();
+  var btn=event.target;btn.textContent='Saved!';
+  setTimeout(()=>{btn.textContent='Save today's check-in';},1500);
+};
+
+function renderFaithHistory(){
+  var el=document.getElementById('faith-history');
+  if(!el)return;
+  if(!faithHistory.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">Check in daily to build your history</div>';return;}
+  el.innerHTML=faithHistory.slice(0,7).map(h=>`
+    <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+        <span style="font-size:12px;font-weight:600;color:var(--txt)">${h.date}</span>
+        ${h.passage?`<span style="font-size:11px;color:var(--purple-txt,#3C3489)">${h.passage}</span>`:''}
+      </div>
+      ${h.gratitude&&h.gratitude.length?`<div style="font-size:11px;color:var(--txt2)">${h.gratitude.slice(0,2).join(' · ')}</div>`:''}
+    </div>
+  `).join('');
+}
+
+function initFaithTab(){
+  loadDailyVerse();
+  renderPrayerList();
+  renderFaithHistory();
+  // Restore today's state
+  try{
+    var done=localStorage.getItem('faith-done-'+getTodayStr());
+    if(done==='1')setFaithDone(true);
+    var today=faithHistory.find(h=>h.date===getTodayStr());
+    if(today){
+      var bp=document.getElementById('bible-passage');if(bp&&today.passage)bp.value=today.passage;
+      var g=today.gratitude||[];
+      ['gratitude-1','gratitude-2','gratitude-3'].forEach((id,i)=>{var el=document.getElementById(id);if(el&&g[i])el.value=g[i];});
+    }
+  }catch(e){}
+}
+
+// ── DANA TAB ─────────────────────────────────────────
+var danaIdeas=[];
+
+function loadDanaData(){
+  try{
+    var d=localStorage.getItem('sebren-dana-ideas');if(d)danaIdeas=JSON.parse(d);
+    var n=localStorage.getItem('sebren-dana-notes');
+    var el=document.getElementById('dana-notes');if(el&&n)el.value=n;
+    var i=localStorage.getItem('sebren-dana-intention');
+    var iEl=document.getElementById('dana-intention-display');
+    if(iEl&&i)iEl.textContent='"'+i+'"';
+    var ld=localStorage.getItem('sebren-last-date');
+    if(ld){var p=JSON.parse(ld);var ldEl=document.getElementById('last-date-display');if(ldEl)ldEl.textContent='Last date: '+p.date+(p.note?' — '+p.note:'');}
+  }catch(e){}
+}
+
+function renderDanaIdeas(){
+  var el=document.getElementById('dana-ideas-list');
+  if(!el)return;
+  if(!danaIdeas.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px 0">Add ideas, gifts, date night ideas...</div>';return;}
+  el.innerHTML=danaIdeas.map((idea,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="flex:1;font-size:13px;color:var(--txt)">${idea}</span>
+      <button onclick="deleteDanaIdea(${i})" style="font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0;line-height:1">×</button>
+    </div>
+  `).join('');
+}
+
+window.addDanaIdea=function(){
+  var inp=document.getElementById('dana-idea-inp');
+  var val=inp?inp.value.trim():'';
+  if(!val)return;
+  danaIdeas.push(val);
+  try{localStorage.setItem('sebren-dana-ideas',JSON.stringify(danaIdeas));}catch(e){}
+  renderDanaIdeas();inp.value='';
+};
+
+window.deleteDanaIdea=function(i){
+  danaIdeas.splice(i,1);
+  try{localStorage.setItem('sebren-dana-ideas',JSON.stringify(danaIdeas));}catch(e){}
+  renderDanaIdeas();
+};
+
+window.saveDanaIntention=function(){
+  var val=document.getElementById('dana-intention').value.trim();
+  if(!val)return;
+  try{localStorage.setItem('sebren-dana-intention',val);}catch(e){}
+  var el=document.getElementById('dana-intention-display');
+  if(el)el.textContent='"'+val+'"';
+  var btn=event.target;btn.textContent='Set!';
+  setTimeout(()=>{btn.textContent='Set intention';},1500);
+};
+
+window.saveLastDate=function(){
+  var date=document.getElementById('last-date-inp').value;
+  var note=document.getElementById('last-date-note').value.trim();
+  if(!date)return;
+  try{localStorage.setItem('sebren-last-date',JSON.stringify({date,note}));}catch(e){}
+  var el=document.getElementById('last-date-display');
+  if(el)el.textContent='Last date: '+date+(note?' — '+note:'');
+};
+
+window.saveDanaNotes=function(){
+  var val=document.getElementById('dana-notes').value;
+  try{localStorage.setItem('sebren-dana-notes',val);}catch(e){}
+  var btn=event.target;btn.textContent='Saved!';
+  setTimeout(()=>{btn.textContent='Save notes';},1500);
+};
+
+// ── WEEKLY REVIEW ────────────────────────────────────
+function initReviewTab(){
+  var d=new Date();
+  var day=d.getDay();
+  var monday=new Date(d);monday.setDate(d.getDate()-day+1);
+  var sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+  var fmt=dt=>(dt.getMonth()+1)+'/'+dt.getDate();
+  var lbl=document.getElementById('review-week-label');
+  if(lbl)lbl.textContent=fmt(monday)+' – '+fmt(sunday);
+
+  // Fill in stats
+  var hotworxCount=Object.values(S.hxDays||{}).filter(Boolean).length;
+  var el=document.getElementById('rev-hotworx');if(el)el.textContent=hotworxCount;
+
+  // Faith check-ins this week
+  var faithCount=faithHistory.filter(h=>{
+    var parts=h.date.split('-');
+    var hd=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+    return hd>=monday&&hd<=sunday;
+  }).length;
+  var fel=document.getElementById('rev-faith');if(fel)fel.textContent=faithCount;
+
+  // Current weight
+  var wt=S.weights&&S.weights.length?S.weights[0].val+'':'-—';
+  var wel=document.getElementById('rev-wt');if(wel)wel.textContent=wt;
+
+  // Work hours this week
+  try{
+    var wb=JSON.parse(localStorage.getItem('sebren-work')||'[]');
+    var weekMins=wb.filter(b=>{
+      var parts=b.date.split('-');
+      var bd=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+      return bd>=monday&&bd<=sunday;
+    }).reduce((a,b)=>a+b.mins,0);
+    var wkEl=document.getElementById('rev-work');if(wkEl)wkEl.textContent=(weekMins/60).toFixed(1)+'h';
+  }catch(e){}
+
+  // Load saved review
+  try{
+    var key='review-'+fmt(monday);
+    var saved=JSON.parse(localStorage.getItem(key)||'{}');
+    if(saved.win)document.getElementById('rev-win').value=saved.win;
+    if(saved.improve)document.getElementById('rev-improve').value=saved.improve;
+    if(saved.focus)document.getElementById('rev-focus').value=saved.focus;
+  }catch(e){}
+
+  renderPrevReviews();
+}
+
+window.saveWeeklyReview=function(){
+  var d=new Date();var day=d.getDay();
+  var monday=new Date(d);monday.setDate(d.getDate()-day+1);
+  var fmt=dt=>(dt.getMonth()+1)+'/'+dt.getDate();
+  var key='review-'+fmt(monday);
+  var review={
+    week:fmt(monday),
+    win:document.getElementById('rev-win').value,
+    improve:document.getElementById('rev-improve').value,
+    focus:document.getElementById('rev-focus').value,
+    ts:Date.now()
+  };
+  try{
+    localStorage.setItem(key,JSON.stringify(review));
+    var all=JSON.parse(localStorage.getItem('sebren-all-reviews')||'[]');
+    all=all.filter(r=>r.week!==review.week);
+    all.unshift(review);
+    localStorage.setItem('sebren-all-reviews',JSON.stringify(all.slice(0,12)));
+  }catch(e){}
+  renderPrevReviews();
+  var btn=event.target;btn.textContent='Saved!';
+  setTimeout(()=>{btn.textContent='Save this week's review';},1500);
+};
+
+function renderPrevReviews(){
+  var el=document.getElementById('prev-reviews');
+  if(!el)return;
+  try{
+    var all=JSON.parse(localStorage.getItem('sebren-all-reviews')||'[]');
+    if(!all.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">No reviews yet</div>';return;}
+    el.innerHTML=all.slice(1,5).map(r=>`
+      <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:4px">Week of ${r.week}</div>
+        ${r.focus?`<div style="font-size:12px;color:var(--txt2);margin-bottom:2px">Focus: <strong>${r.focus}</strong></div>`:''}
+        ${r.win?`<div style="font-size:11px;color:var(--txt3)">Win: ${r.win.slice(0,60)}${r.win.length>60?'...':''}</div>`:''}
+      </div>
+    `).join('');
+  }catch(e){}
+}
+
+// ── OVERRIDE TAB LOADING ─────────────────────────────
 loadKids();
+loadFaithData();
+loadDanaData();
+fetchWeather();
+checkWeeklyReview();
 
 // ── STREAK ──────────────────────────────────────────
 function getTodayStr(){
@@ -1770,12 +2969,795 @@ function renderLaunchCountdown(){
   }
 }
 
+
+
+// ── AI MORNING BRIEFING ──────────────────────────────
+var briefingGenerated = false;
+
+function buildBriefingContext(){
+  var d = new Date();
+  var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var dow = d.getDay();
+  var dayName = DAYS[dow];
+  var dateStr = (d.getMonth()+1)+'/'+d.getDate();
+
+  // Kids schedule today
+  var kidsToday = (KIDS[dow]||[]).map(e=>e.t+' — '+e.n).join('; ');
+
+  // Hotworx this week
+  var hxDone = Object.values(S.hxDays||{}).filter(Boolean).length;
+
+  // Weight
+  var currentWt = S.weights&&S.weights.length ? S.weights[0].val : null;
+  var wtLost = currentWt ? (223 - currentWt).toFixed(1) : null;
+  var wtLeft = currentWt ? (currentWt - 195).toFixed(1) : 28;
+
+  // Steps yesterday
+  var steps = S.stepCount || 0;
+
+  // Faith streak
+  var faithDays = 0;
+  var fd = new Date();
+  for(var i=0;i<7;i++){
+    var fs = fd.getFullYear()+'-'+(fd.getMonth()+1)+'-'+fd.getDate();
+    if(faithData.entries&&faithData.entries[fs]&&faithData.entries[fs].spent) faithDays++;
+    fd.setDate(fd.getDate()-1);
+  }
+
+  // Grocery day
+  var isGroceryDay = (dow===1||dow===5);
+
+  // Launch countdown
+  var launch = new Date('2026-04-21');
+  var daysToLaunch = Math.ceil((launch-d)/(1000*60*60*24));
+
+  // Work focus today
+  var workFocus = '';
+  try{ workFocus = localStorage.getItem('work-focus-'+getTodayStr())||''; }catch(e){}
+
+  // Date night plan
+  var dateNight = '';
+  try{ var dn=localStorage.getItem('date-night'); if(dn) dateNight=JSON.parse(dn).plan||''; }catch(e){}
+
+  // Prayer count
+  var prayerCount = (faithData.prayers||[]).filter(p=>!p.answered).length;
+
+  // Sun times
+  var sunTimes = CONFIG.sunTimes||[];
+  var sunriseTime = sunTimes[1]&&sunTimes[1].time ? sunTimes[1].time : '7:12am';
+  var uvaTime = sunTimes[2]&&sunTimes[2].time ? sunTimes[2].time : '8-9:30am';
+  var sunsetTime = sunTimes[4]&&sunTimes[4].time ? sunTimes[4].time : '7:40pm';
+
+  return `Today is ${dayName}, ${dateStr}.
+
+USER CONTEXT (Fred Sebren, The Woodlands TX):
+- Kids schedule today: ${kidsToday||'Nothing scheduled'}
+- Hotworx sessions this week: ${hxDone} (goal is 4/week)
+- Current weight: ${currentWt ? currentWt+' lbs (lost '+wtLost+' lbs, '+wtLeft+' lbs from 195 goal by June 1)' : 'not logged yet'}
+- Steps logged: ${steps.toLocaleString()} today
+- Faith time this week: ${faithDays}/7 days
+- Is grocery day: ${isGroceryDay ? 'YES — '+dayName+' is a grocery run day' : 'No'}
+- Clasifi launch countdown: ${daysToLaunch} days until April 21
+- Top work focus today: ${workFocus||'not set'}
+- Date night plan: ${dateNight||'not planned'}
+- Active prayer requests: ${prayerCount}
+- Circadian anchors: sunrise ${sunriseTime}, UVA window ${uvaTime}, sunset ${sunsetTime}
+- Dinner must be before sunset (${sunsetTime}), breakfast before 8am
+
+INSTRUCTIONS:
+Write a 3-5 sentence morning briefing as Fred's trusted personal assistant. Sound like a real friend who knows his life — not a robot, not a life coach. Be specific and practical. Reference his actual schedule and numbers. Tell him what matters most today and where his best time windows are. If he has Hotworx sessions to catch up on, mention it. If it's grocery day, remind him. Keep faith and family woven in naturally. End with one specific encouragement. No bullet points. No headers. Just natural conversational sentences.`;
+}
+
+function generateBriefing(){
+  var card = document.getElementById('ai-briefing-card');
+  var text = document.getElementById('ai-briefing-text');
+  var loading = document.getElementById('ai-briefing-loading');
+  if(!card) return;
+
+  card.style.display = 'block';
+  if(text) text.style.display = 'none';
+  if(loading) loading.style.display = 'block';
+
+  var context = buildBriefingContext();
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:300,
+      messages:[{role:'user',content:context}]
+    })
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    var response = data.content&&data.content[0]&&data.content[0].text;
+    if(response){
+      if(text){text.textContent=response;text.style.display='block';}
+      if(loading)loading.style.display='none';
+      briefingGenerated = true;
+      // Cache for 1 hour
+      try{localStorage.setItem('briefing-cache',JSON.stringify({text:response,ts:Date.now()}));}catch(e){}
+    }
+  })
+  .catch(()=>{
+    if(loading)loading.textContent="Couldn't connect — check your internet.";
+  });
+}
+
+window.refreshBriefing = function(){
+  briefingGenerated = false;
+  var text = document.getElementById('ai-briefing-text');
+  var loading = document.getElementById('ai-briefing-loading');
+  if(text){text.textContent='';text.style.display='none';}
+  if(loading){loading.textContent='Pulling your day together...';loading.style.display='block';}
+  generateBriefing();
+};
+
+function initBriefing(){
+  // Check cache first — only regenerate if older than 1 hour
+  try{
+    var cached = localStorage.getItem('briefing-cache');
+    if(cached){
+      var c = JSON.parse(cached);
+      var age = Date.now() - c.ts;
+      if(age < 60*60*1000 && c.text){ // less than 1 hour old
+        var card = document.getElementById('ai-briefing-card');
+        var text = document.getElementById('ai-briefing-text');
+        var loading = document.getElementById('ai-briefing-loading');
+        if(card) card.style.display='block';
+        if(text){text.textContent=c.text;text.style.display='block';}
+        if(loading) loading.style.display='none';
+        briefingGenerated = true;
+        return;
+      }
+    }
+  }catch(e){}
+  generateBriefing();
+}
+
+
+
+// ── SHEENA AI ASSISTANT ──────────────────────────────
+var IMPORTANT_DATES = [{"name": "Dana's birthday", "month": 4, "day": 5, "year": 1983, "type": "birthday", "person": "Dana"}, {"name": "Your birthday", "month": 7, "day": 29, "year": 1982, "type": "birthday", "person": "Fred"}, {"name": "Mom's birthday", "month": 6, "day": 7, "year": 1962, "type": "birthday", "person": "Mom"}, {"name": "Wedding anniversary", "month": 5, "day": 25, "year": 2013, "type": "anniversary", "person": "Dana"}, {"name": "Parker's birthday", "month": 3, "day": 27, "year": 2014, "type": "birthday", "person": "Parker"}, {"name": "Braxton's birthday", "month": 7, "day": 28, "year": 2016, "type": "birthday", "person": "Braxton"}, {"name": "Tyler's birthday", "month": 9, "day": 27, "year": 2021, "type": "birthday", "person": "Tyler"}];
+var sheenaMood = null;
+var sheenaListening = false;
+var sheenaRecognition = null;
+var sheenaConversation = [];
+
+function getDaysUntil(month, day){
+  var now = new Date();
+  var next = new Date(now.getFullYear(), month-1, day);
+  if(next < now) next.setFullYear(now.getFullYear()+1);
+  return Math.ceil((next-now)/(1000*60*60*24));
+}
+
+function getUpcomingDates(){
+  var upcoming = [];
+  IMPORTANT_DATES.forEach(function(d){
+    var days = getDaysUntil(d.month, d.day);
+    if(days <= 14){
+      var age = null;
+      if(d.year && d.type==='birthday'){
+        age = new Date().getFullYear() - d.year;
+        if(getDaysUntil(d.month,d.day) > 0 && new Date().getMonth()+1===d.month && new Date().getDate() > d.day) age++;
+      } else if(d.year && d.type==='anniversary'){
+        age = new Date().getFullYear() - d.year;
+      }
+      upcoming.push({name:d.name, days:days, type:d.type, person:d.person, age:age});
+    }
+  });
+  return upcoming.sort(function(a,b){return a.days-b.days;});
+}
+
+function openSheena(){
+  var overlay = document.getElementById('sheena-overlay');
+  if(overlay) overlay.style.display='block';
+  document.body.style.overflow='hidden';
+
+  // Check if mood already set today
+  var cachedMood = null;
+  try{
+    var cm = localStorage.getItem('sheena-mood-'+getTodayStr());
+    if(cm) cachedMood = parseInt(cm);
+  }catch(e){}
+
+  if(cachedMood){
+    sheenaMood = cachedMood;
+    showVoiceSection();
+    document.getElementById('sheena-response').textContent='';
+  } else {
+    document.getElementById('sheena-mood-section').style.display='block';
+    document.getElementById('sheena-voice-section').style.display='none';
+    document.getElementById('sheena-mood-prompt').textContent='Hey Fred. How are you feeling today? Tap a number.';
+    document.getElementById('sheena-response').textContent='';
+  }
+}
+
+function closeSheena(){
+  var overlay = document.getElementById('sheena-overlay');
+  if(overlay) overlay.style.display='none';
+  document.body.style.overflow='';
+  if(sheenaRecognition&&sheenaListening){sheenaRecognition.stop();sheenaListening=false;}
+}
+
+window.setMood = function(n){
+  sheenaMood = n;
+  try{localStorage.setItem('sheena-mood-'+getTodayStr(), n);}catch(e){}
+  // Update mood buttons
+  document.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('selected');});
+  event.target.classList.add('selected');
+  document.getElementById('sheena-mood-prompt').textContent='';
+
+  // Generate mood-aware response
+  var responseEl = document.getElementById('sheena-response');
+  responseEl.textContent='Give me a sec...';
+
+  var context = buildSheenaContext('User just rated their mood '+n+'/10');
+  var moodExtra = n<=3 ? 'Their mood is low ('+n+'/10). Acknowledge it warmly, do not push hard. Give them one small manageable thing to do. Be gentle and encouraging. Weave in faith if it feels natural.' :
+    n<=6 ? 'Their mood is okay ('+n+'/10). Give them a practical morning briefing. What matters most today, where their best window is, one thing to prioritize.' :
+    'Their mood is great ('+n+'/10). Lean in. Capitalize on the energy. Challenge them to make today count. Be fired up with them.';
+
+  var msgs = sheenaConversation.length > 0 ? sheenaConversation : [{role:'user',content:context+'
+
+'+moodExtra+'
+
+Give a 2-4 sentence morning response. Natural, like a friend. Reference their actual data.'}];
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:msgs})
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var text = data.content&&data.content[0]&&data.content[0].text;
+    if(text){
+      responseEl.textContent = text;
+      sheenaConversation = [{role:'user',content:context+'
+
+'+moodExtra},{role:'assistant',content:text}];
+      speakText(text);
+      setTimeout(showVoiceSection, 500);
+    }
+  })
+  .catch(function(){responseEl.textContent='Having trouble connecting. Try again.';});
+};
+
+function showVoiceSection(){
+  document.getElementById('sheena-voice-section').style.display='block';
+}
+
+window.toggleListening = function(){
+  if(sheenaListening){
+    if(sheenaRecognition)sheenaRecognition.stop();
+    sheenaListening=false;
+    document.getElementById('sheena-mic-btn').classList.remove('listening');
+    document.getElementById('sheena-mic-label').textContent='Tap to speak';
+    return;
+  }
+
+  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
+    document.getElementById('sheena-transcript').textContent='Voice not supported in this browser. Try Chrome.';
+    return;
+  }
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  sheenaRecognition = new SR();
+  sheenaRecognition.continuous = false;
+  sheenaRecognition.interimResults = true;
+  sheenaRecognition.lang = 'en-US';
+
+  sheenaRecognition.onresult = function(e){
+    var transcript = '';
+    for(var i=e.resultIndex;i<e.results.length;i++){
+      transcript += e.results[i][0].transcript;
+    }
+    document.getElementById('sheena-transcript').textContent=transcript;
+    if(e.results[e.results.length-1].isFinal){
+      sheenaListening=false;
+      document.getElementById('sheena-mic-btn').classList.remove('listening');
+      document.getElementById('sheena-mic-label').textContent='Tap to speak';
+      sendToSheena(transcript);
+    }
+  };
+
+  sheenaRecognition.onerror = function(){
+    sheenaListening=false;
+    document.getElementById('sheena-mic-btn').classList.remove('listening');
+    document.getElementById('sheena-mic-label').textContent='Tap to speak';
+  };
+
+  sheenaRecognition.start();
+  sheenaListening=true;
+  document.getElementById('sheena-mic-btn').classList.add('listening');
+  document.getElementById('sheena-mic-label').textContent='Listening...';
+  document.getElementById('sheena-transcript').textContent='';
+};
+
+function sendToSheena(userMessage){
+  var responseEl = document.getElementById('sheena-response');
+  responseEl.textContent='...';
+
+  var context = buildSheenaContext('');
+  var msgs;
+  if(sheenaConversation.length===0){
+    msgs=[{role:'user',content:context+'
+
+User says: '+userMessage}];
+  } else {
+    msgs = sheenaConversation.concat([{role:'user',content:userMessage}]);
+  }
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:250,messages:msgs})
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var text=data.content&&data.content[0]&&data.content[0].text;
+    if(text){
+      responseEl.textContent=text;
+      sheenaConversation=msgs.concat([{role:'assistant',content:text}]);
+      if(sheenaConversation.length>10)sheenaConversation=sheenaConversation.slice(-10);
+      speakText(text);
+      // Auto-process: check for grocery items
+      processVoiceForActions(userMessage, text);
+    }
+  })
+  .catch(function(){responseEl.textContent='Having trouble connecting.';});
+}
+
+function processVoiceForActions(userMsg, sheenaReply){
+  // Simple keyword detection for grocery items
+  var groceryTriggers=['we need','out of','add','get some','pick up','buy'];
+  var lower=userMsg.toLowerCase();
+  groceryTriggers.forEach(function(t){
+    if(lower.includes(t)){
+      // Ask Claude to extract grocery items
+      fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          model:'claude-sonnet-4-20250514',
+          max_tokens:100,
+          system:'Extract grocery items from this message. Return ONLY a JSON array of item names, or empty array if none. Example: ["chicken","milk"]. No other text.',
+          messages:[{role:'user',content:userMsg}]
+        })
+      })
+      .then(function(r){return r.json();})
+      .then(function(data){
+        try{
+          var items=JSON.parse(data.content[0].text);
+          if(items&&items.length){
+            items.forEach(function(item){
+              var id='v'+Date.now()+Math.random().toString(36).slice(2,5);
+              grocItems.push({id:id,name:item,cat:guessCategory(item),type:'weekly',done:false});
+            });
+            saveGroc();
+            if(items.length>0){
+              document.getElementById('sheena-transcript').textContent='Added to grocery list: '+items.join(', ');
+            }
+          }
+        }catch(e){}
+      });
+    }
+  });
+}
+
+function speakText(text){
+  if(!('speechSynthesis' in window))return;
+  window.speechSynthesis.cancel();
+  var utt=new SpeechSynthesisUtterance(text);
+  utt.rate=1.05;utt.pitch=1.1;utt.volume=1;
+  // Try to get a female voice
+  var voices=window.speechSynthesis.getVoices();
+  var femaleVoice=voices.find(function(v){return v.name.includes('Samantha')||v.name.includes('Karen')||v.name.includes('Victoria')||v.name.includes('Female')||v.gender==='female';});
+  if(femaleVoice)utt.voice=femaleVoice;
+  window.speechSynthesis.speak(utt);
+}
+
+window.sheenaQuick = function(type){
+  var prompts={
+    'bored': "I'm bored and feeling like opening a time-wasting app. What should I do instead?",
+    'craving': "I'm craving something sweet or junky right now. Talk me off the edge.",
+    'schedule': "What does my day look like? Walk me through it.",
+    'debrief': "Let's do my evening debrief. Ask me how my day went.",
+    'haircut': "I need to schedule something — help me find the best time in my schedule this week.",
+    'traffic': "I need to leave for an appointment soon. Check traffic conditions for The Woodlands area and tell me if I should leave early."
+  };
+  document.getElementById('sheena-transcript').textContent=prompts[type]||'';
+  sendToSheena(prompts[type]||type);
+};
+
+// Load voices when available
+if('speechSynthesis' in window){
+  window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices();};
+}
+
+// ── IMPORTANT DATES CHECK ────────────────────────────
+function checkImportantDates(){
+  var upcoming = getUpcomingDates();
+  if(!upcoming.length)return;
+  var soon = upcoming.filter(function(u){return u.days<=3;});
+  if(!soon.length)return;
+  // Surface on Today tab
+  var todayTab=document.getElementById('tab-today');
+  if(!todayTab||document.getElementById('dates-banner'))return;
+  var banner=document.createElement('div');
+  banner.id='dates-banner';
+  banner.style.cssText='background:#FBEAF0;border:1px solid #ED93B1;border-radius:12px;padding:0.875rem 1rem;margin-bottom:8px';
+  var items=soon.map(function(u){
+    if(u.days===0)return u.name+' is TODAY'+(u.age?' — '+u.age+' years':'')+'!';
+    if(u.days===1)return u.name+' is TOMORROW'+(u.age?' — turning '+u.age:'');
+    return u.name+' in '+u.days+' days'+(u.age?' — turning '+u.age:'');
+  }).join(' · ');
+  banner.innerHTML='<div style="font-size:12px;font-weight:700;color:#72243E;margin-bottom:3px">Upcoming dates</div><div style="font-size:13px;color:#993556;line-height:1.5">'+items+'</div>';
+  var firstCard=todayTab.querySelector('.card');
+  if(firstCard)todayTab.insertBefore(banner,firstCard);
+}
+
+
+// ── WEATHER ──────────────────────────────────────────
+function fetchWeather(){
+  // The Woodlands, TX coords
+  var lat=30.1658, lon=-95.4613;
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FChicago`)
+  .then(r=>r.json())
+  .then(data=>{
+    var c=data.current;
+    var d=data.daily;
+    var temp=Math.round(c.temperature_2m);
+    var feels=Math.round(c.apparent_temperature);
+    var hi=Math.round(d.temperature_2m_max[0]);
+    var lo=Math.round(d.temperature_2m_min[0]);
+    var code=c.weather_code;
+    var icon=wxIcon(code);
+    var desc=wxDesc(code);
+    document.getElementById('wx-icon').textContent=icon;
+    document.getElementById('wx-temp').textContent=temp+'°F';
+    document.getElementById('wx-desc').textContent=desc;
+    document.getElementById('wx-detail').textContent='Humidity '+c.relative_humidity_2m+'% · Wind '+Math.round(c.wind_speed_10m)+' mph';
+    document.getElementById('wx-high-low').textContent='H: '+hi+'° L: '+lo+'°';
+    document.getElementById('wx-feels').textContent='Feels '+feels+'°';
+    document.getElementById('weather-widget').style.display='block';
+  })
+  .catch(()=>{});
+}
+
+function wxIcon(code){
+  if(code===0)return '☀️';
+  if(code<=2)return '⛅';
+  if(code<=3)return '☁️';
+  if(code<=48)return '🌫️';
+  if(code<=57)return '🌧️';
+  if(code<=67)return '🌨️';
+  if(code<=77)return '❄️';
+  if(code<=82)return '🌧️';
+  if(code<=86)return '🌨️';
+  if(code<=99)return '⛈️';
+  return '🌤️';
+}
+
+function wxDesc(code){
+  if(code===0)return 'Clear sky';
+  if(code<=2)return 'Partly cloudy';
+  if(code<=3)return 'Overcast';
+  if(code<=48)return 'Foggy';
+  if(code<=57)return 'Drizzle';
+  if(code<=67)return 'Rain';
+  if(code<=77)return 'Snow';
+  if(code<=82)return 'Rain showers';
+  if(code<=86)return 'Snow showers';
+  if(code<=99)return 'Thunderstorm';
+  return 'Mixed';
+}
+
+// ── FAITH TAB ────────────────────────────────────────
+var faithData={entries:{},prayers:[]};
+
+function loadFaithData(){
+  try{var s=localStorage.getItem('sebren-faith');if(s)faithData=JSON.parse(s);}catch(e){}
+}
+
+function saveFaithData(){
+  try{localStorage.setItem('sebren-faith',JSON.stringify(faithData));}catch(e){}
+}
+
+function initFaithTab(){
+  loadVerseOfDay();
+  renderPrayerList();
+  renderFaithHistory();
+  renderFaithStreak();
+  loadTodayFaithEntry();
+}
+
+function loadVerseOfDay(){
+  var verses=[
+    {ref:'Philippians 4:13',text:'I can do all things through Christ who strengthens me.'},
+    {ref:'Jeremiah 29:11',text:'For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.'},
+    {ref:'Proverbs 16:3',text:'Commit to the Lord whatever you do, and he will establish your plans.'},
+    {ref:'Joshua 1:9',text:'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.'},
+    {ref:'Romans 8:28',text:'And we know that in all things God works for the good of those who love him, who have been called according to his purpose.'},
+    {ref:'Matthew 6:33',text:'But seek first his kingdom and his righteousness, and all these things will be given to you as well.'},
+    {ref:'Psalm 46:10',text:'Be still, and know that I am God.'},
+    {ref:'Proverbs 3:5-6',text:'Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.'},
+    {ref:'Isaiah 40:31',text:'But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.'},
+    {ref:'2 Timothy 1:7',text:'For God has not given us a spirit of fear, but of power and of love and of a sound mind.'},
+    {ref:'Psalm 23:1',text:'The Lord is my shepherd; I shall not want.'},
+    {ref:'Galatians 5:22-23',text:'But the fruit of the Spirit is love, joy, peace, forbearance, kindness, goodness, faithfulness, gentleness and self-control.'},
+    {ref:'1 Corinthians 16:13',text:'Be on your guard; stand firm in the faith; be courageous; be strong.'},
+    {ref:'Lamentations 3:22-23',text:'The steadfast love of the Lord never ceases; his mercies never come to an end; they are new every morning; great is your faithfulness.'},
+    {ref:'Psalm 119:105',text:'Your word is a lamp for my feet, a light on my path.'}
+  ];
+  var day=new Date().getDay()+new Date().getDate();
+  var v=verses[day%verses.length];
+  document.getElementById('daily-verse-ref').textContent=v.ref;
+  document.getElementById('daily-verse-text').textContent=v.text;
+}
+
+function loadTodayFaithEntry(){
+  var today=getTodayStr();
+  var entry=faithData.entries[today];
+  if(!entry)return;
+  if(entry.read)document.getElementById('faith-reading').value=entry.read;
+  if(entry.gratitude)document.getElementById('faith-gratitude').value=entry.gratitude;
+  if(entry.spent){
+    document.getElementById('faith-yes-btn').style.background=entry.spent?'var(--success)':'transparent';
+    document.getElementById('faith-yes-btn').style.color=entry.spent?'#fff':'var(--txt)';
+  }
+}
+
+window.logFaithDay=function(spent){
+  var today=getTodayStr();
+  if(!faithData.entries[today])faithData.entries[today]={};
+  faithData.entries[today].spent=spent;
+  saveFaithData();
+  var yBtn=document.getElementById('faith-yes-btn');
+  var nBtn=document.getElementById('faith-no-btn');
+  if(spent){
+    yBtn.style.background='var(--success)';yBtn.style.color='#fff';yBtn.style.borderColor='var(--success)';
+    nBtn.style.background='transparent';nBtn.style.color='var(--txt2)';nBtn.style.borderColor='var(--border)';
+  } else {
+    nBtn.style.background='var(--bg2)';nBtn.style.color='var(--txt)';
+    yBtn.style.background='transparent';yBtn.style.color='var(--txt)';yBtn.style.borderColor='var(--border)';
+  }
+  renderFaithStreak();
+};
+
+window.saveFaithEntry=function(){
+  var today=getTodayStr();
+  if(!faithData.entries[today])faithData.entries[today]={};
+  faithData.entries[today].read=document.getElementById('faith-reading').value.trim();
+  faithData.entries[today].gratitude=document.getElementById('faith-gratitude').value.trim();
+  faithData.entries[today].date=today;
+  saveFaithData();
+  renderFaithHistory();
+  renderFaithStreak();
+  var btn=event.target;btn.textContent='Saved!';
+  setTimeout(()=>{btn.textContent='Save today's entry';},1500);
+};
+
+function renderFaithStreak(){
+  var days=0;
+  var d=new Date();
+  for(var i=0;i<7;i++){
+    var str=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+    if(faithData.entries[str]&&faithData.entries[str].spent)days++;
+    d.setDate(d.getDate()-1);
+  }
+  var el=document.getElementById('faith-streak-count');
+  var sub=document.getElementById('faith-streak-sub');
+  if(el)el.textContent=days;
+  if(sub){
+    if(days===7)sub.textContent='Perfect week with God!';
+    else if(days>=5)sub.textContent='Strong week — keep going';
+    else if(days>=3)sub.textContent='Good momentum';
+    else sub.textContent='Every day matters — keep showing up';
+  }
+}
+
+function renderFaithHistory(){
+  var el=document.getElementById('faith-history');
+  if(!el)return;
+  var entries=Object.values(faithData.entries).filter(e=>e.read||e.gratitude).sort((a,b)=>b.date>a.date?1:-1).slice(0,5);
+  if(!entries.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);text-align:center;padding:12px 0">Your entries will appear here</div>';return;}
+  el.innerHTML=entries.map(e=>`
+    <div class="faith-history-item">
+      <div style="font-size:10px;color:var(--txt3);margin-bottom:3px">${e.date}</div>
+      ${e.read?`<div style="font-size:12px;color:var(--txt);margin-bottom:2px">Read: ${e.read}</div>`:''}
+      ${e.gratitude?`<div style="font-size:12px;color:var(--txt2);line-height:1.4">${e.gratitude.substring(0,100)}${e.gratitude.length>100?'...':''}</div>`:''}
+    </div>
+  `).join('');
+}
+
+window.addPrayer=function(){
+  var inp=document.getElementById('new-prayer');
+  var text=inp.value.trim();
+  if(!text)return;
+  faithData.prayers.unshift({id:Date.now(),text,answered:false,date:getTodayStr()});
+  inp.value='';
+  saveFaithData();renderPrayerList();
+};
+
+function renderPrayerList(){
+  var el=document.getElementById('prayer-list-items');
+  if(!el)return;
+  var active=faithData.prayers.filter(p=>!p.answered);
+  var answered=faithData.prayers.filter(p=>p.answered);
+  if(!faithData.prayers.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px 0">Add things you're praying for</div>';return;}
+  var html='';
+  active.forEach((p,i)=>{
+    html+=`<div class="prayer-item">
+      <div class="prayer-chk" onclick="togglePrayer(${p.id})"></div>
+      <span style="flex:1;color:var(--txt)">${p.text}</span>
+      <button class="dana-del" onclick="deletePrayer(${p.id})">×</button>
+    </div>`;
+  });
+  if(answered.length){
+    html+=`<div style="font-size:10px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.06em;margin:8px 0 4px">Answered</div>`;
+    answered.slice(0,3).forEach(p=>{
+      html+=`<div class="prayer-item" style="opacity:0.5">
+        <div class="prayer-chk answered"></div>
+        <span style="flex:1;color:var(--txt);text-decoration:line-through">${p.text}</span>
+      </div>`;
+    });
+  }
+  el.innerHTML=html;
+}
+
+window.togglePrayer=function(id){
+  var p=faithData.prayers.find(p=>p.id===id);
+  if(p)p.answered=!p.answered;
+  saveFaithData();renderPrayerList();
+};
+
+window.deletePrayer=function(id){
+  faithData.prayers=faithData.prayers.filter(p=>p.id!==id);
+  saveFaithData();renderPrayerList();
+};
+
+// ── DANA / MARRIAGE TAB ──────────────────────────────
+var danaData={acts:[],loves:[],goals:[],notes:''};
+
+function loadDanaData(){
+  try{var s=localStorage.getItem('sebren-dana');if(s)danaData=JSON.parse(s);}catch(e){}
+}
+
+function saveDanaData(){
+  try{localStorage.setItem('sebren-dana',JSON.stringify(danaData));}catch(e){}
+}
+
+function initDanaTab(){
+  renderDanaList('dana-acts-list','acts');
+  renderDanaList('dana-love-list','loves');
+  renderDanaList('shared-goals-list','goals');
+  loadDanaNotes();
+  loadDateNight();
+}
+
+function renderDanaList(elId, key){
+  var el=document.getElementById(elId);
+  if(!el)return;
+  var items=danaData[key]||[];
+  if(!items.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:4px 0 8px">Nothing added yet</div>';return;}
+  el.innerHTML=items.map((item,i)=>`
+    <div class="dana-item">
+      <span style="flex:1;color:var(--txt)">${item}</span>
+      <button class="dana-del" onclick="deleteDanaItem('${key}',${i},'${elId}')">×</button>
+    </div>
+  `).join('');
+}
+
+window.deleteDanaItem=function(key,i,elId){
+  danaData[key].splice(i,1);
+  saveDanaData();
+  renderDanaList(elId,key);
+};
+
+window.addDanaAct=function(){
+  var inp=document.getElementById('new-dana-act');
+  if(!inp.value.trim())return;
+  danaData.acts.unshift(inp.value.trim());
+  inp.value='';saveDanaData();renderDanaList('dana-acts-list','acts');
+};
+
+window.addDanaLove=function(){
+  var inp=document.getElementById('new-dana-love');
+  if(!inp.value.trim())return;
+  danaData.loves.unshift(inp.value.trim());
+  inp.value='';saveDanaData();renderDanaList('dana-love-list','loves');
+};
+
+window.addSharedGoal=function(){
+  var inp=document.getElementById('new-shared-goal');
+  if(!inp.value.trim())return;
+  danaData.goals.unshift(inp.value.trim());
+  inp.value='';saveDanaData();renderDanaList('shared-goals-list','goals');
+};
+
+function loadDanaNotes(){
+  var el=document.getElementById('dana-notes');
+  if(el&&danaData.notes)el.value=danaData.notes;
+}
+
+window.saveDanaNotes=function(){
+  var el=document.getElementById('dana-notes');
+  if(!el)return;
+  danaData.notes=el.value;
+  saveDanaData();
+  var btn=event.target;btn.textContent='Saved!';
+  setTimeout(()=>{btn.textContent='Save notes';},1500);
+};
+
+function loadDateNight(){
+  var el=document.getElementById('date-night-plan');
+  var saved=document.getElementById('date-night-saved');
+  try{
+    var s=localStorage.getItem('date-night');
+    if(s){var d=JSON.parse(s);if(el)el.value=d.plan||'';if(saved)saved.textContent=d.plan?'Planned: '+d.plan:'';}
+  }catch(e){}
+}
+
+window.saveDateNight=function(){
+  var el=document.getElementById('date-night-plan');
+  if(!el)return;
+  try{localStorage.setItem('date-night',JSON.stringify({plan:el.value,date:getTodayStr()}));}catch(e){}
+  var saved=document.getElementById('date-night-saved');
+  if(saved)saved.textContent='Planned: '+el.value;
+  var btn=event.target;btn.textContent='Saved!';
+  setTimeout(()=>{btn.textContent='Save plan';},1500);
+};
+
+// ── WEEKLY REVIEW PROMPT ─────────────────────────────
+function checkWeeklyReview(){
+  var d=new Date();
+  if(d.getDay()!==0)return; // Sunday only
+  var week=d.getFullYear()+'-W'+Math.ceil(d.getDate()/7);
+  try{if(localStorage.getItem('weekly-review-'+week))return;}catch(e){}
+  // Show prompt on Today tab
+  var todayTab=document.getElementById('tab-today');
+  if(!todayTab)return;
+  var existing=document.getElementById('weekly-review-banner');
+  if(existing)return;
+  var banner=document.createElement('div');
+  banner.id='weekly-review-banner';
+  banner.style.cssText='background:var(--info-bg);border:1px solid var(--info-border);border-radius:var(--radius-lg);padding:0.875rem 1rem;margin-bottom:8px';
+  banner.innerHTML=`
+    <div style="font-size:13px;font-weight:600;color:var(--info);margin-bottom:4px">Weekly review — Sunday</div>
+    <div style="font-size:12px;color:var(--info);margin-bottom:10px;line-height:1.5">Take 5 minutes to reflect on the week. How did it go?</div>
+    <textarea id="weekly-review-text" placeholder="Wins this week... What I want to do differently... Goals for next week..." style="width:100%;min-height:80px;padding:8px;border:1px solid var(--info-border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;resize:none;line-height:1.5;margin-bottom:8px"></textarea>
+    <div style="display:flex;gap:8px">
+      <button onclick="saveWeeklyReview('${week}')" style="flex:1;padding:8px;background:var(--info);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Save review</button>
+      <button onclick="dismissWeeklyReview('${week}')" style="padding:8px 14px;background:transparent;border:1px solid var(--info-border);border-radius:var(--radius);font-size:13px;cursor:pointer;color:var(--info);font-family:inherit">Later</button>
+    </div>`;
+  var firstCard=todayTab.querySelector('.card');
+  if(firstCard)todayTab.insertBefore(banner,firstCard);
+}
+
+window.saveWeeklyReview=function(week){
+  var text=document.getElementById('weekly-review-text').value;
+  try{localStorage.setItem('weekly-review-'+week,JSON.stringify({text,date:getTodayStr()}));}catch(e){}
+  var banner=document.getElementById('weekly-review-banner');
+  if(banner)banner.remove();
+};
+
+window.dismissWeeklyReview=function(week){
+  var banner=document.getElementById('weekly-review-banner');
+  if(banner)banner.remove();
+};
+
+// ── OVERRIDE TAB for new tabs ────────────────────────
+
 // ── OVERRIDE TAB TO LOAD DATA ────────────────────────
 const _origTab2=window.tab;
 window.tab=function(id,btn){
   _origTab2(id,btn);
   if(id==='summary')renderSummary();
-  if(id==='work'){initWork();}
+  if(id==='work')initWork();
+  if(id==='faith')initFaithTab();
+  if(id==='dana')initDanaTab();
   if(id==='settings')openSettingsTab();
 };
 
