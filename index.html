@@ -2507,11 +2507,7 @@ window.setMood = function(n){
     n<=6 ? 'Their mood is okay ('+n+'/10). Give them a practical morning briefing. What matters most today, where their best window is, one thing to prioritize.' :
     'Their mood is great ('+n+'/10). Lean in. Capitalize on the energy. Challenge them to make today count. Be fired up with them.';
 
-  var msgs = sheenaConversation.length > 0 ? sheenaConversation : [{role:'user',content:context+'
-
-'+moodExtra+'
-
-Give a 2-4 sentence morning response. Natural, like a friend. Reference their actual data.'}];
+  var msgs = sheenaConversation.length > 0 ? sheenaConversation : [{role:"user",content:context+"\n\n"+moodExtra+"\n\nGive a 2-4 sentence morning response. Natural, like a friend. Reference their actual data."}];
 
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
@@ -2523,9 +2519,7 @@ Give a 2-4 sentence morning response. Natural, like a friend. Reference their ac
     var text = data.content&&data.content[0]&&data.content[0].text;
     if(text){
       responseEl.textContent = text;
-      sheenaConversation = [{role:'user',content:context+'
-
-'+moodExtra},{role:'assistant',content:text}];
+      sheenaConversation = [{role:"user",content:context+"\n\n"+moodExtra},{role:"assistant",content:text}];
       speakText(text);
       setTimeout(showVoiceSection, 500);
     }
@@ -2591,9 +2585,7 @@ function sendToSheena(userMessage){
   var context = buildSheenaContext('');
   var msgs;
   if(sheenaConversation.length===0){
-    msgs=[{role:'user',content:context+'
-
-User says: '+userMessage}];
+    msgs=[{role:"user",content:context+"\n\nUser says: "+userMessage}];
   } else {
     msgs = sheenaConversation.concat([{role:'user',content:userMessage}]);
   }
@@ -2866,7 +2858,7 @@ window.saveFaithEntry=function(){
   renderFaithHistory();
   renderFaithStreak();
   var btn=event.target;btn.textContent='Saved!';
-  setTimeout(()=>{btn.textContent='Save today's entry';},1500);
+  setTimeout(()=>{btn.textContent="Save today's entry";},1500);
 };
 
 function renderFaithStreak(){
@@ -2916,7 +2908,7 @@ function renderPrayerList(){
   if(!el)return;
   var active=faithData.prayers.filter(p=>!p.answered);
   var answered=faithData.prayers.filter(p=>p.answered);
-  if(!faithData.prayers.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px 0">Add things you're praying for</div>';return;}
+  if(!faithData.prayers.length){el.innerHTML=`<div style="font-size:12px;color:var(--txt3);padding:8px 0">Add things you're praying for</div>`;return;}
   var html='';
   active.forEach((p,i)=>{
     html+=`<div class="prayer-item">
@@ -2946,6 +2938,8 @@ window.togglePrayer=function(id){
 window.deletePrayer=function(id){
   faithData.prayers=faithData.prayers.filter(p=>p.id!==id);
   saveFaithData();renderPrayerList();
+};
+
 // ── DANA / MARRIAGE TAB ──────────────────────────────
 var danaData={acts:[],loves:[],goals:[],notes:''};
 
