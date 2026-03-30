@@ -173,6 +173,48 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
 .danger-btn{color:var(--danger);border-color:var(--danger)}
 .info-box{background:var(--info-bg);border:1px solid var(--info-border);border-radius:var(--radius-lg);padding:0.875rem 1rem;margin-bottom:8px;font-size:13px;color:var(--info);line-height:1.6}
 .info-box strong{font-weight:700}
+/* POWER LIST */
+.pl-task{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.pl-task:last-child{border-bottom:none}
+.pl-chk{width:24px;height:24px;border-radius:50%;border:2.5px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.pl-chk.on{background:var(--success);border-color:var(--success)}
+.pl-chk.on::after{content:'';width:10px;height:6px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block}
+.pl-input{flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;background:var(--bg);color:var(--txt);font-family:inherit}
+.pl-input:focus{outline:none;border-color:var(--info)}
+.pl-input.done{text-decoration:line-through;color:var(--txt3)}
+.pl-verdict{display:flex;gap:10px;margin-top:12px}
+.pl-verdict-btn{flex:1;padding:14px;border-radius:var(--radius-lg);font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;border:2px solid var(--border)}
+.pl-verdict-btn.w{background:var(--success-bg);border-color:var(--success);color:var(--success)}
+.pl-verdict-btn.l{background:var(--danger-bg);border-color:var(--danger);color:var(--danger)}
+.pl-verdict-btn.selected{transform:scale(1.05)}
+.pl-streak-bar{display:flex;gap:3px;margin-top:8px}
+.pl-streak-day{flex:1;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.pl-streak-day.win{background:var(--success-bg);color:var(--success)}
+.pl-streak-day.loss{background:var(--danger-bg);color:var(--danger)}
+.pl-streak-day.empty{background:var(--bg3);color:var(--txt3)}
+
+/* CALENDAR */
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-hdr-title{font-size:16px;font-weight:700;color:var(--txt)}
+.cal-nav-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:14px;color:var(--txt);display:flex;align-items:center;justify-content:center;font-family:inherit}
+.cal-nav-btn:active{background:var(--bg2)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:12px}
+.cal-day-hdr{text-align:center;font-size:10px;font-weight:600;color:var(--txt3);padding:4px 0;text-transform:uppercase}
+.cal-day{text-align:center;padding:8px 2px;border-radius:var(--radius);cursor:pointer;position:relative;font-size:13px;color:var(--txt);min-height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cal-day:active{background:var(--bg2)}
+.cal-day.other{color:var(--txt3);opacity:0.4}
+.cal-day.today{background:var(--txt);color:#fff;font-weight:700;border-radius:50%;width:36px;height:36px;margin:0 auto}
+.cal-day.selected{background:var(--info-bg);color:var(--info);font-weight:600}
+.cal-day.today.selected{background:var(--info);color:#fff}
+.cal-dot{width:4px;height:4px;border-radius:50%;background:var(--info);position:absolute;bottom:3px}
+.cal-day.today .cal-dot{background:#fff}
+.cal-event{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.cal-event:last-child{border-bottom:none}
+.cal-event-time{font-size:11px;font-weight:600;color:var(--txt2);min-width:60px;flex-shrink:0}
+.cal-event-title{font-size:13px;color:var(--txt);flex:1}
+.cal-event-del{font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0 4px;line-height:1;font-family:inherit}
+.cal-event-kid{background:var(--info-bg);border-left:3px solid var(--info);padding:8px 10px;border-radius:0 var(--radius) var(--radius) 0;margin-bottom:4px;font-size:12px;color:var(--info)}
+.cal-event-kid .cal-event-time{color:var(--info)}
 </style>
 </head>
 <body>
@@ -197,6 +239,8 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
 
 <div class="nav">
   <button class="nb on" onclick="tab('today',this)">Today</button>
+  <button class="nb" onclick="tab('cal',this)">Cal</button>
+  <button class="nb" onclick="tab('power',this)">Power</button>
   <button class="nb" onclick="tab('sun',this)">Sun</button>
   <button class="nb" onclick="tab('food',this)">Food</button>
   <button class="nb" onclick="tab('progress',this)">Weight</button>
@@ -205,12 +249,9 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <button class="nb" onclick="tab('work',this)">Work</button>
   <button class="nb" onclick="tab('faith',this)">Faith</button>
   <button class="nb" onclick="tab('dana',this)">Dana</button>
-  <button class="nb" onclick="tab('faith',this)">Faith</button>
-  <button class="nb" onclick="tab('dana',this)">Dana</button>
   <button class="nb" onclick="tab('review',this)">Review</button>
   <button class="nb" onclick="tab('settings',this)">Edit</button>
 </div>
-
 <!-- TODAY -->
 <div id="weather-bar" style="display:flex;align-items:center;gap:10px;padding:8px 1rem;background:var(--bg2);border-bottom:1px solid var(--border);font-size:13px;cursor:pointer" onclick="fetchWeather()">
   <span id="weather-icon" style="font-size:20px">⛅</span>
@@ -287,6 +328,110 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <div id="kids-block"></div>
 </div>
 
+<!-- CALENDAR -->
+<div id="tab-cal" class="tab">
+  <div class="cal-hdr">
+    <button class="cal-nav-btn" onclick="calNav(-1)">‹</button>
+    <div class="cal-hdr-title" id="cal-month-title">March 2026</div>
+    <button class="cal-nav-btn" onclick="calNav(1)">›</button>
+  </div>
+  <div class="cal-grid" id="cal-grid"></div>
+
+  <div id="cal-selected-section">
+    <div class="sec" id="cal-selected-label">Today</div>
+    <div class="card">
+      <div id="cal-events-list"><div class="empty-state">No events — add one below</div></div>
+    </div>
+    <div class="card" style="margin-top:8px">
+      <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:8px">Add event</div>
+      <div class="inp-row" style="margin-top:0;margin-bottom:8px">
+        <input type="text" id="cal-event-time" placeholder="Time (e.g. 2:00p)" style="max-width:100px">
+        <input type="text" id="cal-event-title" placeholder="Haircut, dinner, meeting...">
+        <button onclick="addCalEvent()">Add</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="filt" onclick="addCalEventQuick('Morning','Bible + prayer')">☀️ Bible</button>
+        <button class="filt" onclick="addCalEventQuick('','Hotworx session')">🔥 Hotworx</button>
+        <button class="filt" onclick="addCalEventQuick('','Date night with Dana')">❤️ Date</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" style="margin-top:16px">Recurring events</div>
+  <div class="card">
+    <div id="cal-recurring-list"><div class="empty-state">No recurring events yet</div></div>
+    <div style="margin-top:10px">
+      <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:8px">Add recurring</div>
+      <div class="inp-row" style="margin-top:0;margin-bottom:8px">
+        <input type="text" id="cal-rec-time" placeholder="Time" style="max-width:90px">
+        <input type="text" id="cal-rec-title" placeholder="Event name...">
+      </div>
+      <div class="add-selects" style="margin-bottom:0">
+        <select id="cal-rec-day" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;background:var(--bg);color:var(--txt);font-family:inherit">
+          <option value="0">Sunday</option>
+          <option value="1" selected>Monday</option>
+          <option value="2">Tuesday</option>
+          <option value="3">Wednesday</option>
+          <option value="4">Thursday</option>
+          <option value="5">Friday</option>
+          <option value="6">Saturday</option>
+        </select>
+        <button onclick="addCalRecurring()" style="padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:var(--bg);color:var(--txt)">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POWER LIST -->
+<div id="tab-power" class="tab">
+  <div style="background:#1a1a1a;border-radius:var(--radius-lg);padding:1rem;margin-bottom:12px;text-align:center">
+    <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;color:rgba(255,255,255,0.5);text-transform:uppercase">Andy Frisella's Power List</div>
+    <div style="font-size:22px;font-weight:700;color:#fff;margin-top:4px">5 Critical Tasks</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:4px">All 5 done = W. Anything less = L. No excuses.</div>
+  </div>
+
+  <div class="card">
+    <div id="pl-tasks"></div>
+  </div>
+
+  <div id="pl-verdict-section" style="display:none">
+    <div class="sec">Today's verdict</div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:8px" id="pl-verdict-prompt">Did you complete all 5 tasks?</div>
+      <div class="pl-verdict" id="pl-verdict-btns">
+        <button class="pl-verdict-btn" onclick="setPLVerdict('W')">W</button>
+        <button class="pl-verdict-btn" onclick="setPLVerdict('L')">L</button>
+      </div>
+      <div id="pl-verdict-display" style="display:none;margin-top:8px">
+        <div id="pl-verdict-result" style="font-size:36px;font-weight:700"></div>
+        <div id="pl-verdict-msg" style="font-size:12px;color:var(--txt2);margin-top:4px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">This week</div>
+  <div class="card">
+    <div class="pl-streak-bar" id="pl-streak-bar"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px">
+      <span style="color:var(--txt2)" id="pl-week-record">0W – 0L</span>
+      <span style="font-weight:600" id="pl-streak-label" style="color:var(--txt)">Start your streak</span>
+    </div>
+  </div>
+
+  <div class="sec">Streak history</div>
+  <div class="card">
+    <div id="pl-history" style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">Complete your first day to start tracking</div>
+  </div>
+
+  <div class="sec">The rules</div>
+  <div class="card" style="font-size:12px;color:var(--txt2);line-height:1.6">
+    <div style="margin-bottom:6px"><strong style="color:var(--txt)">1.</strong> Write down 5 critical tasks every morning.</div>
+    <div style="margin-bottom:6px"><strong style="color:var(--txt)">2.</strong> These must be tasks that move your life forward — not maintenance.</div>
+    <div style="margin-bottom:6px"><strong style="color:var(--txt)">3.</strong> All 5 done = <strong style="color:var(--success)">W</strong>. Anything less = <strong style="color:var(--danger)">L</strong>.</div>
+    <div style="margin-bottom:6px"><strong style="color:var(--txt)">4.</strong> Track your streak. Try to string together as many W's as possible.</div>
+    <div><strong style="color:var(--txt)">5.</strong> Be honest. This only works if you are.</div>
+  </div>
+</div>
 <!-- SUN -->
 <div id="tab-sun" class="tab">
   <div class="sec">Tap each anchor as you hit it</div>
@@ -400,7 +545,6 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
     <button class="log-btn" style="margin-bottom:0" onclick="coach('Give me a 5-minute Bible reading plan for my morning outside time — something on discipline, gratitude, and purpose.')">Morning Bible plan</button>
   </div>
 </div>
-
 <!-- GROCERIES -->
 <div id="tab-grocery" class="tab">
   <div style="display:flex;align-items:center;margin-bottom:12px">
@@ -553,8 +697,6 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
     <button class="log-btn danger-btn" onclick="resetChecks()">Reset today's check-offs</button>
   </div>
 </div>
-
-
 <!-- SUMMARY TAB -->
 <div id="tab-summary" class="tab">
   <div class="sec">Today at a glance</div>
@@ -632,8 +774,6 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
     <div style="font-size:11px;color:var(--txt3);margin-top:8px" id="launch-sub"></div>
   </div>
 </div>
-
-
 <!-- FAITH TAB -->
 <div id="tab-faith" class="tab">
   <div class="sec">Morning devotional</div>
@@ -675,7 +815,6 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <div class="sec">Recent entries</div>
   <div class="card" id="faith-history"></div>
 </div>
-
 <!-- DANA / MARRIAGE TAB -->
 <div id="tab-dana" class="tab">
   <div class="sec">Marriage intentionality</div>
@@ -724,89 +863,6 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
     <button class="log-btn" style="margin-top:8px;margin-bottom:0" onclick="saveDanaNotes()">Save notes</button>
   </div>
 </div>
-
-
-<!-- FAITH TAB -->
-<div id="tab-faith" class="tab">
-  <div style="background:#EEEDFE;border:1px solid #AFA9EC;border-radius:var(--radius-lg);padding:1rem;margin-bottom:12px">
-    <div id="daily-verse-ref" style="font-size:11px;font-weight:600;color:#3C3489;margin-bottom:4px">Daily verse</div>
-    <div id="daily-verse-text" style="font-size:14px;color:#26215C;line-height:1.6;font-style:italic">Loading...</div>
-  </div>
-
-  <div class="sec">Today's faith check-in</div>
-  <div class="card">
-    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:10px">Did I spend time with God this morning?</div>
-    <div style="display:flex;gap:8px;margin-bottom:14px">
-      <button id="faith-yes" onclick="setFaithDone(true)" style="flex:1;padding:10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--txt)">Yes</button>
-      <button id="faith-no" onclick="setFaithDone(false)" style="flex:1;padding:10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--txt)">Not yet</button>
-    </div>
-
-    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:6px">What I read today</div>
-    <input type="text" id="bible-passage" placeholder="e.g. Psalm 23, John 3:16-21, Proverbs 4..." style="width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:12px">
-
-    <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:6px">Gratitude — 3 things today</div>
-    <input type="text" id="gratitude-1" placeholder="1. I'm grateful for..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:6px">
-    <input type="text" id="gratitude-2" placeholder="2. I'm grateful for..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:6px">
-    <input type="text" id="gratitude-3" placeholder="3. I'm grateful for..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:12px">
-
-    <button onclick="saveFaithCheckin()" style="width:100%;padding:10px;background:var(--txt);color:var(--bg);border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Save today's check-in</button>
-  </div>
-
-  <div class="sec">Prayer list</div>
-  <div class="card">
-    <div id="prayer-list-render"></div>
-    <div class="inp-row" style="margin-top:10px">
-      <input type="text" id="prayer-inp" placeholder="Add prayer request...">
-      <button onclick="addPrayer()">Add</button>
-    </div>
-  </div>
-
-  <div class="sec">Reading history</div>
-  <div class="card">
-    <div id="faith-history" style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">Check in daily to build your history</div>
-  </div>
-</div>
-
-<!-- DANA TAB -->
-<div id="tab-dana" class="tab">
-  <div style="background:#FAECE7;border:1px solid #F0997B;border-radius:var(--radius-lg);padding:1rem;margin-bottom:12px">
-    <div style="font-size:13px;font-weight:600;color:#712B13;margin-bottom:2px">Dana & Fred</div>
-    <div style="font-size:12px;color:#993C1D;line-height:1.5">Small intentional moments make the biggest marriages.</div>
-  </div>
-
-  <div class="sec">This week's intention</div>
-  <div class="card">
-    <div style="font-size:12px;color:var(--txt2);margin-bottom:8px">What's one thing you want to do for Dana this week?</div>
-    <input type="text" id="dana-intention" placeholder="e.g. Plan a date night, write her a note, cook her favorite meal..." style="width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:8px">
-    <button onclick="saveDanaIntention()" style="width:100%;padding:9px;background:var(--txt);color:var(--bg);border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Set intention</button>
-    <div id="dana-intention-display" style="margin-top:10px;font-size:13px;color:var(--txt2);font-style:italic"></div>
-  </div>
-
-  <div class="sec">Things Dana would love</div>
-  <div class="card">
-    <div id="dana-ideas-list"></div>
-    <div class="inp-row" style="margin-top:10px">
-      <input type="text" id="dana-idea-inp" placeholder="Date idea, gift, gesture...">
-      <button onclick="addDanaIdea()">Add</button>
-    </div>
-  </div>
-
-  <div class="sec">Last date night</div>
-  <div class="card">
-    <div style="font-size:12px;color:var(--txt2);margin-bottom:8px">When was your last intentional date?</div>
-    <input type="date" id="last-date-inp" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:8px">
-    <input type="text" id="last-date-note" placeholder="What did you do?" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:8px">
-    <button onclick="saveLastDate()" style="width:100%;padding:9px;background:var(--txt);color:var(--bg);border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Save</button>
-    <div id="last-date-display" style="margin-top:10px;font-size:12px;color:var(--txt2)"></div>
-  </div>
-
-  <div class="sec">Notes about Dana</div>
-  <div class="card">
-    <textarea id="dana-notes" placeholder="Things she mentioned wanting, things that made her smile, things to remember..." style="width:100%;min-height:80px;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:transparent;color:var(--txt);font-family:inherit;resize:vertical;line-height:1.5"></textarea>
-    <button onclick="saveDanaNotes()" style="width:100%;margin-top:8px;padding:9px;background:transparent;color:var(--txt);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Save notes</button>
-  </div>
-</div>
-
 <!-- WEEKLY REVIEW TAB -->
 <div id="tab-review" class="tab">
   <div class="sec">Week of <span id="review-week-label"></span></div>
@@ -835,8 +891,6 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <div class="sec">Previous reviews</div>
   <div class="card"><div id="prev-reviews" style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">No reviews yet — complete your first one above</div></div>
 </div>
-
-
 <!-- SHEENA FLOATING BUTTON -->
 <div id="sheena-overlay" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:100;min-height:100vh">
   <div style="max-width:400px;margin:0 auto;padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh">
@@ -891,8 +945,6 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="8" y="1" width="6" height="11" rx="3" fill="white"/><path d="M3 11c0 4.42 3.58 8 8 8s8-3.58 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/><line x1="11" y1="19" x2="11" y2="22" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
 </div><!-- end app -->
-
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, doc, onSnapshot, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -1047,6 +1099,10 @@ function guessCategory(name){
 }
 
 // Init
+function renderMealQuickBtns(){
+  // Quick-log meals are handled via Favorites and AI lookup in the Food tab
+}
+
 function init(){
   loadLocal();
   const d=new Date();
@@ -1123,14 +1179,38 @@ function updateProg(){
 
 // Kids
 function buildKids(dow){
-  const events=KIDS[dow];
+  const kidsEvents=KIDS[dow]||[];
+  // Also get today's calendar events (non-kid, non-recurring-kid)
+  var calEventsToday=[];
+  try{
+    loadCalData();
+    var today=getTodayStr();
+    var allCal=(calEvents[today]||[]).slice();
+    // Add recurring for today
+    calRecurring.forEach(function(r){if(r.day===dow)allCal.push({time:r.time,title:r.title+' ↻'});});
+    calEventsToday=allCal;
+  }catch(e){}
+
   const block=document.getElementById('kids-block');
   const lbl=document.getElementById('kids-sec');
-  if(!events||!events.length){block.innerHTML='';lbl.style.display='none';return;}
+  var hasContent=kidsEvents.length||calEventsToday.length;
+  if(!hasContent){block.innerHTML='';lbl.style.display='none';return;}
   lbl.style.display='block';
-  let h='<div class="kids-card"><div class="kids-title">Today\'s commitments</div>';
-  events.forEach(e=>{h+=`<div class="kids-event"><span class="kids-time">${e.t}</span><span>${e.n}</span></div>`;});
-  h+='</div>';
+  let h='';
+  if(calEventsToday.length){
+    h+='<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.875rem 1rem;margin-bottom:8px">';
+    h+='<div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:8px">Calendar</div>';
+    calEventsToday.sort(function(a,b){return(a.time||'').localeCompare(b.time||'');});
+    calEventsToday.forEach(function(e){
+      h+='<div style="display:flex;gap:8px;font-size:13px;color:var(--txt);padding:3px 0"><span style="font-size:11px;color:var(--txt2);min-width:70px;flex-shrink:0">'+(e.time||'')+'</span><span>'+e.title+'</span></div>';
+    });
+    h+='</div>';
+  }
+  if(kidsEvents.length){
+    h+='<div class="kids-card"><div class="kids-title">Kids schedule</div>';
+    kidsEvents.forEach(e=>{h+=`<div class="kids-event"><span class="kids-time">${e.t}</span><span>${e.n}</span></div>`;});
+    h+='</div>';
+  }
   block.innerHTML=h;
 }
 
@@ -1420,9 +1500,6 @@ window.resetAll=function(){
     sy=0;pulling=false;
   });
 })();
-
-
-
 // ── FOOD COACH PROMPTS ───────────────────────────────
 window.coachPrompt = function(type){
   var tc = (S.meals||[]).reduce((a,m)=>a+m.cal, 0);
@@ -1640,9 +1717,7 @@ window.meal=function(name,cal,prot){
 };
 
 loadFoodData();
-loadFaithData();
-initWeather();
-init();
+// faithData, weather, and other inits are called after their definitions below
 
 // EDIT / SETTINGS
 let editDay = 1;
@@ -1882,827 +1957,6 @@ window.resetChecks = function(){
 };
 
 loadConfig();
-
-
-// ── AI MORNING BRIEFING ──────────────────────────────
-var briefingGenerated = false;
-
-function buildBriefingContext(){
-  var d = new Date();
-  var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var dow = d.getDay();
-  var dayName = DAYS[dow];
-  var dateStr = (d.getMonth()+1)+'/'+d.getDate();
-
-  // Kids schedule today
-  var kidsToday = (KIDS[dow]||[]).map(e=>e.t+' — '+e.n).join('; ');
-
-  // Hotworx this week
-  var hxDone = Object.values(S.hxDays||{}).filter(Boolean).length;
-
-  // Weight
-  var currentWt = S.weights&&S.weights.length ? S.weights[0].val : null;
-  var wtLost = currentWt ? (223 - currentWt).toFixed(1) : null;
-  var wtLeft = currentWt ? (currentWt - 195).toFixed(1) : 28;
-
-  // Steps yesterday
-  var steps = S.stepCount || 0;
-
-  // Faith streak
-  var faithDays = 0;
-  var fd = new Date();
-  for(var i=0;i<7;i++){
-    var fs = fd.getFullYear()+'-'+(fd.getMonth()+1)+'-'+fd.getDate();
-    if(faithData.entries&&faithData.entries[fs]&&faithData.entries[fs].spent) faithDays++;
-    fd.setDate(fd.getDate()-1);
-  }
-
-  // Grocery day
-  var isGroceryDay = (dow===1||dow===5);
-
-  // Launch countdown
-  var launch = new Date('2026-04-21');
-  var daysToLaunch = Math.ceil((launch-d)/(1000*60*60*24));
-
-  // Work focus today
-  var workFocus = '';
-  try{ workFocus = localStorage.getItem('work-focus-'+getTodayStr())||''; }catch(e){}
-
-  // Date night plan
-  var dateNight = '';
-  try{ var dn=localStorage.getItem('date-night'); if(dn) dateNight=JSON.parse(dn).plan||''; }catch(e){}
-
-  // Prayer count
-  var prayerCount = (faithData.prayers||[]).filter(p=>!p.answered).length;
-
-  // Sun times
-  var sunTimes = CONFIG.sunTimes||[];
-  var sunriseTime = sunTimes[1]&&sunTimes[1].time ? sunTimes[1].time : '7:12am';
-  var uvaTime = sunTimes[2]&&sunTimes[2].time ? sunTimes[2].time : '8-9:30am';
-  var sunsetTime = sunTimes[4]&&sunTimes[4].time ? sunTimes[4].time : '7:40pm';
-
-  return `Today is ${dayName}, ${dateStr}.
-
-USER CONTEXT (Fred Sebren, The Woodlands TX):
-- Kids schedule today: ${kidsToday||'Nothing scheduled'}
-- Hotworx sessions this week: ${hxDone} (goal is 4/week)
-- Current weight: ${currentWt ? currentWt+' lbs (lost '+wtLost+' lbs, '+wtLeft+' lbs from 195 goal by June 1)' : 'not logged yet'}
-- Steps logged: ${steps.toLocaleString()} today
-- Faith time this week: ${faithDays}/7 days
-- Is grocery day: ${isGroceryDay ? 'YES — '+dayName+' is a grocery run day' : 'No'}
-- Clasifi launch countdown: ${daysToLaunch} days until April 21
-- Top work focus today: ${workFocus||'not set'}
-- Date night plan: ${dateNight||'not planned'}
-- Active prayer requests: ${prayerCount}
-- Circadian anchors: sunrise ${sunriseTime}, UVA window ${uvaTime}, sunset ${sunsetTime}
-- Dinner must be before sunset (${sunsetTime}), breakfast before 8am
-
-INSTRUCTIONS:
-Write a 3-5 sentence morning briefing as Fred's trusted personal assistant. Sound like a real friend who knows his life — not a robot, not a life coach. Be specific and practical. Reference his actual schedule and numbers. Tell him what matters most today and where his best time windows are. If he has Hotworx sessions to catch up on, mention it. If it's grocery day, remind him. Keep faith and family woven in naturally. End with one specific encouragement. No bullet points. No headers. Just natural conversational sentences.`;
-}
-
-function generateBriefing(){
-  var card = document.getElementById('ai-briefing-card');
-  var text = document.getElementById('ai-briefing-text');
-  var loading = document.getElementById('ai-briefing-loading');
-  if(!card) return;
-
-  card.style.display = 'block';
-  if(text) text.style.display = 'none';
-  if(loading) loading.style.display = 'block';
-
-  var context = buildBriefingContext();
-
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:300,
-      messages:[{role:'user',content:context}]
-    })
-  })
-  .then(r=>r.json())
-  .then(data=>{
-    var response = data.content&&data.content[0]&&data.content[0].text;
-    if(response){
-      if(text){text.textContent=response;text.style.display='block';}
-      if(loading)loading.style.display='none';
-      briefingGenerated = true;
-      // Cache for 1 hour
-      try{localStorage.setItem('briefing-cache',JSON.stringify({text:response,ts:Date.now()}));}catch(e){}
-    }
-  })
-  .catch(()=>{
-    if(loading)loading.textContent="Couldn't connect — check your internet.";
-  });
-}
-
-window.refreshBriefing = function(){
-  briefingGenerated = false;
-  var text = document.getElementById('ai-briefing-text');
-  var loading = document.getElementById('ai-briefing-loading');
-  if(text){text.textContent='';text.style.display='none';}
-  if(loading){loading.textContent='Pulling your day together...';loading.style.display='block';}
-  generateBriefing();
-};
-
-function initBriefing(){
-  // Check cache first — only regenerate if older than 1 hour
-  try{
-    var cached = localStorage.getItem('briefing-cache');
-    if(cached){
-      var c = JSON.parse(cached);
-      var age = Date.now() - c.ts;
-      if(age < 60*60*1000 && c.text){ // less than 1 hour old
-        var card = document.getElementById('ai-briefing-card');
-        var text = document.getElementById('ai-briefing-text');
-        var loading = document.getElementById('ai-briefing-loading');
-        if(card) card.style.display='block';
-        if(text){text.textContent=c.text;text.style.display='block';}
-        if(loading) loading.style.display='none';
-        briefingGenerated = true;
-        return;
-      }
-    }
-  }catch(e){}
-  generateBriefing();
-}
-
-
-
-// ── SHEENA AI ASSISTANT ──────────────────────────────
-var IMPORTANT_DATES = [{"name": "Dana's birthday", "month": 4, "day": 5, "year": 1983, "type": "birthday", "person": "Dana"}, {"name": "Your birthday", "month": 7, "day": 29, "year": 1982, "type": "birthday", "person": "Fred"}, {"name": "Mom's birthday", "month": 6, "day": 7, "year": 1962, "type": "birthday", "person": "Mom"}, {"name": "Wedding anniversary", "month": 5, "day": 25, "year": 2013, "type": "anniversary", "person": "Dana"}, {"name": "Parker's birthday", "month": 3, "day": 27, "year": 2014, "type": "birthday", "person": "Parker"}, {"name": "Braxton's birthday", "month": 7, "day": 28, "year": 2016, "type": "birthday", "person": "Braxton"}, {"name": "Tyler's birthday", "month": 9, "day": 27, "year": 2021, "type": "birthday", "person": "Tyler"}];
-var sheenaMood = null;
-var sheenaListening = false;
-var sheenaRecognition = null;
-var sheenaConversation = [];
-
-function getDaysUntil(month, day){
-  var now = new Date();
-  var next = new Date(now.getFullYear(), month-1, day);
-  if(next < now) next.setFullYear(now.getFullYear()+1);
-  return Math.ceil((next-now)/(1000*60*60*24));
-}
-
-function getUpcomingDates(){
-  var upcoming = [];
-  IMPORTANT_DATES.forEach(function(d){
-    var days = getDaysUntil(d.month, d.day);
-    if(days <= 14){
-      var age = null;
-      if(d.year && d.type==='birthday'){
-        age = new Date().getFullYear() - d.year;
-        if(getDaysUntil(d.month,d.day) > 0 && new Date().getMonth()+1===d.month && new Date().getDate() > d.day) age++;
-      } else if(d.year && d.type==='anniversary'){
-        age = new Date().getFullYear() - d.year;
-      }
-      upcoming.push({name:d.name, days:days, type:d.type, person:d.person, age:age});
-    }
-  });
-  return upcoming.sort(function(a,b){return a.days-b.days;});
-}
-
-function buildSheenaContext(extra){
-  var d = new Date();
-  var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var dow = d.getDay();
-  var hour = d.getHours();
-  var timeOfDay = hour<12?'morning':hour<17?'afternoon':'evening';
-
-  var kidsToday = (KIDS[dow]||[]).map(function(e){return e.t+' — '+e.n;}).join('; ');
-  var hxDone = Object.values(S.hxDays||{}).filter(Boolean).length;
-  var currentWt = S.weights&&S.weights.length ? S.weights[0].val : null;
-  var tc = (S.meals||[]).reduce(function(a,m){return a+m.cal;},0);
-  var tp = (S.meals||[]).reduce(function(a,m){return a+m.prot;},0);
-  var calGoal = CONFIG.calGoal||1800;
-  var protGoal = CONFIG.protGoal||150;
-  var daysToLaunch = Math.ceil((new Date('2026-04-21')-d)/(1000*60*60*24));
-  var faithDays = 0;
-  var fd = new Date();
-  for(var i=0;i<7;i++){
-    var fs=fd.getFullYear()+'-'+(fd.getMonth()+1)+'-'+fd.getDate();
-    if(faithData.entries&&faithData.entries[fs]&&faithData.entries[fs].spent)faithDays++;
-    fd.setDate(fd.getDate()-1);
-  }
-  var upcoming = getUpcomingDates();
-  var upcomingStr = upcoming.map(function(u){
-    return u.name+' in '+u.days+' days'+(u.age?' (turning '+u.age+')':'');
-  }).join('; ');
-  var workFocus='';
-  try{workFocus=localStorage.getItem('work-focus-'+getTodayStr())||'';}catch(e){}
-  var isGrocery = (dow===1||dow===5);
-  var moodStr = sheenaMood ? 'Mood today: '+sheenaMood+'/10' : 'Mood not yet logged';
-
-  return `You are Sheena, Fred's personal AI assistant. You were named by his son Braxton. You know Fred's entire life and speak like a trusted friend — warm, direct, real. Never robotic, never preachy. Short sentences. Natural tone.
-
-FRED'S PROFILE: Fred Sebren, The Woodlands TX. Married to Dana (18-yr accountant, runs The Bookkeeping HQ). Kids: Parker (12, baseball), Braxton (9), Tyler (4). Building Clasifi (AI bookkeeping SaaS), launching cold email April 21. Weight goal: 195 lbs by June 1 (started 223). Goes to Hotworx. Has a sweet tooth. Faith-driven. Hates the gym. Loves his family.
-
-TODAY'S DATA:
-- Day: ${DAYS[dow]}, ${timeOfDay}
-- Kids today: ${kidsToday||'nothing scheduled'}
-- Hotworx this week: ${hxDone}/4 sessions
-- Weight: ${currentWt?currentWt+' lbs ('+(currentWt-195).toFixed(1)+' from goal)':'not logged'}
-- Calories: ${tc}/${calGoal} | Protein: ${tp}g/${protGoal}g
-- ${moodStr}
-- Faith streak this week: ${faithDays}/7
-- Clasifi launch: ${daysToLaunch} days
-- Work focus: ${workFocus||'not set'}
-- Grocery day: ${isGrocery?'YES':'No'}
-- Upcoming dates: ${upcomingStr||'none in next 14 days'}
-- Extra context: ${extra||'none'}`
-}
-
-function openSheena(){
-  var overlay = document.getElementById('sheena-overlay');
-  if(overlay) overlay.style.display='block';
-  document.body.style.overflow='hidden';
-
-  // Check if mood already set today
-  var cachedMood = null;
-  try{
-    var cm = localStorage.getItem('sheena-mood-'+getTodayStr());
-    if(cm) cachedMood = parseInt(cm);
-  }catch(e){}
-
-  if(cachedMood){
-    sheenaMood = cachedMood;
-    showVoiceSection();
-    document.getElementById('sheena-response').textContent='';
-  } else {
-    document.getElementById('sheena-mood-section').style.display='block';
-    document.getElementById('sheena-voice-section').style.display='none';
-    document.getElementById('sheena-mood-prompt').textContent='Hey Fred. How are you feeling today? Tap a number.';
-    document.getElementById('sheena-response').textContent='';
-  }
-}
-
-function closeSheena(){
-  var overlay = document.getElementById('sheena-overlay');
-  if(overlay) overlay.style.display='none';
-  document.body.style.overflow='';
-  if(sheenaRecognition&&sheenaListening){sheenaRecognition.stop();sheenaListening=false;}
-}
-
-window.setMood = function(n){
-  sheenaMood = n;
-  try{localStorage.setItem('sheena-mood-'+getTodayStr(), n);}catch(e){}
-  // Update mood buttons
-  document.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('selected');});
-  event.target.classList.add('selected');
-  document.getElementById('sheena-mood-prompt').textContent='';
-
-  // Generate mood-aware response
-  var responseEl = document.getElementById('sheena-response');
-  responseEl.textContent='Give me a sec...';
-
-  var context = buildSheenaContext('User just rated their mood '+n+'/10');
-  var moodExtra = n<=3 ? 'Their mood is low ('+n+'/10). Acknowledge it warmly, do not push hard. Give them one small manageable thing to do. Be gentle and encouraging. Weave in faith if it feels natural.' :
-    n<=6 ? 'Their mood is okay ('+n+'/10). Give them a practical morning briefing. What matters most today, where their best window is, one thing to prioritize.' :
-    'Their mood is great ('+n+'/10). Lean in. Capitalize on the energy. Challenge them to make today count. Be fired up with them.';
-
-  var msgs = sheenaConversation.length > 0 ? sheenaConversation : [{role:'user',content:context+'
-
-'+moodExtra+'
-
-Give a 2-4 sentence morning response. Natural, like a friend. Reference their actual data.'}];
-
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:msgs})
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){
-    var text = data.content&&data.content[0]&&data.content[0].text;
-    if(text){
-      responseEl.textContent = text;
-      sheenaConversation = [{role:'user',content:context+'
-
-'+moodExtra},{role:'assistant',content:text}];
-      speakText(text);
-      setTimeout(showVoiceSection, 500);
-    }
-  })
-  .catch(function(){responseEl.textContent='Having trouble connecting. Try again.';});
-};
-
-function showVoiceSection(){
-  document.getElementById('sheena-voice-section').style.display='block';
-}
-
-window.toggleListening = function(){
-  if(sheenaListening){
-    if(sheenaRecognition)sheenaRecognition.stop();
-    sheenaListening=false;
-    document.getElementById('sheena-mic-btn').classList.remove('listening');
-    document.getElementById('sheena-mic-label').textContent='Tap to speak';
-    return;
-  }
-
-  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
-    document.getElementById('sheena-transcript').textContent='Voice not supported in this browser. Try Chrome.';
-    return;
-  }
-
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  sheenaRecognition = new SR();
-  sheenaRecognition.continuous = false;
-  sheenaRecognition.interimResults = true;
-  sheenaRecognition.lang = 'en-US';
-
-  sheenaRecognition.onresult = function(e){
-    var transcript = '';
-    for(var i=e.resultIndex;i<e.results.length;i++){
-      transcript += e.results[i][0].transcript;
-    }
-    document.getElementById('sheena-transcript').textContent=transcript;
-    if(e.results[e.results.length-1].isFinal){
-      sheenaListening=false;
-      document.getElementById('sheena-mic-btn').classList.remove('listening');
-      document.getElementById('sheena-mic-label').textContent='Tap to speak';
-      sendToSheena(transcript);
-    }
-  };
-
-  sheenaRecognition.onerror = function(){
-    sheenaListening=false;
-    document.getElementById('sheena-mic-btn').classList.remove('listening');
-    document.getElementById('sheena-mic-label').textContent='Tap to speak';
-  };
-
-  sheenaRecognition.start();
-  sheenaListening=true;
-  document.getElementById('sheena-mic-btn').classList.add('listening');
-  document.getElementById('sheena-mic-label').textContent='Listening...';
-  document.getElementById('sheena-transcript').textContent='';
-};
-
-function sendToSheena(userMessage){
-  var responseEl = document.getElementById('sheena-response');
-  responseEl.textContent='...';
-
-  var context = buildSheenaContext('');
-  var msgs;
-  if(sheenaConversation.length===0){
-    msgs=[{role:'user',content:context+'
-
-User says: '+userMessage}];
-  } else {
-    msgs = sheenaConversation.concat([{role:'user',content:userMessage}]);
-  }
-
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:250,messages:msgs})
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){
-    var text=data.content&&data.content[0]&&data.content[0].text;
-    if(text){
-      responseEl.textContent=text;
-      sheenaConversation=msgs.concat([{role:'assistant',content:text}]);
-      if(sheenaConversation.length>10)sheenaConversation=sheenaConversation.slice(-10);
-      speakText(text);
-      // Auto-process: check for grocery items
-      processVoiceForActions(userMessage, text);
-    }
-  })
-  .catch(function(){responseEl.textContent='Having trouble connecting.';});
-}
-
-function processVoiceForActions(userMsg, sheenaReply){
-  // Simple keyword detection for grocery items
-  var groceryTriggers=['we need','out of','add','get some','pick up','buy'];
-  var lower=userMsg.toLowerCase();
-  groceryTriggers.forEach(function(t){
-    if(lower.includes(t)){
-      // Ask Claude to extract grocery items
-      fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          model:'claude-sonnet-4-20250514',
-          max_tokens:100,
-          system:'Extract grocery items from this message. Return ONLY a JSON array of item names, or empty array if none. Example: ["chicken","milk"]. No other text.',
-          messages:[{role:'user',content:userMsg}]
-        })
-      })
-      .then(function(r){return r.json();})
-      .then(function(data){
-        try{
-          var items=JSON.parse(data.content[0].text);
-          if(items&&items.length){
-            items.forEach(function(item){
-              var id='v'+Date.now()+Math.random().toString(36).slice(2,5);
-              grocItems.push({id:id,name:item,cat:guessCategory(item),type:'weekly',done:false});
-            });
-            saveGroc();
-            if(items.length>0){
-              document.getElementById('sheena-transcript').textContent='Added to grocery list: '+items.join(', ');
-            }
-          }
-        }catch(e){}
-      });
-    }
-  });
-}
-
-function speakText(text){
-  if(!('speechSynthesis' in window))return;
-  window.speechSynthesis.cancel();
-  var utt=new SpeechSynthesisUtterance(text);
-  utt.rate=1.05;utt.pitch=1.1;utt.volume=1;
-  // Try to get a female voice
-  var voices=window.speechSynthesis.getVoices();
-  var femaleVoice=voices.find(function(v){return v.name.includes('Samantha')||v.name.includes('Karen')||v.name.includes('Victoria')||v.name.includes('Female')||v.gender==='female';});
-  if(femaleVoice)utt.voice=femaleVoice;
-  window.speechSynthesis.speak(utt);
-}
-
-window.sheenaQuick = function(type){
-  var prompts={
-    'bored': "I'm bored and feeling like opening a time-wasting app. What should I do instead?",
-    'craving': "I'm craving something sweet or junky right now. Talk me off the edge.",
-    'schedule': "What does my day look like? Walk me through it.",
-    'debrief': "Let's do my evening debrief. Ask me how my day went.",
-    'haircut': "I need to schedule something — help me find the best time in my schedule this week.",
-    'traffic': "I need to leave for an appointment soon. Check traffic conditions for The Woodlands area and tell me if I should leave early."
-  };
-  document.getElementById('sheena-transcript').textContent=prompts[type]||'';
-  sendToSheena(prompts[type]||type);
-};
-
-// Load voices when available
-if('speechSynthesis' in window){
-  window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices();};
-}
-
-// ── IMPORTANT DATES CHECK ────────────────────────────
-function checkImportantDates(){
-  var upcoming = getUpcomingDates();
-  if(!upcoming.length)return;
-  var soon = upcoming.filter(function(u){return u.days<=3;});
-  if(!soon.length)return;
-  // Surface on Today tab
-  var todayTab=document.getElementById('tab-today');
-  if(!todayTab||document.getElementById('dates-banner'))return;
-  var banner=document.createElement('div');
-  banner.id='dates-banner';
-  banner.style.cssText='background:#FBEAF0;border:1px solid #ED93B1;border-radius:12px;padding:0.875rem 1rem;margin-bottom:8px';
-  var items=soon.map(function(u){
-    if(u.days===0)return u.name+' is TODAY'+(u.age?' — '+u.age+' years':'')+'!';
-    if(u.days===1)return u.name+' is TOMORROW'+(u.age?' — turning '+u.age:'');
-    return u.name+' in '+u.days+' days'+(u.age?' — turning '+u.age:'');
-  }).join(' · ');
-  banner.innerHTML='<div style="font-size:12px;font-weight:700;color:#72243E;margin-bottom:3px">Upcoming dates</div><div style="font-size:13px;color:#993556;line-height:1.5">'+items+'</div>';
-  var firstCard=todayTab.querySelector('.card');
-  if(firstCard)todayTab.insertBefore(banner,firstCard);
-}
-
-
-// ── WEATHER ──────────────────────────────────────────
-function fetchWeather(){
-  // The Woodlands TX coords
-  var lat=30.1658,lon=-95.4613;
-  fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,weathercode,apparent_temperature&temperature_unit=fahrenheit&wind_speed_unit=mph')
-  .then(r=>r.json())
-  .then(d=>{
-    var temp=Math.round(d.current.temperature_2m);
-    var feels=Math.round(d.current.apparent_temperature);
-    var code=d.current.weathercode;
-    var icons={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'❄️',73:'❄️',75:'❄️',80:'🌦',81:'🌧',82:'⛈',95:'⛈',96:'⛈',99:'⛈'};
-    var desc={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',51:'Light drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',80:'Showers',95:'Thunderstorm'};
-    document.getElementById('weather-icon').textContent=icons[code]||'🌡';
-    document.getElementById('weather-temp').textContent=temp+'°F';
-    document.getElementById('weather-desc').textContent=desc[code]||'The Woodlands';
-    document.getElementById('weather-feels').textContent='Feels '+feels+'°';
-    try{localStorage.setItem('sebren-weather',JSON.stringify({temp,feels,code,ts:Date.now()}));}catch(e){}
-  })
-  .catch(()=>{
-    document.getElementById('weather-feels').textContent='offline';
-  });
-}
-
-function initWeather(){
-  try{
-    var s=localStorage.getItem('sebren-weather');
-    if(s){
-      var d=JSON.parse(s);
-      if(Date.now()-d.ts<3600000){
-        var icons={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',51:'🌦',61:'🌧',80:'🌦',95:'⛈'};
-        document.getElementById('weather-icon').textContent=icons[d.code]||'🌡';
-        document.getElementById('weather-temp').textContent=d.temp+'°F';
-        document.getElementById('weather-feels').textContent='Feels '+d.feels+'°';
-        return;
-      }
-    }
-  }catch(e){}
-  fetchWeather();
-}
-
-// ── FAITH TAB ────────────────────────────────────────
-var prayerList=[];
-var faithHistory=[];
-
-function loadFaithData(){
-  try{
-    var p=localStorage.getItem('sebren-prayers');if(p)prayerList=JSON.parse(p);
-    var h=localStorage.getItem('sebren-faith-history');if(h)faithHistory=JSON.parse(h);
-  }catch(e){}
-}
-
-function saveFaithData(){
-  try{
-    localStorage.setItem('sebren-prayers',JSON.stringify(prayerList));
-    localStorage.setItem('sebren-faith-history',JSON.stringify(faithHistory.slice(0,30)));
-  }catch(e){}
-}
-
-function loadDailyVerse(){
-  var verses=[
-    {ref:'Philippians 4:13',text:'I can do all things through Christ who strengthens me.'},
-    {ref:'Proverbs 3:5-6',text:'Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.'},
-    {ref:'Isaiah 40:31',text:'But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.'},
-    {ref:'Joshua 1:9',text:'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.'},
-    {ref:'Romans 8:28',text:'And we know that in all things God works for the good of those who love him, who have been called according to his purpose.'},
-    {ref:'Jeremiah 29:11',text:'For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.'},
-    {ref:'Matthew 6:33',text:'But seek first his kingdom and his righteousness, and all these things will be given to you as well.'},
-    {ref:'Psalm 23:1',text:'The Lord is my shepherd, I lack nothing.'},
-    {ref:'Proverbs 16:3',text:'Commit to the Lord whatever you do, and he will establish your plans.'},
-    {ref:'Psalm 46:10',text:'Be still, and know that I am God.'},
-    {ref:'2 Timothy 1:7',text:'For God has not given us a spirit of fear, but of power and of love and of a sound mind.'},
-    {ref:'Lamentations 3:22-23',text:'The steadfast love of the Lord never ceases; his mercies never come to an end; they are new every morning; great is your faithfulness.'},
-    {ref:'Matthew 11:28',text:'Come to me, all you who are weary and burdened, and I will give you rest.'},
-    {ref:'Psalm 119:105',text:'Your word is a lamp for my feet, a light on my path.'}
-  ];
-  var idx=new Date().getDate()%verses.length;
-  var v=verses[idx];
-  var ref=document.getElementById('daily-verse-ref');
-  var text=document.getElementById('daily-verse-text');
-  if(ref)ref.textContent=v.ref;
-  if(text)text.textContent=v.text;
-}
-
-function renderPrayerList(){
-  var el=document.getElementById('prayer-list-render');
-  if(!el)return;
-  if(!prayerList.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px 0">No prayer requests yet — add one below</div>';return;}
-  el.innerHTML=prayerList.map((p,i)=>`
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
-      <div onclick="togglePrayer(${i})" style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;${p.answered?'background:var(--success);border-color:var(--success)':''}">
-        ${p.answered?'<div style="width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px)"></div>':''}
-      </div>
-      <span style="flex:1;font-size:13px;color:var(--txt);${p.answered?'text-decoration:line-through;color:var(--txt3)':''}">${p.text}</span>
-      <button onclick="deletePrayer(${i})" style="font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0;line-height:1">×</button>
-    </div>
-  `).join('');
-}
-
-window.addPrayer=function(){
-  var inp=document.getElementById('prayer-inp');
-  var val=inp?inp.value.trim():'';
-  if(!val)return;
-  prayerList.unshift({text:val,answered:false,date:getTodayStr()});
-  saveFaithData();renderPrayerList();
-  inp.value='';
-};
-
-window.togglePrayer=function(i){
-  prayerList[i].answered=!prayerList[i].answered;
-  saveFaithData();renderPrayerList();
-};
-
-window.deletePrayer=function(i){
-  prayerList.splice(i,1);
-  saveFaithData();renderPrayerList();
-};
-
-window.setFaithDone=function(done){
-  var yBtn=document.getElementById('faith-yes');
-  var nBtn=document.getElementById('faith-no');
-  if(done){
-    if(yBtn){yBtn.style.background='var(--txt)';yBtn.style.color='var(--bg)';}
-    if(nBtn){nBtn.style.background='transparent';nBtn.style.color='var(--txt)';}
-  } else {
-    if(nBtn){nBtn.style.background='var(--txt)';nBtn.style.color='var(--bg)';}
-    if(yBtn){yBtn.style.background='transparent';yBtn.style.color='var(--txt)';}
-  }
-  try{localStorage.setItem('faith-done-'+getTodayStr(),done?'1':'0');}catch(e){}
-};
-
-window.saveFaithCheckin=function(){
-  var passage=document.getElementById('bible-passage').value.trim();
-  var g1=document.getElementById('gratitude-1').value.trim();
-  var g2=document.getElementById('gratitude-2').value.trim();
-  var g3=document.getElementById('gratitude-3').value.trim();
-  var entry={date:getTodayStr(),passage,gratitude:[g1,g2,g3].filter(Boolean)};
-  faithHistory=faithHistory.filter(h=>h.date!==getTodayStr());
-  faithHistory.unshift(entry);
-  saveFaithData();
-  renderFaithHistory();
-  var btn=event.target;btn.textContent='Saved!';
-  setTimeout(()=>{btn.textContent='Save today's check-in';},1500);
-};
-
-function renderFaithHistory(){
-  var el=document.getElementById('faith-history');
-  if(!el)return;
-  if(!faithHistory.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">Check in daily to build your history</div>';return;}
-  el.innerHTML=faithHistory.slice(0,7).map(h=>`
-    <div style="padding:8px 0;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-        <span style="font-size:12px;font-weight:600;color:var(--txt)">${h.date}</span>
-        ${h.passage?`<span style="font-size:11px;color:var(--purple-txt,#3C3489)">${h.passage}</span>`:''}
-      </div>
-      ${h.gratitude&&h.gratitude.length?`<div style="font-size:11px;color:var(--txt2)">${h.gratitude.slice(0,2).join(' · ')}</div>`:''}
-    </div>
-  `).join('');
-}
-
-function initFaithTab(){
-  loadDailyVerse();
-  renderPrayerList();
-  renderFaithHistory();
-  // Restore today's state
-  try{
-    var done=localStorage.getItem('faith-done-'+getTodayStr());
-    if(done==='1')setFaithDone(true);
-    var today=faithHistory.find(h=>h.date===getTodayStr());
-    if(today){
-      var bp=document.getElementById('bible-passage');if(bp&&today.passage)bp.value=today.passage;
-      var g=today.gratitude||[];
-      ['gratitude-1','gratitude-2','gratitude-3'].forEach((id,i)=>{var el=document.getElementById(id);if(el&&g[i])el.value=g[i];});
-    }
-  }catch(e){}
-}
-
-// ── DANA TAB ─────────────────────────────────────────
-var danaIdeas=[];
-
-function loadDanaData(){
-  try{
-    var d=localStorage.getItem('sebren-dana-ideas');if(d)danaIdeas=JSON.parse(d);
-    var n=localStorage.getItem('sebren-dana-notes');
-    var el=document.getElementById('dana-notes');if(el&&n)el.value=n;
-    var i=localStorage.getItem('sebren-dana-intention');
-    var iEl=document.getElementById('dana-intention-display');
-    if(iEl&&i)iEl.textContent='"'+i+'"';
-    var ld=localStorage.getItem('sebren-last-date');
-    if(ld){var p=JSON.parse(ld);var ldEl=document.getElementById('last-date-display');if(ldEl)ldEl.textContent='Last date: '+p.date+(p.note?' — '+p.note:'');}
-  }catch(e){}
-}
-
-function renderDanaIdeas(){
-  var el=document.getElementById('dana-ideas-list');
-  if(!el)return;
-  if(!danaIdeas.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px 0">Add ideas, gifts, date night ideas...</div>';return;}
-  el.innerHTML=danaIdeas.map((idea,i)=>`
-    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
-      <span style="flex:1;font-size:13px;color:var(--txt)">${idea}</span>
-      <button onclick="deleteDanaIdea(${i})" style="font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0;line-height:1">×</button>
-    </div>
-  `).join('');
-}
-
-window.addDanaIdea=function(){
-  var inp=document.getElementById('dana-idea-inp');
-  var val=inp?inp.value.trim():'';
-  if(!val)return;
-  danaIdeas.push(val);
-  try{localStorage.setItem('sebren-dana-ideas',JSON.stringify(danaIdeas));}catch(e){}
-  renderDanaIdeas();inp.value='';
-};
-
-window.deleteDanaIdea=function(i){
-  danaIdeas.splice(i,1);
-  try{localStorage.setItem('sebren-dana-ideas',JSON.stringify(danaIdeas));}catch(e){}
-  renderDanaIdeas();
-};
-
-window.saveDanaIntention=function(){
-  var val=document.getElementById('dana-intention').value.trim();
-  if(!val)return;
-  try{localStorage.setItem('sebren-dana-intention',val);}catch(e){}
-  var el=document.getElementById('dana-intention-display');
-  if(el)el.textContent='"'+val+'"';
-  var btn=event.target;btn.textContent='Set!';
-  setTimeout(()=>{btn.textContent='Set intention';},1500);
-};
-
-window.saveLastDate=function(){
-  var date=document.getElementById('last-date-inp').value;
-  var note=document.getElementById('last-date-note').value.trim();
-  if(!date)return;
-  try{localStorage.setItem('sebren-last-date',JSON.stringify({date,note}));}catch(e){}
-  var el=document.getElementById('last-date-display');
-  if(el)el.textContent='Last date: '+date+(note?' — '+note:'');
-};
-
-window.saveDanaNotes=function(){
-  var val=document.getElementById('dana-notes').value;
-  try{localStorage.setItem('sebren-dana-notes',val);}catch(e){}
-  var btn=event.target;btn.textContent='Saved!';
-  setTimeout(()=>{btn.textContent='Save notes';},1500);
-};
-
-// ── WEEKLY REVIEW ────────────────────────────────────
-function initReviewTab(){
-  var d=new Date();
-  var day=d.getDay();
-  var monday=new Date(d);monday.setDate(d.getDate()-day+1);
-  var sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
-  var fmt=dt=>(dt.getMonth()+1)+'/'+dt.getDate();
-  var lbl=document.getElementById('review-week-label');
-  if(lbl)lbl.textContent=fmt(monday)+' – '+fmt(sunday);
-
-  // Fill in stats
-  var hotworxCount=Object.values(S.hxDays||{}).filter(Boolean).length;
-  var el=document.getElementById('rev-hotworx');if(el)el.textContent=hotworxCount;
-
-  // Faith check-ins this week
-  var faithCount=faithHistory.filter(h=>{
-    var parts=h.date.split('-');
-    var hd=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
-    return hd>=monday&&hd<=sunday;
-  }).length;
-  var fel=document.getElementById('rev-faith');if(fel)fel.textContent=faithCount;
-
-  // Current weight
-  var wt=S.weights&&S.weights.length?S.weights[0].val+'':'-—';
-  var wel=document.getElementById('rev-wt');if(wel)wel.textContent=wt;
-
-  // Work hours this week
-  try{
-    var wb=JSON.parse(localStorage.getItem('sebren-work')||'[]');
-    var weekMins=wb.filter(b=>{
-      var parts=b.date.split('-');
-      var bd=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
-      return bd>=monday&&bd<=sunday;
-    }).reduce((a,b)=>a+b.mins,0);
-    var wkEl=document.getElementById('rev-work');if(wkEl)wkEl.textContent=(weekMins/60).toFixed(1)+'h';
-  }catch(e){}
-
-  // Load saved review
-  try{
-    var key='review-'+fmt(monday);
-    var saved=JSON.parse(localStorage.getItem(key)||'{}');
-    if(saved.win)document.getElementById('rev-win').value=saved.win;
-    if(saved.improve)document.getElementById('rev-improve').value=saved.improve;
-    if(saved.focus)document.getElementById('rev-focus').value=saved.focus;
-  }catch(e){}
-
-  renderPrevReviews();
-}
-
-window.saveWeeklyReview=function(){
-  var d=new Date();var day=d.getDay();
-  var monday=new Date(d);monday.setDate(d.getDate()-day+1);
-  var fmt=dt=>(dt.getMonth()+1)+'/'+dt.getDate();
-  var key='review-'+fmt(monday);
-  var review={
-    week:fmt(monday),
-    win:document.getElementById('rev-win').value,
-    improve:document.getElementById('rev-improve').value,
-    focus:document.getElementById('rev-focus').value,
-    ts:Date.now()
-  };
-  try{
-    localStorage.setItem(key,JSON.stringify(review));
-    var all=JSON.parse(localStorage.getItem('sebren-all-reviews')||'[]');
-    all=all.filter(r=>r.week!==review.week);
-    all.unshift(review);
-    localStorage.setItem('sebren-all-reviews',JSON.stringify(all.slice(0,12)));
-  }catch(e){}
-  renderPrevReviews();
-  var btn=event.target;btn.textContent='Saved!';
-  setTimeout(()=>{btn.textContent='Save this week's review';},1500);
-};
-
-function renderPrevReviews(){
-  var el=document.getElementById('prev-reviews');
-  if(!el)return;
-  try{
-    var all=JSON.parse(localStorage.getItem('sebren-all-reviews')||'[]');
-    if(!all.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">No reviews yet</div>';return;}
-    el.innerHTML=all.slice(1,5).map(r=>`
-      <div style="padding:10px 0;border-bottom:1px solid var(--border)">
-        <div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:4px">Week of ${r.week}</div>
-        ${r.focus?`<div style="font-size:12px;color:var(--txt2);margin-bottom:2px">Focus: <strong>${r.focus}</strong></div>`:''}
-        ${r.win?`<div style="font-size:11px;color:var(--txt3)">Win: ${r.win.slice(0,60)}${r.win.length>60?'...':''}</div>`:''}
-      </div>
-    `).join('');
-  }catch(e){}
-}
-
-// ── OVERRIDE TAB LOADING ─────────────────────────────
-loadKids();
-loadFaithData();
-loadDanaData();
-fetchWeather();
-checkWeeklyReview();
-
 // ── STREAK ──────────────────────────────────────────
 function getTodayStr(){
   var d=new Date();
@@ -2739,7 +1993,6 @@ function renderStreak(){
   var ss=document.getElementById('sum-streak');
   if(ss)ss.textContent=count||0;
 }
-
 // ── SUMMARY TAB ─────────────────────────────────────
 function renderSummary(){
   var done=Object.values(S.checks||{}).filter(Boolean).length;
@@ -2968,9 +2221,6 @@ function renderLaunchCountdown(){
     else sub.textContent='Launch day is here!';
   }
 }
-
-
-
 // ── AI MORNING BRIEFING ──────────────────────────────
 var briefingGenerated = false;
 
@@ -3041,6 +2291,7 @@ USER CONTEXT (Fred Sebren, The Woodlands TX):
 - Top work focus today: ${workFocus||'not set'}
 - Date night plan: ${dateNight||'not planned'}
 - Active prayer requests: ${prayerCount}
+- Calendar today: ${getTodayCalendarContext()}
 - Circadian anchors: sunrise ${sunriseTime}, UVA window ${uvaTime}, sunset ${sunsetTime}
 - Dinner must be before sunset (${sunsetTime}), breakfast before 8am
 
@@ -3115,9 +2366,6 @@ function initBriefing(){
   }catch(e){}
   generateBriefing();
 }
-
-
-
 // ── SHEENA AI ASSISTANT ──────────────────────────────
 var IMPORTANT_DATES = [{"name": "Dana's birthday", "month": 4, "day": 5, "year": 1983, "type": "birthday", "person": "Dana"}, {"name": "Your birthday", "month": 7, "day": 29, "year": 1982, "type": "birthday", "person": "Fred"}, {"name": "Mom's birthday", "month": 6, "day": 7, "year": 1962, "type": "birthday", "person": "Mom"}, {"name": "Wedding anniversary", "month": 5, "day": 25, "year": 2013, "type": "anniversary", "person": "Dana"}, {"name": "Parker's birthday", "month": 3, "day": 27, "year": 2014, "type": "birthday", "person": "Parker"}, {"name": "Braxton's birthday", "month": 7, "day": 28, "year": 2016, "type": "birthday", "person": "Braxton"}, {"name": "Tyler's birthday", "month": 9, "day": 27, "year": 2021, "type": "birthday", "person": "Tyler"}];
 var sheenaMood = null;
@@ -3148,6 +2396,67 @@ function getUpcomingDates(){
     }
   });
   return upcoming.sort(function(a,b){return a.days-b.days;});
+}
+
+function buildSheenaContext(extra){
+  var d = new Date();
+  var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var dow = d.getDay();
+  var hour = d.getHours();
+  var timeOfDay = hour<12?'morning':hour<17?'afternoon':'evening';
+
+  var kidsToday = (KIDS[dow]||[]).map(function(e){return e.t+' — '+e.n;}).join('; ');
+  var hxDone = Object.values(S.hxDays||{}).filter(Boolean).length;
+  var currentWt = S.weights&&S.weights.length ? S.weights[0].val : null;
+  var tc = (S.meals||[]).reduce(function(a,m){return a+m.cal;},0);
+  var tp = (S.meals||[]).reduce(function(a,m){return a+m.prot;},0);
+  var calGoal = CONFIG.calGoal||1800;
+  var protGoal = CONFIG.protGoal||150;
+  var daysToLaunch = Math.ceil((new Date('2026-04-21')-d)/(1000*60*60*24));
+  var faithDays = 0;
+  var fd = new Date();
+  for(var i=0;i<7;i++){
+    var fs=fd.getFullYear()+'-'+(fd.getMonth()+1)+'-'+fd.getDate();
+    if(faithData.entries&&faithData.entries[fs]&&faithData.entries[fs].spent)faithDays++;
+    fd.setDate(fd.getDate()-1);
+  }
+  var upcoming = getUpcomingDates();
+  var upcomingStr = upcoming.map(function(u){
+    return u.name+' in '+u.days+' days'+(u.age?' (turning '+u.age+')':'');
+  }).join('; ');
+  var workFocus='';
+  try{workFocus=localStorage.getItem('work-focus-'+getTodayStr())||'';}catch(e){}
+  var isGrocery = (dow===1||dow===5);
+  var moodStr = sheenaMood ? 'Mood today: '+sheenaMood+'/10' : 'Mood not yet logged';
+  var calContext = getTodayCalendarContext();
+  var weekCal = getWeekCalendarContext();
+
+  return `You are Sheena, Fred's personal AI assistant. You were named by his son Braxton. You know Fred's entire life and speak like a trusted friend — warm, direct, real. Never robotic, never preachy. Short sentences. Natural tone.
+
+FRED'S PROFILE: Fred Sebren, The Woodlands TX. Married to Dana (18-yr accountant, runs The Bookkeeping HQ). Kids: Parker (12, baseball), Braxton (9), Tyler (4). Building Clasifi (AI bookkeeping SaaS), launching cold email April 21. Weight goal: 195 lbs by June 1 (started 223). Goes to Hotworx. Has a sweet tooth. Faith-driven. Hates the gym. Loves his family.
+
+SCHEDULING: You can add events to Fred's calendar. When he wants to schedule something:
+1. Look at his week below and suggest the best open time slot
+2. When he confirms, respond with EXACTLY this format on its own line: [SCHEDULE:YYYY-M-D|TIME|TITLE] — e.g. [SCHEDULE:2026-4-2|2:00p|Haircut at Sport Clips]
+3. The system will automatically add it to his calendar. Confirm it's locked in.
+4. Consider kids schedule conflicts, Hotworx, work blocks, sunrise/sunset anchors, and meals when suggesting times.
+5. Morning (before 8am) is Bible/outside time. Protect it. Deep work blocks are best 9am-3pm. Evenings after 7:40pm are wind-down.
+
+TODAY'S DATA:
+- Day: ${DAYS[dow]}, ${timeOfDay}
+- Calendar today: ${calContext}
+- THIS WEEK'S CALENDAR:
+${weekCal}
+- Hotworx this week: ${hxDone}/4 sessions
+- Weight: ${currentWt?currentWt+' lbs ('+(currentWt-195).toFixed(1)+' from goal)':'not logged'}
+- Calories: ${tc}/${calGoal} | Protein: ${tp}g/${protGoal}g
+- ${moodStr}
+- Faith streak this week: ${faithDays}/7
+- Clasifi launch: ${daysToLaunch} days
+- Work focus: ${workFocus||'not set'}
+- Grocery day: ${isGrocery?'YES':'No'}
+- Upcoming dates: ${upcomingStr||'none in next 14 days'}
+- Extra context: ${extra||'none'}`
 }
 
 function openSheena(){
@@ -3298,11 +2607,13 @@ User says: '+userMessage}];
   .then(function(data){
     var text=data.content&&data.content[0]&&data.content[0].text;
     if(text){
-      responseEl.textContent=text;
+      // Strip scheduling tags from display/speech
+      var cleanText=text.replace(/\[SCHEDULE:[^\]]+\]/g,'').trim();
+      responseEl.textContent=cleanText;
       sheenaConversation=msgs.concat([{role:'assistant',content:text}]);
       if(sheenaConversation.length>10)sheenaConversation=sheenaConversation.slice(-10);
-      speakText(text);
-      // Auto-process: check for grocery items
+      speakText(cleanText);
+      // Auto-process: check for calendar scheduling + grocery items
       processVoiceForActions(userMessage, text);
     }
   })
@@ -3310,40 +2621,60 @@ User says: '+userMessage}];
 }
 
 function processVoiceForActions(userMsg, sheenaReply){
+  // Check Sheena's reply for calendar scheduling tags
+  var schedMatch=sheenaReply.match(/\[SCHEDULE:([^\]]+)\]/);
+  if(schedMatch){
+    try{
+      var parts=schedMatch[1].split('|');
+      if(parts.length>=3){
+        var dateStr=parts[0].trim();
+        var time=parts[1].trim();
+        var title=parts[2].trim();
+        sheenaAddCalEvent(dateStr, time, title);
+        // Update the transcript to confirm
+        var transcript=document.getElementById('sheena-transcript');
+        if(transcript) transcript.textContent='📅 Added to calendar: '+time+' — '+title+' ('+dateStr+')';
+        // Rebuild today tab schedule if it's today
+        if(dateStr===getTodayStr()) buildKids(new Date().getDay());
+      }
+    }catch(e){}
+  }
+
   // Simple keyword detection for grocery items
-  var groceryTriggers=['we need','out of','add','get some','pick up','buy'];
+  var groceryTriggers=['we need','out of','add to grocery','get some','pick up','buy'];
   var lower=userMsg.toLowerCase();
+  var groceryMatched=false;
   groceryTriggers.forEach(function(t){
-    if(lower.includes(t)){
-      // Ask Claude to extract grocery items
-      fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          model:'claude-sonnet-4-20250514',
-          max_tokens:100,
-          system:'Extract grocery items from this message. Return ONLY a JSON array of item names, or empty array if none. Example: ["chicken","milk"]. No other text.',
-          messages:[{role:'user',content:userMsg}]
-        })
-      })
-      .then(function(r){return r.json();})
-      .then(function(data){
-        try{
-          var items=JSON.parse(data.content[0].text);
-          if(items&&items.length){
-            items.forEach(function(item){
-              var id='v'+Date.now()+Math.random().toString(36).slice(2,5);
-              grocItems.push({id:id,name:item,cat:guessCategory(item),type:'weekly',done:false});
-            });
-            saveGroc();
-            if(items.length>0){
-              document.getElementById('sheena-transcript').textContent='Added to grocery list: '+items.join(', ');
-            }
-          }
-        }catch(e){}
-      });
-    }
+    if(lower.includes(t))groceryMatched=true;
   });
+  if(groceryMatched){
+    fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:100,
+        system:'Extract grocery items from this message. Return ONLY a JSON array of item names, or empty array if none. Example: ["chicken","milk"]. No other text.',
+        messages:[{role:'user',content:userMsg}]
+      })
+    })
+    .then(function(r){return r.json();})
+    .then(function(data){
+      try{
+        var items=JSON.parse(data.content[0].text);
+        if(items&&items.length){
+          items.forEach(function(item){
+            var id='v'+Date.now()+Math.random().toString(36).slice(2,5);
+            grocItems.push({id:id,name:item,cat:guessCategory(item),type:'weekly',done:false});
+          });
+          saveGroc();
+          if(items.length>0){
+            document.getElementById('sheena-transcript').textContent='Added to grocery list: '+items.join(', ');
+          }
+        }
+      }catch(e){}
+    });
+  }
 }
 
 function speakText(text){
@@ -3453,7 +2784,6 @@ function wxDesc(code){
   if(code<=99)return 'Thunderstorm';
   return 'Mixed';
 }
-
 // ── FAITH TAB ────────────────────────────────────────
 var faithData={entries:{},prayers:[]};
 
@@ -3616,8 +2946,6 @@ window.togglePrayer=function(id){
 window.deletePrayer=function(id){
   faithData.prayers=faithData.prayers.filter(p=>p.id!==id);
   saveFaithData();renderPrayerList();
-};
-
 // ── DANA / MARRIAGE TAB ──────────────────────────────
 var danaData={acts:[],loves:[],goals:[],notes:''};
 
@@ -3709,6 +3037,85 @@ window.saveDateNight=function(){
   var btn=event.target;btn.textContent='Saved!';
   setTimeout(()=>{btn.textContent='Save plan';},1500);
 };
+// ── REVIEW TAB INIT ─────────────────────────────────
+function initReviewTab(){
+  var d=new Date();
+  var day=d.getDay();
+  var monday=new Date(d);monday.setDate(d.getDate()-day+1);
+  var sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+  var fmt=function(dt){return(dt.getMonth()+1)+'/'+dt.getDate();};
+  var lbl=document.getElementById('review-week-label');
+  if(lbl)lbl.textContent=fmt(monday)+' – '+fmt(sunday);
+
+  var hotworxCount=Object.values(S.hxDays||{}).filter(Boolean).length;
+  var el=document.getElementById('rev-hotworx');if(el)el.textContent=hotworxCount;
+
+  var faithCount=0;
+  var fd=new Date(monday);
+  for(var i=0;i<7;i++){
+    var str=fd.getFullYear()+'-'+(fd.getMonth()+1)+'-'+fd.getDate();
+    if(faithData.entries&&faithData.entries[str]&&faithData.entries[str].spent)faithCount++;
+    fd.setDate(fd.getDate()+1);
+  }
+  var fel=document.getElementById('rev-faith');if(fel)fel.textContent=faithCount;
+
+  var wt=S.weights&&S.weights.length?S.weights[0].val+'':'—';
+  var wel=document.getElementById('rev-wt');if(wel)wel.textContent=wt;
+
+  try{
+    var wb=JSON.parse(localStorage.getItem('sebren-work')||'[]');
+    var weekMins=wb.filter(function(b){
+      var parts=b.date.split('-');
+      var bd=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+      return bd>=monday&&bd<=sunday;
+    }).reduce(function(a,b){return a+b.mins;},0);
+    var wkEl=document.getElementById('rev-work');if(wkEl)wkEl.textContent=(weekMins/60).toFixed(1)+'h';
+  }catch(e){}
+
+  try{
+    var key='review-'+fmt(monday);
+    var saved=JSON.parse(localStorage.getItem(key)||'{}');
+    if(saved.win)document.getElementById('rev-win').value=saved.win;
+    if(saved.improve)document.getElementById('rev-improve').value=saved.improve;
+    if(saved.focus)document.getElementById('rev-focus').value=saved.focus;
+  }catch(e){}
+
+  renderPrevReviews();
+}
+
+window.saveWeeklyReview=function(){
+  var d=new Date();var day=d.getDay();
+  var monday=new Date(d);monday.setDate(d.getDate()-day+1);
+  var fmt=function(dt){return(dt.getMonth()+1)+'/'+dt.getDate();};
+  var key='review-'+fmt(monday);
+  var review={
+    week:fmt(monday),
+    win:document.getElementById('rev-win').value,
+    improve:document.getElementById('rev-improve').value,
+    focus:document.getElementById('rev-focus').value,
+    ts:Date.now()
+  };
+  try{
+    localStorage.setItem(key,JSON.stringify(review));
+    var all=JSON.parse(localStorage.getItem('sebren-all-reviews')||'[]');
+    all=all.filter(function(r){return r.week!==review.week;});
+    all.unshift(review);
+    localStorage.setItem('sebren-all-reviews',JSON.stringify(all.slice(0,12)));
+  }catch(e){}
+  renderPrevReviews();
+  var btn=event.target;btn.textContent='Saved!';
+  setTimeout(function(){btn.textContent="Save this week\u2019s review";},1500);
+};
+
+function renderPrevReviews(){
+  var el=document.getElementById('prev-reviews');
+  if(!el)return;
+  try{
+    var all=JSON.parse(localStorage.getItem('sebren-all-reviews')||'[]');
+    if(!all.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">No reviews yet</div>';return;}
+    el.innerHTML=all.slice(1,5).map(function(r){return '<div style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:4px">Week of '+r.week+'</div>'+(r.focus?'<div style="font-size:12px;color:var(--txt2);margin-bottom:2px">Focus: <strong>'+r.focus+'</strong></div>':'')+(r.win?'<div style="font-size:11px;color:var(--txt3)">Win: '+r.win.slice(0,60)+(r.win.length>60?'...':'')+'</div>':'')+'</div>';}).join('');
+  }catch(e){}
+}
 
 // ── WEEKLY REVIEW PROMPT ─────────────────────────────
 function checkWeeklyReview(){
@@ -3729,14 +3136,14 @@ function checkWeeklyReview(){
     <div style="font-size:12px;color:var(--info);margin-bottom:10px;line-height:1.5">Take 5 minutes to reflect on the week. How did it go?</div>
     <textarea id="weekly-review-text" placeholder="Wins this week... What I want to do differently... Goals for next week..." style="width:100%;min-height:80px;padding:8px;border:1px solid var(--info-border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;resize:none;line-height:1.5;margin-bottom:8px"></textarea>
     <div style="display:flex;gap:8px">
-      <button onclick="saveWeeklyReview('${week}')" style="flex:1;padding:8px;background:var(--info);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Save review</button>
+      <button onclick="saveBannerReview('${week}')" style="flex:1;padding:8px;background:var(--info);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Save review</button>
       <button onclick="dismissWeeklyReview('${week}')" style="padding:8px 14px;background:transparent;border:1px solid var(--info-border);border-radius:var(--radius);font-size:13px;cursor:pointer;color:var(--info);font-family:inherit">Later</button>
     </div>`;
   var firstCard=todayTab.querySelector('.card');
   if(firstCard)todayTab.insertBefore(banner,firstCard);
 }
 
-window.saveWeeklyReview=function(week){
+window.saveBannerReview=function(week){
   var text=document.getElementById('weekly-review-text').value;
   try{localStorage.setItem('weekly-review-'+week,JSON.stringify({text,date:getTodayStr()}));}catch(e){}
   var banner=document.getElementById('weekly-review-banner');
@@ -3748,9 +3155,422 @@ window.dismissWeeklyReview=function(week){
   if(banner)banner.remove();
 };
 
-// ── OVERRIDE TAB for new tabs ────────────────────────
+// ── POWER LIST (Andy Frisella) ──────────────────────
+var powerList = {tasks:['','','','',''], done:[false,false,false,false,false], verdict:null};
 
-// ── OVERRIDE TAB TO LOAD DATA ────────────────────────
+function loadPowerList(){
+  try{
+    var key='pl-'+getTodayStr();
+    var s=localStorage.getItem(key);
+    if(s) powerList=JSON.parse(s);
+    else powerList={tasks:['','','','',''],done:[false,false,false,false,false],verdict:null};
+  }catch(e){}
+}
+
+function savePowerList(){
+  try{localStorage.setItem('pl-'+getTodayStr(),JSON.stringify(powerList));}catch(e){}
+}
+
+function initPowerList(){
+  loadPowerList();
+  renderPLTasks();
+  renderPLVerdict();
+  renderPLStreak();
+  renderPLHistory();
+}
+
+function renderPLTasks(){
+  var el=document.getElementById('pl-tasks');
+  if(!el) return;
+  var html='';
+  for(var i=0;i<5;i++){
+    var checked=powerList.done[i];
+    html+=`<div class="pl-task">
+      <div class="pl-chk${checked?' on':''}" onclick="togglePLTask(${i})"></div>
+      <input class="pl-input${checked?' done':''}" type="text" placeholder="Task ${i+1}..." value="${(powerList.tasks[i]||'').replace(/"/g,'&quot;')}" onchange="updatePLTask(${i},this.value)" ${powerList.verdict?'disabled':''}>
+    </div>`;
+  }
+  el.innerHTML=html;
+  // Show verdict section if all tasks have text
+  var allFilled=powerList.tasks.filter(t=>t.trim()).length===5;
+  var verdictSec=document.getElementById('pl-verdict-section');
+  if(verdictSec) verdictSec.style.display=allFilled?'block':'none';
+}
+
+window.updatePLTask=function(i,val){
+  powerList.tasks[i]=val;
+  savePowerList();
+  // Check if verdict section should show
+  var allFilled=powerList.tasks.filter(t=>t.trim()).length===5;
+  var verdictSec=document.getElementById('pl-verdict-section');
+  if(verdictSec) verdictSec.style.display=allFilled?'block':'none';
+};
+
+window.togglePLTask=function(i){
+  if(powerList.verdict) return; // locked after verdict
+  powerList.done[i]=!powerList.done[i];
+  savePowerList();
+  renderPLTasks();
+  // Auto-check: if all 5 done, prompt verdict
+  var allDone=powerList.done.every(Boolean);
+  if(allDone && !powerList.verdict){
+    var prompt=document.getElementById('pl-verdict-prompt');
+    if(prompt) prompt.textContent='All 5 done! Call it.';
+  }
+};
+
+window.setPLVerdict=function(v){
+  powerList.verdict=v;
+  savePowerList();
+  renderPLVerdict();
+  renderPLTasks(); // lock inputs
+  renderPLStreak();
+  renderPLHistory();
+  // Save to history
+  try{
+    var history=JSON.parse(localStorage.getItem('pl-history')||'[]');
+    history.unshift({date:getTodayStr(),verdict:v,tasks:powerList.tasks.slice(),done:powerList.done.slice()});
+    localStorage.setItem('pl-history',JSON.stringify(history.slice(0,90)));
+  }catch(e){}
+};
+
+function renderPLVerdict(){
+  var btns=document.getElementById('pl-verdict-btns');
+  var display=document.getElementById('pl-verdict-display');
+  var result=document.getElementById('pl-verdict-result');
+  var msg=document.getElementById('pl-verdict-msg');
+  if(!powerList.verdict){
+    if(btns) btns.style.display='flex';
+    if(display) display.style.display='none';
+    return;
+  }
+  if(btns) btns.style.display='none';
+  if(display) display.style.display='block';
+  if(result){
+    result.textContent=powerList.verdict;
+    result.style.color=powerList.verdict==='W'?'var(--success)':'var(--danger)';
+  }
+  if(msg){
+    if(powerList.verdict==='W') msg.textContent='You showed up and got it done. Stack another one tomorrow.';
+    else msg.textContent='Honest L. Reset tomorrow and come back harder.';
+  }
+}
+
+function renderPLStreak(){
+  var bar=document.getElementById('pl-streak-bar');
+  var record=document.getElementById('pl-week-record');
+  var label=document.getElementById('pl-streak-label');
+  if(!bar) return;
+  var DAYS=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  var d=new Date();
+  var dow=d.getDay();
+  // Get Monday of this week
+  var monday=new Date(d);monday.setDate(d.getDate()-(dow===0?6:dow-1));
+  var wins=0,losses=0;
+  var html='';
+  for(var i=0;i<7;i++){
+    var check=new Date(monday);check.setDate(monday.getDate()+i);
+    var key='pl-'+check.getFullYear()+'-'+(check.getMonth()+1)+'-'+check.getDate();
+    try{
+      var entry=JSON.parse(localStorage.getItem(key)||'null');
+      if(entry&&entry.verdict==='W'){html+=`<div class="pl-streak-day win">W</div>`;wins++;}
+      else if(entry&&entry.verdict==='L'){html+=`<div class="pl-streak-day loss">L</div>`;losses++;}
+      else{html+=`<div class="pl-streak-day empty">${DAYS[(monday.getDay()+i)%7]}</div>`;}
+    }catch(e){html+=`<div class="pl-streak-day empty">${DAYS[(monday.getDay()+i)%7]}</div>`;}
+  }
+  bar.innerHTML=html;
+  if(record) record.textContent=wins+'W – '+losses+'L';
+  // Calculate current W streak
+  var streak=0;
+  try{
+    var history=JSON.parse(localStorage.getItem('pl-history')||'[]');
+    for(var j=0;j<history.length;j++){
+      if(history[j].verdict==='W') streak++;
+      else break;
+    }
+  }catch(e){}
+  if(label){
+    if(streak>=7) label.textContent=streak+' day streak — on fire';
+    else if(streak>=3) label.textContent=streak+' day streak — building momentum';
+    else if(streak>=1) label.textContent=streak+' day streak';
+    else label.textContent='Start your streak';
+  }
+}
+
+function renderPLHistory(){
+  var el=document.getElementById('pl-history');
+  if(!el) return;
+  try{
+    var history=JSON.parse(localStorage.getItem('pl-history')||'[]');
+    if(!history.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">Complete your first day to start tracking</div>';return;}
+    el.innerHTML=history.slice(0,14).map(function(h){
+      var doneCount=h.done?h.done.filter(Boolean).length:0;
+      var color=h.verdict==='W'?'var(--success)':'var(--danger)';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="font-size:18px;font-weight:700;color:${color};min-width:28px">${h.verdict}</div>
+        <div style="flex:1">
+          <div style="font-size:12px;color:var(--txt)">${h.date}</div>
+          <div style="font-size:11px;color:var(--txt3)">${doneCount}/5 tasks · ${h.tasks.filter(function(t){return t.trim();}).slice(0,2).join(', ')}${h.tasks.filter(function(t){return t.trim();}).length>2?'...':''}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){}
+}
+
+
+// ── CALENDAR ────────────────────────────────────────
+var calEvents = {};  // key: 'YYYY-M-D', value: [{time,title,id}]
+var calRecurring = []; // [{day:0-6, time, title, id}]
+var calViewYear, calViewMonth, calSelectedDate;
+
+function loadCalData(){
+  try{
+    var e=localStorage.getItem('sebren-cal-events');if(e)calEvents=JSON.parse(e);
+    var r=localStorage.getItem('sebren-cal-recurring');if(r)calRecurring=JSON.parse(r);
+  }catch(e){}
+}
+
+function saveCalData(){
+  try{
+    localStorage.setItem('sebren-cal-events',JSON.stringify(calEvents));
+    localStorage.setItem('sebren-cal-recurring',JSON.stringify(calRecurring));
+  }catch(e){}
+}
+
+function initCalTab(){
+  loadCalData();
+  var d=new Date();
+  if(!calViewYear){calViewYear=d.getFullYear();calViewMonth=d.getMonth();}
+  if(!calSelectedDate)calSelectedDate=getTodayStr();
+  renderCalGrid();
+  renderCalEvents();
+  renderCalRecurring();
+}
+
+window.calNav=function(dir){
+  calViewMonth+=dir;
+  if(calViewMonth>11){calViewMonth=0;calViewYear++;}
+  if(calViewMonth<0){calViewMonth=11;calViewYear--;}
+  renderCalGrid();
+};
+
+function renderCalGrid(){
+  var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var title=document.getElementById('cal-month-title');
+  if(title)title.textContent=MONTHS[calViewMonth]+' '+calViewYear;
+
+  var grid=document.getElementById('cal-grid');
+  if(!grid)return;
+  var html='';
+  var dayHeaders=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  dayHeaders.forEach(function(d){html+='<div class="cal-day-hdr">'+d+'</div>';});
+
+  var first=new Date(calViewYear,calViewMonth,1);
+  var startDay=first.getDay();
+  var daysInMonth=new Date(calViewYear,calViewMonth+1,0).getDate();
+  var prevDays=new Date(calViewYear,calViewMonth,0).getDate();
+  var today=new Date();
+  var todayStr=today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+
+  // Previous month padding
+  for(var i=startDay-1;i>=0;i--){
+    html+='<div class="cal-day other">'+(prevDays-i)+'</div>';
+  }
+
+  // Current month days
+  for(var d=1;d<=daysInMonth;d++){
+    var dateStr=calViewYear+'-'+(calViewMonth+1)+'-'+d;
+    var isToday=dateStr===todayStr;
+    var isSelected=dateStr===calSelectedDate;
+    var hasEvents=getEventsForDate(dateStr).length>0;
+    var cls='cal-day';
+    if(isToday)cls+=' today';
+    if(isSelected&&!isToday)cls+=' selected';
+    if(isSelected&&isToday)cls+=' today selected';
+    html+='<div class="'+cls+'" onclick="selectCalDate(\''+dateStr+'\','+d+')">'+d+(hasEvents?'<div class="cal-dot"></div>':'')+'</div>';
+  }
+
+  // Next month padding
+  var totalCells=startDay+daysInMonth;
+  var remaining=totalCells%7===0?0:7-(totalCells%7);
+  for(var i=1;i<=remaining;i++){
+    html+='<div class="cal-day other">'+i+'</div>';
+  }
+
+  grid.innerHTML=html;
+}
+
+window.selectCalDate=function(dateStr){
+  calSelectedDate=dateStr;
+  renderCalGrid();
+  renderCalEvents();
+
+  var parts=dateStr.split('-');
+  var d=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var lbl=document.getElementById('cal-selected-label');
+  var todayStr=getTodayStr();
+  if(lbl){
+    if(dateStr===todayStr) lbl.textContent='Today — '+DAYS[d.getDay()];
+    else lbl.textContent=DAYS[d.getDay()]+', '+MONTHS[d.getMonth()]+' '+parts[2];
+  }
+};
+
+function getEventsForDate(dateStr){
+  var events=(calEvents[dateStr]||[]).slice();
+  // Add recurring events for this day of week
+  var parts=dateStr.split('-');
+  var d=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  var dow=d.getDay();
+  calRecurring.forEach(function(r){
+    if(r.day===dow){
+      events.push({time:r.time,title:r.title+'  ↻',id:'rec-'+r.id,recurring:true});
+    }
+  });
+  // Add KIDS events for this day of week
+  var kids=KIDS[dow]||[];
+  kids.forEach(function(k,i){
+    events.push({time:k.t,title:k.n,id:'kid-'+i,isKid:true});
+  });
+  // Sort by time
+  events.sort(function(a,b){return(a.time||'').localeCompare(b.time||'');});
+  return events;
+}
+
+function renderCalEvents(){
+  var el=document.getElementById('cal-events-list');
+  if(!el)return;
+  var events=getEventsForDate(calSelectedDate);
+  if(!events.length){el.innerHTML='<div class="empty-state">No events — add one below</div>';return;}
+  el.innerHTML=events.map(function(e){
+    if(e.isKid){
+      return '<div class="cal-event-kid"><span class="cal-event-time">'+e.time+'</span> '+e.title+'</div>';
+    }
+    var delBtn=e.recurring?'':'<button class="cal-event-del" onclick="deleteCalEvent(\''+calSelectedDate+'\',\''+e.id+'\')">×</button>';
+    return '<div class="cal-event"><span class="cal-event-time">'+(e.time||'')+'</span><span class="cal-event-title">'+e.title+'</span>'+delBtn+'</div>';
+  }).join('');
+
+  // Update label
+  var parts=calSelectedDate.split('-');
+  var d=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var lbl=document.getElementById('cal-selected-label');
+  if(lbl){
+    if(calSelectedDate===getTodayStr()) lbl.textContent='Today — '+DAYS[d.getDay()];
+    else lbl.textContent=DAYS[d.getDay()]+', '+MONTHS[d.getMonth()]+' '+parts[2];
+  }
+}
+
+window.addCalEvent=function(){
+  var time=document.getElementById('cal-event-time').value.trim();
+  var title=document.getElementById('cal-event-title').value.trim();
+  if(!title)return;
+  if(!calEvents[calSelectedDate])calEvents[calSelectedDate]=[];
+  calEvents[calSelectedDate].push({time:time,title:title,id:'e'+Date.now()});
+  document.getElementById('cal-event-time').value='';
+  document.getElementById('cal-event-title').value='';
+  saveCalData();renderCalGrid();renderCalEvents();
+};
+
+window.addCalEventQuick=function(time,title){
+  if(!calEvents[calSelectedDate])calEvents[calSelectedDate]=[];
+  calEvents[calSelectedDate].push({time:time,title:title,id:'e'+Date.now()});
+  saveCalData();renderCalGrid();renderCalEvents();
+};
+
+window.deleteCalEvent=function(dateStr,id){
+  if(!calEvents[dateStr])return;
+  calEvents[dateStr]=calEvents[dateStr].filter(function(e){return e.id!==id;});
+  if(!calEvents[dateStr].length)delete calEvents[dateStr];
+  saveCalData();renderCalGrid();renderCalEvents();
+};
+
+window.addCalRecurring=function(){
+  var time=document.getElementById('cal-rec-time').value.trim();
+  var title=document.getElementById('cal-rec-title').value.trim();
+  var day=parseInt(document.getElementById('cal-rec-day').value);
+  if(!title)return;
+  calRecurring.push({day:day,time:time,title:title,id:'r'+Date.now()});
+  document.getElementById('cal-rec-time').value='';
+  document.getElementById('cal-rec-title').value='';
+  saveCalData();renderCalRecurring();renderCalGrid();renderCalEvents();
+};
+
+window.deleteCalRecurring=function(id){
+  calRecurring=calRecurring.filter(function(r){return r.id!==id;});
+  saveCalData();renderCalRecurring();renderCalGrid();renderCalEvents();
+};
+
+function renderCalRecurring(){
+  var el=document.getElementById('cal-recurring-list');
+  if(!el)return;
+  if(!calRecurring.length){el.innerHTML='<div class="empty-state">No recurring events yet</div>';return;}
+  var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  el.innerHTML=calRecurring.map(function(r){
+    return '<div class="cal-event"><span class="cal-event-time">'+DAYS[r.day]+(r.time?' '+r.time:'')+'</span><span class="cal-event-title">'+r.title+'</span><button class="cal-event-del" onclick="deleteCalRecurring(\''+r.id+'\')">×</button></div>';
+  }).join('');
+}
+
+// Get today's calendar events for briefing/Sheena context
+function getTodayCalendarContext(){
+  loadCalData();
+  var events=getEventsForDate(getTodayStr());
+  if(!events.length)return 'No calendar events today';
+  return events.map(function(e){
+    var prefix=e.isKid?'[kids] ':'';
+    return prefix+(e.time?e.time+' — ':'')+e.title;
+  }).join('; ');
+}
+
+function getWeekCalendarContext(){
+  loadCalData();
+  var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var lines=[];
+  var d=new Date();
+  for(var i=0;i<7;i++){
+    var check=new Date(d);check.setDate(d.getDate()+i);
+    var dateStr=check.getFullYear()+'-'+(check.getMonth()+1)+'-'+check.getDate();
+    var events=getEventsForDate(dateStr);
+    var dayLabel=i===0?'Today ('+DAYS[check.getDay()]+')':DAYS[check.getDay()]+' '+(check.getMonth()+1)+'/'+check.getDate();
+    if(events.length){
+      var evtStr=events.map(function(e){
+        var prefix=e.isKid?'[kids] ':'';
+        return prefix+(e.time?e.time+' ':'')+e.title;
+      }).join(', ');
+      lines.push(dayLabel+': '+evtStr);
+    } else {
+      lines.push(dayLabel+': open');
+    }
+  }
+  return lines.join('\n');
+}
+
+// Called by Sheena when she confirms a calendar event
+function sheenaAddCalEvent(dateStr, time, title){
+  loadCalData();
+  if(!calEvents[dateStr])calEvents[dateStr]=[];
+  calEvents[dateStr].push({time:time||'',title:title,id:'s'+Date.now()});
+  saveCalData();
+  return true;
+}
+
+// ── MASTER INIT ─────────────────────────────────────
+// Expose functions needed by HTML onclick in module context
+window.openSheena=openSheena;
+window.closeSheena=closeSheena;
+window.fetchWeather=fetchWeather;
+loadKids();
+loadFaithData();
+loadDanaData();
+loadCalData();
+fetchWeather();
+checkWeeklyReview();
+loadConfig();
+init();
+
+// ── TAB OVERRIDE ────────────────────────────────────
 const _origTab2=window.tab;
 window.tab=function(id,btn){
   _origTab2(id,btn);
@@ -3759,7 +3579,16 @@ window.tab=function(id,btn){
   if(id==='faith')initFaithTab();
   if(id==='dana')initDanaTab();
   if(id==='settings')openSettingsTab();
+  if(id==='power')initPowerList();
+  if(id==='cal')initCalTab();
+  if(id==='review')initReviewTab();
 };
+
+// Kick off briefing + dates after everything loaded
+setTimeout(function(){
+  initBriefing();
+  checkImportantDates();
+}, 100);
 
 
 </script>
