@@ -154,6 +154,9 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
     </div>
     <div class="day-pill" id="day-pill"></div>
   </div>
+  <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+    <span id="streak-badge" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:8px;background:var(--bg3);color:var(--txt2)">Day in progress</span>
+  </div>
   <div class="prog-wrap">
     <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
     <div class="prog-lbl" id="prog-lbl">0 of 11 done today</div>
@@ -166,6 +169,8 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <button class="nb" onclick="tab('food',this)">Food</button>
   <button class="nb" onclick="tab('progress',this)">Progress</button>
   <button class="nb" onclick="tab('grocery',this)">Groceries</button>
+  <button class="nb" onclick="tab('summary',this)">Summary</button>
+  <button class="nb" onclick="tab('work',this)">Work</button>
   <button class="nb" onclick="tab('settings',this)">Edit</button>
 </div>
 
@@ -201,7 +206,7 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <div class="card" id="t-dinner"><div class="row"><div class="chk" onclick="chk(this,'t-dinner')"></div><div class="ct"><div class="ct-title">Dinner before sunset — eat outside</div><div class="ct-sub">Aim 7pm. No eating after sunset.</div></div><span class="tag t-food">before 7:40p</span></div></div>
   <div class="card" id="t-blue"><div class="row"><div class="chk" onclick="chk(this,'t-blue')"></div><div class="ct"><div class="ct-title">Blue light blockers + no screens</div><div class="ct-sub">Screens off 1 hr before bed. Bible instead of TV.</div></div><span class="tag t-spirit">9:30p</span></div></div>
 
-  <div class="sec" id="kids-sec" style="display:none">Kids today</div>
+  <div class="sec" id="kids-sec" style="display:none">Daily schedule</div>
   <div id="kids-block"></div>
 </div>
 
@@ -231,10 +236,18 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   </div>
   <div class="sec">Meals today</div>
   <div class="card"><div id="meal-list"><div class="empty-state">Nothing logged yet</div></div></div>
-  <button class="log-btn" onclick="meal('Breakfast — eggs + coffee','400',38)">+ Breakfast — eggs + coffee (400 cal / 38g protein)</button>
-  <button class="log-btn" onclick="meal('Lunch — chicken salad','500',45)">+ Lunch — chicken salad (500 cal / 45g)</button>
-  <button class="log-btn" onclick="meal('Dinner — salmon + veggies','570',42)">+ Dinner — salmon + veggies (570 cal / 42g)</button>
-  <button class="log-btn" onclick="meal('Protein shake','180',30)">+ Protein shake (180 cal / 30g)</button>
+  <div id="meal-quick-btns"></div>
+  <div id="custom-meal-form" style="display:none;margin-bottom:8px">
+    <div class="card">
+      <div style="font-size:12px;color:var(--txt2);margin-bottom:8px;font-weight:600">Log a custom meal</div>
+      <input type="text" id="custom-meal-name" placeholder="Meal name..." style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);margin-bottom:6px">
+      <div class="inp-row" style="margin-top:0">
+        <input type="number" id="custom-meal-cal" placeholder="Calories" inputmode="numeric">
+        <input type="number" id="custom-meal-prot" placeholder="Protein (g)" inputmode="numeric">
+        <button onclick="logCustomMeal()">Log</button>
+      </div>
+    </div>
+  </div>
   <div class="sec">Water — 8 cups</div>
   <div class="card">
     <div class="w-cups" id="w-cups"></div>
@@ -361,7 +374,7 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
     </div>
   </div>
 
-  <div class="sec">Kids schedule</div>
+  <div class="sec">Daily schedule</div>
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="day-selector">
     <button class="filt on" onclick="selectDay(0,this)">Sun</button>
     <button class="filt" onclick="selectDay(1,this)">Mon</button>
@@ -420,6 +433,85 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <div class="card">
     <div style="font-size:12px;color:var(--txt2);margin-bottom:8px">Clears today's check-offs so you can start fresh. Does not delete your tasks.</div>
     <button class="log-btn danger-btn" onclick="resetChecks()">Reset today's check-offs</button>
+  </div>
+</div>
+
+
+<!-- SUMMARY TAB -->
+<div id="tab-summary" class="tab">
+  <div class="sec">Today at a glance</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+    <div class="met"><div class="met-val" id="sum-tasks">0/11</div><div class="met-lbl">tasks done</div></div>
+    <div class="met"><div class="met-val" id="sum-streak">0</div><div class="met-lbl">day streak</div></div>
+    <div class="met"><div class="met-val" id="sum-cal">0</div><div class="met-lbl">calories</div><div class="met-sub">goal: 1,800</div></div>
+    <div class="met"><div class="met-val" id="sum-steps">0</div><div class="met-lbl">steps</div><div class="met-sub">goal: 10k</div></div>
+  </div>
+
+  <div class="sec">Weight progress</div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+      <span style="font-size:13px;font-weight:600;color:var(--txt)" id="chart-current">— lbs</span>
+      <span style="font-size:11px;color:var(--txt2)">goal: 195 lbs by June 1</span>
+    </div>
+    <canvas id="weight-chart" height="120" style="width:100%;display:block"></canvas>
+    <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--txt3)">
+      <span id="chart-start-lbl">Start</span>
+      <span id="chart-lost-lbl"></span>
+      <span>Goal: 195</span>
+    </div>
+  </div>
+
+  <div class="sec">Sun anchors hit today</div>
+  <div class="card">
+    <div style="display:flex;gap:6px;justify-content:space-around" id="sum-pips"></div>
+  </div>
+
+  <div class="sec">This week's Hotworx</div>
+  <div class="card"><div class="hx-week" id="sum-hx-week"></div></div>
+
+  <div class="sec">End of day note</div>
+  <div class="card">
+    <textarea id="eod-note" placeholder="How did today go? Wins, struggles, notes for tomorrow..." style="width:100%;min-height:80px;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:transparent;color:var(--txt);font-family:inherit;resize:vertical;line-height:1.5"></textarea>
+    <button class="log-btn" style="margin-top:8px;margin-bottom:0" onclick="saveEOD()">Save note</button>
+  </div>
+</div>
+
+<!-- WORK TRACKER TAB -->
+<div id="tab-work" class="tab">
+  <div class="sec">Clasifi — today's focus</div>
+  <div class="card">
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:10px">What's your #1 thing to get done today?</div>
+    <input type="text" id="work-top1" placeholder="Most important task..." style="width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:6px">
+    <button class="log-btn" style="margin-bottom:0" onclick="saveWorkFocus()">Set focus</button>
+  </div>
+
+  <div class="sec">Work blocks today</div>
+  <div class="card">
+    <div id="work-blocks-list"></div>
+    <div class="inp-row" style="margin-top:8px">
+      <input type="text" id="new-work-task" placeholder="Task completed...">
+      <input type="number" id="new-work-mins" placeholder="mins" style="max-width:70px" inputmode="numeric">
+      <button onclick="addWorkBlock()">Log</button>
+    </div>
+  </div>
+
+  <div class="sec">Time logged today</div>
+  <div class="met" style="margin-bottom:8px;text-align:center;border-radius:var(--radius);padding:1rem">
+    <div class="met-val" id="work-total-time">0 hrs</div>
+    <div class="met-lbl">focused work</div>
+    <div class="met-sub">goal: 4+ hrs</div>
+  </div>
+
+  <div class="sec">This week</div>
+  <div class="card" id="work-week-list">
+    <div style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">No entries this week</div>
+  </div>
+
+  <div class="sec">Launch countdown</div>
+  <div class="card" style="text-align:center;padding:1.25rem">
+    <div style="font-size:36px;font-weight:700;color:var(--txt)" id="launch-days">—</div>
+    <div style="font-size:13px;color:var(--txt2);margin-top:4px">days until April 21 launch</div>
+    <div style="font-size:11px;color:var(--txt3);margin-top:8px" id="launch-sub"></div>
   </div>
 </div>
 
@@ -590,6 +682,7 @@ function init(){
   buildHx(dow);
   buildKids(dow);
   applyState();
+  renderMealQuickBtns();
   initFirebase();
 }
 
@@ -640,10 +733,15 @@ window.chk=function(el,id){
 };
 
 function updateProg(){
-  const done=Object.values(S.checks).filter(Boolean).length;
+  const done=Object.values(S.checks||{}).filter(Boolean).length;
   const pct=Math.round(done/TOTAL*100);
   document.getElementById('prog-fill').style.width=pct+'%';
   document.getElementById('prog-lbl').textContent=done+' of '+TOTAL+' done today';
+  renderStreak();
+  if(pct>=100)checkStreak();
+  // update summary if open
+  var sumEl=document.getElementById('sum-tasks');
+  if(sumEl)sumEl.textContent=done+'/'+TOTAL;
 }
 
 // Kids
@@ -911,6 +1009,24 @@ window.resetAll=function(){
   saveGroc();
 };
 
+
+window.showCustomMealEntry = function(){
+  var f = document.getElementById('custom-meal-form');
+  if(f) f.style.display = f.style.display==='none' ? 'block' : 'none';
+};
+
+window.logCustomMeal = function(){
+  var name = document.getElementById('custom-meal-name').value.trim();
+  var cal = parseInt(document.getElementById('custom-meal-cal').value) || 0;
+  var prot = parseInt(document.getElementById('custom-meal-prot').value) || 0;
+  if(!name) return;
+  meal(name, String(cal), prot);
+  document.getElementById('custom-meal-name').value='';
+  document.getElementById('custom-meal-cal').value='';
+  document.getElementById('custom-meal-prot').value='';
+  document.getElementById('custom-meal-form').style.display='none';
+};
+
 init();
 
 // EDIT / SETTINGS
@@ -941,9 +1057,9 @@ let CONFIG = {
   calGoal: 1800,
   protGoal: 150,
   mealQuickLog: [
-    {name:'Breakfast — eggs + coffee', cal:400, prot:38},
-    {name:'Lunch — chicken salad', cal:500, prot:45},
-    {name:'Dinner — salmon + veggies', cal:570, prot:42},
+    {name:'Breakfast — greek yogurt + fruit', cal:350, prot:25},
+    {name:'Lunch — grilled chicken + veggies', cal:480, prot:45},
+    {name:'Dinner — salmon + sweet potato', cal:550, prot:42},
     {name:'Protein shake', cal:180, prot:30}
   ]
 };
@@ -964,12 +1080,7 @@ function openSettingsTab(){
   renderMealEdit();
 }
 
-// Override tab function to load settings when entering
-const _origTab = window.tab;
-window.tab = function(id, btn){
-  _origTab(id, btn);
-  if(id === 'settings') openSettingsTab();
-};
+
 
 // SUN TIMES
 function renderSunEdit(){
@@ -1140,6 +1251,282 @@ window.resetChecks = function(){
 };
 
 loadConfig();
+
+// ── STREAK ──────────────────────────────────────────
+function getTodayStr(){
+  var d=new Date();
+  return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+}
+
+function checkStreak(){
+  var done=Object.values(S.checks||{}).filter(Boolean).length;
+  if(done<TOTAL)return;
+  var today=getTodayStr();
+  if(!S.streakData)S.streakData={lastDay:'',count:0,best:0};
+  if(S.streakData.lastDay===today)return;
+  var yest=new Date();yest.setDate(yest.getDate()-1);
+  var yStr=yest.getFullYear()+'-'+(yest.getMonth()+1)+'-'+yest.getDate();
+  if(S.streakData.lastDay===yStr){S.streakData.count++;}
+  else{S.streakData.count=1;}
+  if(S.streakData.count>(S.streakData.best||0))S.streakData.best=S.streakData.count;
+  S.streakData.lastDay=today;
+  saveLocal();
+  renderStreak();
+}
+
+function renderStreak(){
+  var el=document.getElementById('streak-badge');
+  if(!el)return;
+  var count=(S.streakData&&S.streakData.count)||0;
+  var done=Object.values(S.checks||{}).filter(Boolean).length;
+  var pct=Math.round(done/TOTAL*100);
+  if(count>=2){el.textContent=count+' day streak 🔥';el.style.background='#FAEEDA';el.style.color='#633806';}
+  else if(pct>=100){el.textContent='Day complete!';el.style.background='var(--success-bg)';el.style.color='var(--success)';}
+  else if(pct>=50){el.textContent='Halfway there';el.style.background='var(--info-bg)';el.style.color='var(--info)';}
+  else{el.textContent='Day in progress';el.style.background='var(--bg3)';el.style.color='var(--txt2)';}
+  // update summary
+  var ss=document.getElementById('sum-streak');
+  if(ss)ss.textContent=count||0;
+}
+
+// ── SUMMARY TAB ─────────────────────────────────────
+function renderSummary(){
+  var done=Object.values(S.checks||{}).filter(Boolean).length;
+  var el=document.getElementById('sum-tasks');
+  if(el)el.textContent=done+'/'+TOTAL;
+  var sc=document.getElementById('sum-cal');
+  var tc=(S.meals||[]).reduce((a,m)=>a+m.cal,0);
+  if(sc)sc.textContent=tc;
+  var ssteps=document.getElementById('sum-steps');
+  if(ssteps)ssteps.textContent=(S.stepCount||0).toLocaleString();
+  renderStreakInSummary();
+  renderSumPips();
+  renderSumHx();
+  renderWeightChart();
+  renderEOD();
+}
+
+function renderStreakInSummary(){
+  var el=document.getElementById('sum-streak');
+  if(!el)return;
+  var count=(S.streakData&&S.streakData.count)||0;
+  el.textContent=count;
+}
+
+function renderSumPips(){
+  var el=document.getElementById('sum-pips');
+  if(!el)return;
+  var labels=['Daybreak','Sunrise','UVA','Noon','Sunset'];
+  var icons=['🌙','🌅','☀️','⬆️','🌇'];
+  el.innerHTML=labels.map((l,i)=>{
+    var hit=(S.pips||[]).includes(i);
+    return `<div style="text-align:center;opacity:${hit?1:0.3}">
+      <div style="font-size:18px">${icons[i]}</div>
+      <div style="font-size:9px;color:var(--txt2);margin-top:2px">${l}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSumHx(){
+  var el=document.getElementById('sum-hx-week');
+  if(!el)return;
+  el.innerHTML='';
+  var labels=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  var dow=new Date().getDay();
+  for(var i=0;i<7;i++){
+    var d=document.createElement('div');
+    d.className='hx-day'+(i===dow?' today':'');
+    if(S.hxDays&&S.hxDays[i])d.classList.add('on');
+    d.textContent=labels[i];
+    el.appendChild(d);
+  }
+}
+
+function renderEOD(){
+  var el=document.getElementById('eod-note');
+  if(!el)return;
+  var key='eod-'+getTodayStr();
+  try{var saved=localStorage.getItem(key);if(saved)el.value=saved;}catch(e){}
+}
+
+window.saveEOD=function(){
+  var el=document.getElementById('eod-note');
+  if(!el)return;
+  var key='eod-'+getTodayStr();
+  try{localStorage.setItem(key,el.value);}catch(e){}
+  var btn=event.target;btn.textContent='Saved!';
+  setTimeout(()=>{btn.textContent='Save note';},1500);
+};
+
+// ── WEIGHT CHART ────────────────────────────────────
+function renderWeightChart(){
+  var canvas=document.getElementById('weight-chart');
+  if(!canvas||!S.weights||S.weights.length<2)return;
+  var ctx=canvas.getContext('2d');
+  var W=canvas.offsetWidth||300;
+  canvas.width=W*2;canvas.height=240;
+  ctx.scale(2,2);
+  var w=W,h=120;
+  ctx.clearRect(0,0,w,h);
+
+  var pts=S.weights.slice().reverse(); // oldest first
+  var vals=pts.map(p=>p.val);
+  var mn=Math.min(...vals,195)-2;
+  var mx=Math.max(...vals)+2;
+  var xStep=w/(pts.length-1||1);
+
+  function xPos(i){return i*xStep;}
+  function yPos(v){return h-((v-mn)/(mx-mn))*h*0.85-8;}
+
+  // goal line at 195
+  ctx.beginPath();ctx.setLineDash([4,4]);
+  ctx.strokeStyle='#378ADD';ctx.lineWidth=1;
+  var gy=yPos(195);
+  ctx.moveTo(0,gy);ctx.lineTo(w,gy);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // weight line
+  ctx.beginPath();ctx.strokeStyle='#1a1a1a';ctx.lineWidth=2;ctx.lineJoin='round';
+  pts.forEach((p,i)=>{
+    if(i===0)ctx.moveTo(xPos(i),yPos(p.val));
+    else ctx.lineTo(xPos(i),yPos(p.val));
+  });ctx.stroke();
+
+  // dots
+  pts.forEach((p,i)=>{
+    ctx.beginPath();
+    ctx.arc(xPos(i),yPos(p.val),3,0,Math.PI*2);
+    ctx.fillStyle='#1a1a1a';ctx.fill();
+  });
+
+  // current weight label
+  var cur=S.weights[0].val;
+  var lost=(CONFIG.startWt||223)-cur;
+  var el=document.getElementById('chart-current');
+  if(el)el.textContent=cur+' lbs';
+  var ll=document.getElementById('chart-lost-lbl');
+  if(ll)ll.textContent=lost>0?lost.toFixed(1)+' lbs lost':'';
+  var sl=document.getElementById('chart-start-lbl');
+  if(sl)sl.textContent='Start: '+(CONFIG.startWt||223);
+}
+
+// ── WORK TRACKER ────────────────────────────────────
+var workBlocks=[];
+
+function initWork(){
+  try{var s=localStorage.getItem('sebren-work');if(s)workBlocks=JSON.parse(s);}catch(e){}
+  renderWorkBlocks();
+  renderWorkFocus();
+  renderLaunchCountdown();
+}
+
+function saveWork(){
+  try{localStorage.setItem('sebren-work',JSON.stringify(workBlocks));}catch(e){}
+}
+
+function renderWorkFocus(){
+  var el=document.getElementById('work-top1');
+  if(!el)return;
+  var today=getTodayStr();
+  try{var f=localStorage.getItem('work-focus-'+today);if(f)el.value=f;}catch(e){}
+}
+
+window.saveWorkFocus=function(){
+  var el=document.getElementById('work-top1');
+  if(!el)return;
+  var today=getTodayStr();
+  try{localStorage.setItem('work-focus-'+today,el.value);}catch(e){}
+  var btn=event.target;btn.textContent='Focus set!';
+  setTimeout(()=>{btn.textContent='Set focus';},1500);
+};
+
+window.addWorkBlock=function(){
+  var task=document.getElementById('new-work-task').value.trim();
+  var mins=parseInt(document.getElementById('new-work-mins').value)||0;
+  if(!task)return;
+  workBlocks.unshift({date:getTodayStr(),task,mins,ts:Date.now()});
+  document.getElementById('new-work-task').value='';
+  document.getElementById('new-work-mins').value='';
+  saveWork();renderWorkBlocks();
+};
+
+function renderWorkBlocks(){
+  var el=document.getElementById('work-blocks-list');
+  var weekEl=document.getElementById('work-week-list');
+  if(!el)return;
+  var today=getTodayStr();
+  var todayBlocks=workBlocks.filter(b=>b.date===today);
+  var totalMins=todayBlocks.reduce((a,b)=>a+b.mins,0);
+  var hrs=(totalMins/60).toFixed(1);
+  var tw=document.getElementById('work-total-time');
+  if(tw)tw.textContent=hrs+' hrs';
+  if(!todayBlocks.length){el.innerHTML='<div style="font-size:12px;color:var(--txt3);padding:8px 0">Nothing logged yet — add tasks above</div>';return;}
+  el.innerHTML=todayBlocks.map((b,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span style="flex:1;color:var(--txt)">${b.task}</span>
+      <span style="color:var(--txt2);font-size:12px">${b.mins?b.mins+' min':''}</span>
+      <button onclick="deleteWorkBlock(${i})" style="font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0;line-height:1">×</button>
+    </div>`).join('');
+
+  // week view
+  if(weekEl){
+    var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var weekMap={};
+    workBlocks.forEach(b=>{
+      if(!weekMap[b.date])weekMap[b.date]={tasks:[],mins:0};
+      weekMap[b.date].tasks.push(b.task);
+      weekMap[b.date].mins+=b.mins;
+    });
+    var dates=Object.keys(weekMap).sort().reverse().slice(0,7);
+    if(!dates.length){weekEl.innerHTML='<div style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">No entries this week</div>';return;}
+    weekEl.innerHTML=dates.map(d=>{
+      var entry=weekMap[d];
+      var parts=d.split('-');
+      var dt=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+      var label=DAYS[dt.getDay()]+' '+parts[1]+'/'+parts[2];
+      var hrs=(entry.mins/60).toFixed(1);
+      return `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <span style="font-weight:600;color:var(--txt)">${label}</span>
+          <span style="color:var(--txt2)">${hrs} hrs</span>
+        </div>
+        <div style="color:var(--txt3)">${entry.tasks.slice(0,2).join(' · ')}${entry.tasks.length>2?' +more':''}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+window.deleteWorkBlock=function(i){
+  var today=getTodayStr();
+  var todayBlocks=workBlocks.filter(b=>b.date===today);
+  var target=todayBlocks[i];
+  workBlocks=workBlocks.filter(b=>b!==target);
+  saveWork();renderWorkBlocks();
+};
+
+function renderLaunchCountdown(){
+  var el=document.getElementById('launch-days');
+  var sub=document.getElementById('launch-sub');
+  if(!el)return;
+  var now=new Date();
+  var launch=new Date('2026-04-21');
+  var diff=Math.ceil((launch-now)/(1000*60*60*24));
+  el.textContent=Math.max(0,diff);
+  if(sub){
+    if(diff>0)sub.textContent='April 21 — Clasifi cold email launch';
+    else sub.textContent='Launch day is here!';
+  }
+}
+
+// ── OVERRIDE TAB TO LOAD DATA ────────────────────────
+const _origTab2=window.tab;
+window.tab=function(id,btn){
+  _origTab2(id,btn);
+  if(id==='summary')renderSummary();
+  if(id==='work'){initWork();}
+  if(id==='settings')openSettingsTab();
+};
+
 
 </script>
 </body>
