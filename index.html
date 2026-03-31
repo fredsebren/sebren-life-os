@@ -1411,9 +1411,45 @@ function toggleCup(i){
 
 // Meals
 window.meal=function(name,cal,prot){
+  // Check correction memory for overrides
+  var corrected=getCorrectedMacros(name);
+  if(corrected){cal=corrected.cal;prot=corrected.prot;name=corrected.name||name;}
   S.meals.push({name,cal:parseInt(cal),prot:parseInt(prot)});
   renderMeals();saveLocal();
 };
+
+// ── CORRECTION MEMORY ─────────────────────────────
+var mealCorrections={};
+var CORR_KEY='sebren-meal-corrections';
+
+function loadCorrections(){
+  try{var s=localStorage.getItem(CORR_KEY);if(s)mealCorrections=JSON.parse(s);}catch(e){}
+}
+
+function saveCorrections(){
+  try{localStorage.setItem(CORR_KEY,JSON.stringify(mealCorrections));}catch(e){}
+}
+
+function normalizeKey(name){
+  return (name||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();
+}
+
+function saveCorrection(origName,newName,newCal,newProt){
+  var key=normalizeKey(origName);
+  if(!key)return;
+  mealCorrections[key]={name:newName,cal:parseInt(newCal),prot:parseInt(newProt),ts:Date.now()};
+  saveCorrections();
+}
+
+function getCorrectedMacros(name){
+  var key=normalizeKey(name);
+  return mealCorrections[key]||null;
+}
+
+loadCorrections();
+
+// ── TAP-TO-EDIT MEALS ─────────────────────────────
+var editingMealIdx=-1;
 
 function renderMeals(){
   const ml=document.getElementById('meal-list');
@@ -1429,14 +1465,77 @@ function renderMeals(){
   document.getElementById('prot-val').textContent=tp+'g';
   ml.innerHTML='';
   S.meals.forEach((m,i)=>{
-    const r=document.createElement('div');r.className='meal-row';
-    r.innerHTML=`<span style="color:var(--txt);flex:1">${m.name}</span><span style="color:var(--txt2);white-space:nowrap">${m.cal} cal / ${m.prot}g</span><button onclick="deleteMeal(${i})" style="font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0 0 0 8px;line-height:1;font-family:inherit">×</button>`;
-    ml.appendChild(r);
+    if(i===editingMealIdx){
+      // Inline edit mode
+      var r=document.createElement('div');
+      r.style.cssText='padding:10px 0;border-bottom:1px solid var(--border)';
+      r.innerHTML=`
+        <input type="text" id="edit-meal-name-${i}" value="${(m.name||'').replace(/"/g,'&quot;')}" style="width:100%;padding:8px 10px;border:1.5px solid var(--teal);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;margin-bottom:6px">
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="number" id="edit-meal-cal-${i}" value="${m.cal}" placeholder="Cal" inputmode="numeric" style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit">
+          <span style="font-size:12px;color:var(--txt3)">cal</span>
+          <input type="number" id="edit-meal-prot-${i}" value="${m.prot}" placeholder="Prot" inputmode="numeric" style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit">
+          <span style="font-size:12px;color:var(--txt3)">g</span>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="saveMealEdit(${i})" style="flex:1;padding:8px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Save</button>
+          <button onclick="saveMealEditAndRemember(${i})" style="flex:1;padding:8px;background:var(--teal-bg);color:var(--teal-txt);border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Save + remember</button>
+          <button onclick="cancelMealEdit()" style="padding:8px 12px;background:transparent;color:var(--txt3);border:1.5px solid var(--border);border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:inherit">Cancel</button>
+        </div>
+      `;
+      ml.appendChild(r);
+    } else {
+      // Normal display — tap to edit
+      var r=document.createElement('div');r.className='meal-row';r.style.cursor='pointer';
+      r.innerHTML=`<span style="color:var(--txt);flex:1" onclick="startMealEdit(${i})">${m.name}</span><span style="color:var(--txt2);white-space:nowrap" onclick="startMealEdit(${i})">${m.cal} cal / ${m.prot}g</span><button onclick="deleteMeal(${i})" style="font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0 0 0 8px;line-height:1;font-family:inherit">×</button>`;
+      ml.appendChild(r);
+    }
   });
 }
 
+window.startMealEdit=function(i){
+  editingMealIdx=i;
+  renderMeals();
+  // Focus the name field
+  setTimeout(function(){var el=document.getElementById('edit-meal-cal-'+i);if(el)el.focus();},50);
+};
+
+window.saveMealEdit=function(i){
+  var name=document.getElementById('edit-meal-name-'+i).value.trim();
+  var cal=parseInt(document.getElementById('edit-meal-cal-'+i).value)||0;
+  var prot=parseInt(document.getElementById('edit-meal-prot-'+i).value)||0;
+  if(!name)return;
+  S.meals[i]={name:name,cal:cal,prot:prot};
+  editingMealIdx=-1;
+  renderMeals();saveLocal();
+};
+
+window.saveMealEditAndRemember=function(i){
+  var origName=S.meals[i].name;
+  var name=document.getElementById('edit-meal-name-'+i).value.trim();
+  var cal=parseInt(document.getElementById('edit-meal-cal-'+i).value)||0;
+  var prot=parseInt(document.getElementById('edit-meal-prot-'+i).value)||0;
+  if(!name)return;
+  // Save correction memory for original name
+  saveCorrection(origName,name,cal,prot);
+  // Also save correction for new name if different
+  if(normalizeKey(name)!==normalizeKey(origName)){
+    saveCorrection(name,name,cal,prot);
+  }
+  S.meals[i]={name:name,cal:cal,prot:prot};
+  editingMealIdx=-1;
+  renderMeals();saveLocal();
+};
+
+window.cancelMealEdit=function(){
+  editingMealIdx=-1;
+  renderMeals();
+};
+
 window.deleteMeal=function(i){
   S.meals.splice(i,1);
+  if(editingMealIdx===i)editingMealIdx=-1;
+  else if(editingMealIdx>i)editingMealIdx--;
   renderMeals();
   saveLocal();
 };
@@ -1821,9 +1920,27 @@ window.aiLookupMeal=function(){
   btn.disabled=true;
   result.style.display='none';
 
+  // Check correction memory first
+  var corrected=getCorrectedMacros(query);
+  if(corrected){
+    btn.textContent='Look up macros with AI';
+    btn.disabled=false;
+    window._aiMealParsed={meal:corrected.name||query,calories:corrected.cal,protein:corrected.prot,carbs:0,fat:0,notes:'From your correction memory — tap "Log this meal" to use these values.'};
+    showAIMealResult(window._aiMealParsed,true);
+    return;
+  }
+
+  // Detect restaurant chains for more accurate prompting
+  var chainHints=detectChain(query);
+
   callClaude({
-    max_tokens:300,
-    system:'You are a nutrition expert. When given a meal or food item, return ONLY a JSON object with these exact fields: {"meal":"full meal name","calories":number,"protein":number,"carbs":number,"fat":number,"notes":"brief note"}. Use realistic nutrition data. No markdown, no explanation, just the JSON object.',
+    max_tokens:400,
+    system:'You are a nutrition expert who ALWAYS estimates on the high side for calories and fat, and conservative on protein. This is critical — the user is trying to lose weight and underestimating calories is dangerous. When in doubt, round calories UP by 10-15% and protein DOWN by 10%.' +
+      (chainHints ? '\n\nIMPORTANT: The user is ordering from '+chainHints.chain+'. Use ACTUAL published nutrition data from their menu — do not estimate. '+chainHints.chain+' publishes exact calorie counts. If you are not certain of the exact item, pick the closest match and note it.' : '') +
+      '\n\nReturn ONLY a JSON object with these exact fields: {"meal":"full meal name'+(chainHints?' ('+chainHints.chain+')':'')+'"' +
+      ',"calories":number,"protein":number,"carbs":number,"fat":number,"notes":"brief note' +
+      (chainHints ? ' — cite if this is published nutrition data or an estimate' : '') +
+      '"}. No markdown, no explanation, just the JSON object.',
     messages:[{role:'user',content:'What are the macros for: '+query}]
   })
   .then(data=>{
@@ -1834,21 +1951,7 @@ window.aiLookupMeal=function(){
       var clean=text.replace(/```json|```/g,'').trim();
       var parsed=JSON.parse(clean);
       window._aiMealParsed=parsed;
-      result.style.display='block';
-      result.innerHTML=`
-        <div style="font-weight:600;font-size:14px;color:var(--txt);margin-bottom:6px">${parsed.meal}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px">
-          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.calories}</div><div style="font-size:10px;color:var(--txt2)">cal</div></div>
-          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.protein}g</div><div style="font-size:10px;color:var(--txt2)">protein</div></div>
-          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.carbs}g</div><div style="font-size:10px;color:var(--txt2)">carbs</div></div>
-          <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.fat}g</div><div style="font-size:10px;color:var(--txt2)">fat</div></div>
-        </div>
-        ${parsed.notes?`<div style="font-size:11px;color:var(--txt2);margin-bottom:10px">${parsed.notes}</div>`:''}
-        <div style="display:flex;flex-wrap:wrap;gap:0">
-          <button class="ai-confirm-btn primary" onclick="confirmAIMeal()">Log this meal</button>
-          <button class="ai-confirm-btn secondary" onclick="confirmAIMealAndSave()">Log + save as favorite</button>
-        </div>
-      `;
+      showAIMealResult(parsed,false);
     }catch(e){
       result.style.display='block';
       result.innerHTML='<div style="color:var(--danger);font-size:13px">Could not parse response — try rephrasing your meal</div>';
@@ -1861,6 +1964,74 @@ window.aiLookupMeal=function(){
     result.innerHTML='<div style="color:var(--danger);font-size:13px">Connection error — check your internet and try again</div>';
   });
 };
+
+function showAIMealResult(parsed,fromMemory){
+  var result=document.getElementById('ai-meal-result');
+  result.style.display='block';
+  result.innerHTML=`
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+      <span style="font-weight:600;font-size:14px;color:var(--txt);flex:1">${parsed.meal}</span>
+      ${fromMemory?'<span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:var(--teal-bg);color:var(--teal-txt)">memorized</span>':''}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+      <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.calories}</div><div style="font-size:10px;color:var(--txt2)">cal</div></div>
+      <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.protein}g</div><div style="font-size:10px;color:var(--txt2)">protein</div></div>
+      <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.carbs||0}g</div><div style="font-size:10px;color:var(--txt2)">carbs</div></div>
+      <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${parsed.fat||0}g</div><div style="font-size:10px;color:var(--txt2)">fat</div></div>
+    </div>
+    ${parsed.notes?`<div style="font-size:11px;color:var(--txt2);margin-bottom:10px;line-height:1.4">${parsed.notes}</div>`:''}
+    <div style="display:flex;flex-wrap:wrap;gap:0">
+      <button class="ai-confirm-btn primary" onclick="confirmAIMeal()">Log this meal</button>
+      <button class="ai-confirm-btn secondary" onclick="confirmAIMealAndSave()">Log + save as favorite</button>
+    </div>
+  `;
+}
+
+// ── RESTAURANT CHAIN DETECTION ────────────────────
+function detectChain(query){
+  var q=query.toLowerCase();
+  var chains=[
+    {keywords:['chick-fil-a','chickfila','chic fil a','chik fil a','cfa'],chain:'Chick-fil-A'},
+    {keywords:['mcdonald','mcdonalds','mickey d','mcd'],chain:"McDonald's"},
+    {keywords:['whataburger','whatburger'],chain:'Whataburger'},
+    {keywords:['chipotle'],chain:'Chipotle'},
+    {keywords:['subway'],chain:'Subway'},
+    {keywords:['jersey mike','jersey mikes'],chain:"Jersey Mike's"},
+    {keywords:['taco bell','taco bueno'],chain:'Taco Bell'},
+    {keywords:['wendy','wendys'],chain:"Wendy's"},
+    {keywords:['sonic drive','sonic blast','sonic'],chain:'Sonic Drive-In'},
+    {keywords:['five guys','five guy'],chain:'Five Guys'},
+    {keywords:['in-n-out','in n out','innout'],chain:'In-N-Out'},
+    {keywords:['panda express'],chain:'Panda Express'},
+    {keywords:['raising cane','canes'],chain:"Raising Cane's"},
+    {keywords:['chili','chilis'],chain:"Chili's"},
+    {keywords:['olive garden'],chain:'Olive Garden'},
+    {keywords:['applebee','applebees'],chain:"Applebee's"},
+    {keywords:['starbucks','sbux'],chain:'Starbucks'},
+    {keywords:['dunkin','dunkin donut'],chain:"Dunkin'"},
+    {keywords:['panera'],chain:'Panera Bread'},
+    {keywords:['wingstop'],chain:'Wingstop'},
+    {keywords:['popeye','popeyes'],chain:"Popeyes"},
+    {keywords:['burger king','bk whopper'],chain:'Burger King'},
+    {keywords:['arby','arbys'],chain:"Arby's"},
+    {keywords:['jack in the box','jack box'],chain:'Jack in the Box'},
+    {keywords:['zaxby','zaxbys'],chain:"Zaxby's"},
+    {keywords:['culver','culvers'],chain:"Culver's"},
+    {keywords:['shake shack'],chain:'Shake Shack'},
+    {keywords:['firehouse sub'],chain:'Firehouse Subs'},
+    {keywords:['jason deli','jason\'s deli'],chain:"Jason's Deli"},
+    {keywords:['torchy','torchys'],chain:"Torchy's Tacos"},
+    {keywords:['cheddar','cheddars'],chain:"Cheddar's Scratch Kitchen"},
+    {keywords:['texas roadhouse'],chain:'Texas Roadhouse'},
+    {keywords:['cracker barrel'],chain:'Cracker Barrel'}
+  ];
+  for(var i=0;i<chains.length;i++){
+    for(var j=0;j<chains[i].keywords.length;j++){
+      if(q.includes(chains[i].keywords[j]))return chains[i];
+    }
+  }
+  return null;
+}
 
 window.confirmAIMeal=function(){
   var p=window._aiMealParsed;
@@ -2622,12 +2793,13 @@ LOG A MEAL:
 [MEAL:CALORIES|PROTEIN|MEAL NAME]
 Trigger: Fred says what he ate, is eating, or had for a meal.
 IMPORTANT: Log each distinct food item as its OWN separate [MEAL:] tag. Do NOT combine multiple items into one tag.
+CRITICAL BIAS: ALWAYS estimate calories on the HIGH side (round up 10-15%) and protein on the LOW side (round down 10%). Fred is trying to lose weight — underestimating calories is the #1 diet killer. When guessing portion sizes, assume the larger option. For restaurant meals, use the restaurant's actual published nutrition data if you know it.
 Examples:
-"Had a protein shake" → [MEAL:180|30|Protein shake]
-"Turkey sandwich with chips" → [MEAL:480|32|Turkey sandwich] [MEAL:150|2|Jalapeño chips]
-"Mozzarella sticks and an M&M sonic blast" → [MEAL:350|14|Mozzarella sticks] [MEAL:580|12|M&M Sonic Blast small]
-"2 eggs, toast, and a coffee" → [MEAL:180|12|2 scrambled eggs] [MEAL:130|4|Toast with butter] [MEAL:5|0|Black coffee]
-Use realistic nutrition estimates. His goal is ${calGoal} cal / ${protGoal}g protein.
+"Had a protein shake" → [MEAL:200|28|Protein shake]
+"Turkey sandwich with chips" → [MEAL:520|30|Turkey sandwich] [MEAL:170|2|Jalapeño chips]
+"Mozzarella sticks and an M&M sonic blast" → [MEAL:400|13|Mozzarella sticks] [MEAL:640|11|M&M Sonic Blast small]
+"2 eggs, toast, and a coffee" → [MEAL:200|12|2 scrambled eggs] [MEAL:150|4|Toast with butter] [MEAL:5|0|Black coffee]
+Use realistic but HIGH-side nutrition estimates. His goal is ${calGoal} cal / ${protGoal}g protein.
 
 LOG STEPS:
 [STEPS:NUMBER]
@@ -3044,7 +3216,7 @@ function processVoiceForActions(userMsg, sheenaReply){
     var foodWords=['i ate','i had','i just ate','i just had','just ate','just had','for breakfast','for lunch','for dinner','eating','i grabbed','had some','had a'];
     var foodHit=false;foodWords.forEach(function(t){if(lower.includes(t))foodHit=true;});
     if(foodHit){
-      callClaude({max_tokens:100,system:'Extract a meal and estimate macros. Return ONLY JSON: {"meal":"name","calories":number,"protein":number} or null. No other text.',messages:[{role:'user',content:userMsg}]})
+      callClaude({max_tokens:100,system:'Extract a meal and estimate macros. ALWAYS estimate calories on the HIGH side (round up 10-15%) and protein on the LOW side. For chain restaurants, use published nutrition data. Return ONLY JSON: {"meal":"name","calories":number,"protein":number} or null. No other text.',messages:[{role:'user',content:userMsg}]})
       .then(function(d){try{var p=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());if(p&&p.meal&&p.calories>0){window.meal(p.meal,String(p.calories),p.protein||0);var tc=(S.meals||[]).reduce(function(a,m){return a+m.cal;},0);if(transcript)transcript.textContent='🍽 '+p.meal+' ('+p.calories+' cal) — Day: '+tc;}}catch(e){}}).catch(function(){});
     }
     // Schedule fallback
