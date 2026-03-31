@@ -535,6 +535,30 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
   <div class="sec">Meals today</div>
   <div class="card"><div id="meal-list"><div class="empty-state">Nothing logged yet — add below</div></div></div>
 
+  <div class="sec">Scan barcode</div>
+  <div class="card" id="barcode-card">
+    <div id="barcode-idle">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:var(--radius);background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="2" height="12" fill="var(--txt2)"/><rect x="5" y="4" width="1" height="12" fill="var(--txt2)"/><rect x="7" y="4" width="3" height="12" fill="var(--txt2)"/><rect x="11" y="4" width="1" height="12" fill="var(--txt2)"/><rect x="13" y="4" width="2" height="12" fill="var(--txt2)"/><rect x="16" y="4" width="2" height="12" fill="var(--txt2)"/></svg>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500;color:var(--txt)">Scan a food barcode</div>
+          <div style="font-size:11px;color:var(--txt3);margin-top:2px">Camera → UPC → exact macros from Open Food Facts</div>
+        </div>
+        <button onclick="startBarcodeScan()" style="padding:9px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Scan</button>
+      </div>
+    </div>
+    <div id="barcode-scanning" style="display:none">
+      <div id="barcode-reader" style="width:100%;border-radius:var(--radius);overflow:hidden;margin-bottom:10px"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span id="barcode-status" style="font-size:12px;color:var(--txt2)">Point camera at barcode...</span>
+        <button onclick="stopBarcodeScan()" style="padding:7px 14px;background:transparent;color:var(--txt3);border:1.5px solid var(--border);border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:inherit">Cancel</button>
+      </div>
+    </div>
+    <div id="barcode-result" style="display:none"></div>
+  </div>
+
   <div class="sec">AI coach — right now</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
     <button onclick="coachPrompt('craving')" style="padding:14px 8px;border-radius:var(--radius-lg);border:none;background:#FCEBEB;cursor:pointer;font-family:inherit;text-align:center;box-shadow:var(--shadow-sm);transition:transform 0.15s" ontouchstart="this.style.transform='scale(0.97)'" ontouchend="this.style.transform='scale(1)'">
@@ -655,7 +679,8 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
     <div class="add-sect">
       <div class="add-sect-title">Manual add</div>
       <div class="inp-row" style="margin-top:0;margin-bottom:8px">
-        <input type="text" id="groc-inp" placeholder="Item name...">
+        <input type="text" id="groc-inp" placeholder="Item name..." style="flex:3">
+        <input type="text" id="groc-qty" placeholder="Qty" style="max-width:60px;text-align:center">
       </div>
       <div class="add-selects">
         <select id="groc-cat">
@@ -1067,6 +1092,7 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
   </div>
 </div>
 </div><!-- end app -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, doc, onSnapshot, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -1661,7 +1687,8 @@ function renderGroc(){
     html+=`<div class="groc-cat-hdr"><span class="groc-cat-name">${cat}</span><span class="groc-cat-count">${bycat[cat].length}</span></div>`;
     bycat[cat].forEach(item=>{
       const typePill=`<span class="groc-type-pill ${item.type==='weekly'?'weekly':''}">${item.type}</span>`;
-      html+=`<div class="groc-item"><div class="groc-chk" onclick="cartIt('${item.id}')"></div><span class="groc-name">${item.name}</span>${typePill}<button class="groc-del" onclick="delItem('${item.id}')">×</button></div>`;
+      const qtyBadge=item.qty?`<span style="font-size:11px;font-weight:600;color:var(--accent);background:var(--bg3);padding:2px 7px;border-radius:6px;white-space:nowrap">${item.qty}</span>`:'';
+      html+=`<div class="groc-item"><div class="groc-chk" onclick="cartIt('${item.id}')"></div><span class="groc-name">${item.name}</span>${qtyBadge}${typePill}<button class="groc-del" onclick="delItem('${item.id}')">×</button></div>`;
     });
   });
   if(!html)html='<div class="empty-state">List is empty — add items in the + Add tab</div>';
@@ -1676,7 +1703,8 @@ function renderCart(){
   el.innerHTML='';
   cartItems.forEach(item=>{
     const row=document.createElement('div');row.className='cart-item';
-    row.innerHTML=`<div class="cart-chk"></div><span class="cart-name">${item.name}</span><button class="cart-undo" onclick="undoCart('${item.id}')">undo</button>`;
+    const qtyStr=item.qty?` <span style="font-weight:600;opacity:0.7">(${item.qty})</span>`:'';
+    row.innerHTML=`<div class="cart-chk"></div><span class="cart-name">${item.name}${qtyStr}</span><button class="cart-undo" onclick="undoCart('${item.id}')">undo</button>`;
     el.appendChild(row);
   });
 }
@@ -1685,7 +1713,7 @@ window.cartIt=function(id){
   const item=grocItems.find(i=>i.id===id);
   if(!item)return;
   item.done=true;
-  cartItems.unshift({id,name:item.name});
+  cartItems.unshift({id,name:item.name,qty:item.qty||''});
   saveGroc();
 };
 
@@ -1712,9 +1740,11 @@ window.addManual=function(){
   if(!name)return;
   const cat=document.getElementById('groc-cat').value;
   const type=document.getElementById('groc-type').value;
+  const qty=(document.getElementById('groc-qty').value||'').trim();
   const id='m'+Date.now();
-  grocItems.push({id,name,cat,type,done:false});
+  grocItems.push({id,name,cat,type,done:false,qty:qty||''});
   document.getElementById('groc-inp').value='';
+  document.getElementById('groc-qty').value='';
   saveGroc();
   grocView('list',document.querySelectorAll('.groc-nb')[0]);
 };
@@ -4152,11 +4182,180 @@ function sheenaAddCalEvent(dateStr, time, title){
   return true;
 }
 
+// ── BARCODE SCANNER ────────────────────────────────
+var barcodeScanner=null;
+var barcodeScanActive=false;
+
+window.startBarcodeScan=function(){
+  var idleEl=document.getElementById('barcode-idle');
+  var scanEl=document.getElementById('barcode-scanning');
+  var resultEl=document.getElementById('barcode-result');
+  var statusEl=document.getElementById('barcode-status');
+  if(idleEl)idleEl.style.display='none';
+  if(scanEl)scanEl.style.display='block';
+  if(resultEl)resultEl.style.display='none';
+
+  if(typeof Html5Qrcode==='undefined'){
+    if(statusEl)statusEl.textContent='Scanner library not loaded — check connection';
+    return;
+  }
+
+  try{
+    barcodeScanner=new Html5Qrcode('barcode-reader');
+    barcodeScanActive=true;
+    barcodeScanner.start(
+      {facingMode:'environment'},
+      {fps:10,qrbox:{width:250,height:120},aspectRatio:1.5},
+      function(decodedText){
+        // Success — stop scanning and look up the UPC
+        if(!barcodeScanActive)return;
+        barcodeScanActive=false;
+        if(statusEl)statusEl.textContent='Found: '+decodedText+' — looking up...';
+        stopBarcodeScanQuiet();
+        lookupBarcode(decodedText);
+      },
+      function(err){
+        // Ignore scan errors (no barcode found yet)
+      }
+    ).catch(function(e){
+      if(statusEl)statusEl.textContent='Camera error: '+e;
+      console.error('Barcode start error:',e);
+    });
+  }catch(e){
+    if(statusEl)statusEl.textContent='Scanner error — try again';
+    console.error('Barcode init error:',e);
+  }
+};
+
+function stopBarcodeScanQuiet(){
+  barcodeScanActive=false;
+  if(barcodeScanner){
+    try{barcodeScanner.stop().catch(function(){});}catch(e){}
+    try{barcodeScanner.clear();}catch(e){}
+    barcodeScanner=null;
+  }
+}
+
+window.stopBarcodeScan=function(){
+  stopBarcodeScanQuiet();
+  var idleEl=document.getElementById('barcode-idle');
+  var scanEl=document.getElementById('barcode-scanning');
+  if(idleEl)idleEl.style.display='block';
+  if(scanEl)scanEl.style.display='none';
+};
+
+function lookupBarcode(upc){
+  var resultEl=document.getElementById('barcode-result');
+  var scanEl=document.getElementById('barcode-scanning');
+  var idleEl=document.getElementById('barcode-idle');
+
+  fetch('https://world.openfoodfacts.org/api/v2/product/'+encodeURIComponent(upc)+'.json')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(scanEl)scanEl.style.display='none';
+    if(resultEl)resultEl.style.display='block';
+
+    if(!data||data.status!==1||!data.product){
+      resultEl.innerHTML=`
+        <div style="text-align:center;padding:8px 0">
+          <div style="font-size:13px;color:var(--txt2);margin-bottom:8px">Product not found for UPC: <strong>${upc}</strong></div>
+          <div style="font-size:12px;color:var(--txt3);margin-bottom:12px">Not in Open Food Facts database</div>
+          <div style="display:flex;gap:8px;justify-content:center">
+            <button onclick="retryBarcode()" style="padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Scan again</button>
+            <button onclick="manualBarcodeEntry('${upc}')" style="padding:8px 16px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:inherit">Enter manually</button>
+          </div>
+        </div>`;
+      return;
+    }
+
+    var p=data.product;
+    var name=p.product_name||p.product_name_en||'Unknown product';
+    var brand=p.brands||'';
+    var n=p.nutriments||{};
+    var servingSize=p.serving_size||'';
+    // Per serving if available, otherwise per 100g
+    var cal=Math.round(n['energy-kcal_serving']||n['energy-kcal_100g']||0);
+    var prot=Math.round(n['proteins_serving']||n['proteins_100g']||0);
+    var carbs=Math.round(n['carbohydrates_serving']||n['carbohydrates_100g']||0);
+    var fat=Math.round(n['fat_serving']||n['fat_100g']||0);
+    var isPerServing=!!n['energy-kcal_serving'];
+
+    window._barcodeParsed={meal:(brand?brand+' ':'')+name,calories:cal,protein:prot};
+
+    resultEl.innerHTML=`
+      <div style="margin-bottom:10px">
+        <div style="font-size:14px;font-weight:600;color:var(--txt)">${brand?brand+' — ':''}${name}</div>
+        ${servingSize?`<div style="font-size:11px;color:var(--txt3);margin-top:3px">Serving: ${servingSize}${isPerServing?'':' (per 100g)'}</div>`:''}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${cal}</div><div style="font-size:10px;color:var(--txt2)">cal</div></div>
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${prot}g</div><div style="font-size:10px;color:var(--txt2)">protein</div></div>
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${carbs}g</div><div style="font-size:10px;color:var(--txt2)">carbs</div></div>
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--txt)">${fat}g</div><div style="font-size:10px;color:var(--txt2)">fat</div></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <button class="ai-confirm-btn primary" onclick="logBarcodeMeal()">Log this meal</button>
+        <button class="ai-confirm-btn secondary" onclick="logBarcodeMealAndSave()">Log + save as favorite</button>
+        <button onclick="retryBarcode()" style="padding:8px 14px;background:transparent;color:var(--txt3);border:1.5px solid var(--border);border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:inherit">Scan another</button>
+      </div>
+    `;
+  })
+  .catch(function(e){
+    if(scanEl)scanEl.style.display='none';
+    if(resultEl){
+      resultEl.style.display='block';
+      resultEl.innerHTML='<div style="color:var(--danger);font-size:13px;text-align:center;padding:8px 0">Network error looking up barcode. <button onclick="retryBarcode()" style="color:var(--accent);background:transparent;border:none;cursor:pointer;font-family:inherit;font-weight:600;text-decoration:underline">Try again</button></div>';
+    }
+  });
+}
+
+window.logBarcodeMeal=function(){
+  var p=window._barcodeParsed;
+  if(!p)return;
+  window.meal(p.meal,String(p.calories),p.protein);
+  resetBarcodeUI();
+};
+
+window.logBarcodeMealAndSave=function(){
+  var p=window._barcodeParsed;
+  if(!p)return;
+  window.meal(p.meal,String(p.calories),p.protein);
+  if(!favorites.find(function(f){return f.name===p.meal;})){
+    favorites.push({name:p.meal,cal:p.calories,prot:p.protein});
+    saveFoodData();renderFavs();
+  }
+  resetBarcodeUI();
+};
+
+window.retryBarcode=function(){
+  resetBarcodeUI();
+  setTimeout(function(){startBarcodeScan();},100);
+};
+
+window.manualBarcodeEntry=function(upc){
+  // Pre-fill the AI lookup with the UPC for manual entry
+  var inp=document.getElementById('ai-meal-input');
+  if(inp)inp.value='UPC '+upc+' — ';
+  inp.focus();
+  resetBarcodeUI();
+};
+
+function resetBarcodeUI(){
+  var idleEl=document.getElementById('barcode-idle');
+  var scanEl=document.getElementById('barcode-scanning');
+  var resultEl=document.getElementById('barcode-result');
+  if(idleEl)idleEl.style.display='block';
+  if(scanEl)scanEl.style.display='none';
+  if(resultEl)resultEl.style.display='none';
+}
+
 // ── MASTER INIT ─────────────────────────────────────
 // Expose functions needed by HTML onclick in module context
 window.openSheena=openSheena;
 window.closeSheena=closeSheena;
 window.fetchWeather=fetchWeather;
+window.startBarcodeScan=window.startBarcodeScan;
+window.stopBarcodeScan=window.stopBarcodeScan;
 loadKids();
 loadFaithData();
 loadDanaData();
