@@ -3540,14 +3540,6 @@ function playTone(freq, duration, delay, volume){
 
 var _fullTranscript='';
 
-// Pre-warm mic
-var _micStream=null;
-function preWarmMic(){
-  if(_micStream)return;
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return;
-  try{navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){_micStream=stream;}).catch(function(){});}catch(e){}
-}
-
 function getDaysUntil(month, day){
   var now = new Date();
   var next = new Date(now.getFullYear(), month-1, day);
@@ -3870,9 +3862,6 @@ function initChatTab(){
   if(!cachedMood){
     showMoodCardInChat();
   }
-
-  // Pre-warm mic
-  preWarmMic();
 
   // Start reminder interval
   startReminderChecker();
