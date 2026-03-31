@@ -4,236 +4,311 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Life OS">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#1B3A4B">
 <title>Sebren Life OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAALv0lEQVR4nO3dS2yU1R/G8Wem03ZwuFgBSwljelFKUQMFC1IwsZQuuLUxBGOiiGLSjRohGsHoQkIIYQGoXYEJKkUlbBQlhEuVEFsloU2tJVDLpZNJp4CtlCa9jAXmuPj/29Re6My8Z+ac98zzSc5GnPf9Fb49eTvv29YBfQjVA5BljkQegAGbL+59xfuEjDhxxaW1eJyEEdNwMesulkEzZBqP9P5iETRDpkhJ69Ap60D/x5gpGtK6kfWZwZBJFktNytihGTPJZKknq0EzZoqFqLuKdntnyBQvETUazQ7NmCmeIuot0qAZM6kQdneRBM2YSaWw+pP9PjSRUuEGzd2ZdDBuh+EEzZhJJw/scbygGTPpaMwueQ1NRnlQ0NydSWej9jlW0IyZ7GBEp7zkIKOMFjR3Z7KT//TKHZqMMjxo7s5kR4PdcocmozBoMsrQoHm5QXYmAO7QZBgGTUYZ+H4tXm6QEbhDk1EYNBmFQZNRnOD1MxmEOzQZhUGTURg0GYVBk1EYNBmFQZNRGDQZhUGTURg0GYVBk1EYNBmFQZNRGDQZhUGTURg0GYVBk1EYNBmFQZNRGDQZhUGTURg0GcWlegBZHA4H5s6di/z8fOTl5WH27NnIyMhAeno60tLS4Ha74Xa7EQqF0NfXh76+PvT29qKvrw/d3d24ceMGAoEAAoEAWltbEQgEcP36dfh8PgjBb4y3Cwds/GMMPB4P1q5di3Xr1qGoqAhTp06Vfo6enh5cunQJFy9eHFy1tbW4ffu29HMNVVVVheLiYkvHyM/Px++//y5nIJuw5Q6dk5ODzZs34/XXX4fH44npuTweDwoKClBQUDD434QQaGpqQnV1NWpqalBTU4OrV6/GdA4Kn7DLSktLExUVFeLevXtCN01NTVI/1qqqKsszzZ8/X/m/WbyXbXbokpISVFZWIj09XfUoo5o2bZrqEQg2eZdj69atOHXqlLYxkz6036F37dqFbdu2qR6DbELrHfrNN99kzBQRbYNetGgRPv30U9VjkM1oGXRycjIOHjyIpKQk1aOQzWgZ9KZNm/Dkk0+qHoNsSLugk5KSeN1MUdPuXY7ly5cjMzNTyrFu3bqFs2fP4pdffsG1a9fQ0tKCzs7OwWc4UlJSMGHCBKSlpSEjIwOzZs1CXl4e8vLysHDhQuTk5EiZg+JHu6Bfeukly8doaGjAjh078N133yEUCo35/wWDQQSDQXR2duL69esj/nzatGkoLCxESUkJSkpKkJuba3k2ij3ltyuHLp/PZ+l27xdffCFSU1NjMtsTTzwhPvjgA1FXVzfivB0dHVLPxVvfUS/lAwyumTNnWvoHrK6uFi6XKy6zPv3002Lfvn2ivb2dQWu0tPqiMC8vz9LrP/74Y9y7d0/SNA/W2NiILVu2wOv14o033ki4xzR1pVXQWVlZUb+2u7sbP/30k8RpwhMMBnHw4EGsWLEi7uemkbQKevr06VG/trW1ld9ZQnoFbeVhfadTqw+FFNGqguTk5Khfm5mZiUmTJkmchuxIq6CDwWDUr01JScHGjRslTkN2pFXQnZ2dll6/c+dOLFq0SNI0ZEdaBe33+y29fvLkyTh79izef/99uN1uSVORnWgV9OXLly0f46GHHsLu3bsRCASwd+9eLF26lF8wJhjld3cGltPpFHfu3LF8h2y4jo4O8f3334v33ntPPPfcc2LixInKP9bxFu8URre0ejgpFArh1KlTePHFF6Ued+rUqSgrK0NZWdngef7880/U1dWhtrYWdXV1qK+vR09Pj9TzkhrKP6uGrhdeeEHCnhy5+/fviz/++EPs379fbNy4UXi9Xu7Q9lzKB/jPSkpKEn6/X0Ki1jU1NYk9e/aIwsJC4XA4GLQ9lvIBRqxNmzZJyFEuv98vtm/fLh577DEGrfdSPsCI5XQ6RXV1tYQM5bt79644dOiQyM3NZdAaLi3fzwqFQnjllVfw999/qx5lBJfLhQ0bNqCxsRGffPIJJk6cqHokGkLLoAHA5/NhzZo16O7uVj3KqJKTk/HOO++goaGBdyc1om3QAHD+/HksX74c7e3tqkcZU3Z2Ns6dO4d169apHoWgedAAcOHCBcyfPx/nzp1TPcqY3G43jhw5gtWrV6seJeFpHzQAtLW1oaioCOXl5ejo6FA9zqhcLhe+/fZbPP7446pHSWi2CBoAhBD4/PPPkZWVhY8++gh//fWX6pFGmDRpEr788kvVYyQ02wQ9oLu7Gzt37oTX68WGDRvw888/P/Bnb8Tb0qVLeT2tmPL3Dq2ujIwMUV5eLo4dOya6urqsv9ls0W+//cb3odUt5QNIXU6nU+Tn54u3335bfPPNN6KlpcV6oVGYO3cug1awtHraToZQKIT6+nrU19ejoqICADBjxgwsWbIES5YswbPPPouCgoKYfwNAaWkpLl26FNNz0OiUf1bFe7ndblFUVCR27NghGhsbJezHI504ccLSjNyho17KB1C+Zs+eLfbs2SP1+vvWrVuWZmLQ0S3bvcsRC83NzXj33XeRmZmJr776SsoxH3300Zj/UlAaiUEP0dnZiddeew27d++WcryZM2dKOQ6Fj0GP4sMPP8TFixctH4dP4sUfgx7F/fv3ceDAAcvH4Y9SiD8GPYbq6mrLx/jnn38kTEKRYNBjkPGsSG9vr4RJKBLaBX3y5EkUFhaqHgNTpkyxfIzbt29LmIQioV3Qzz//PGpqavDjjz9i4cKFyuaw+tsE+vr6tHwi0HTaBT1gzZo1qK2tRVVVFUpKSuJ+/ldffdXS630+n5xBKCLaBj2guLgYp0+fRmNjI9566y08/PDDMT9nWVkZSktLLR2jtrZW0jQUCe2DHvDUU0+hoqICbW1tOHz4MEpLS5Gamir9PGVlZTh8+LDl45w/f17CNBQN5fffh65gMBj2swpdXV3i6NGjory8XGRnZ1t+nqOyslKEQiHLz1AIIURWVpbyZzlUaG1tVdqPrR8fnTx5MtavX4/169cDAG7evDn46GhzczP8fj/8fj+6urrQ29uLYDCICRMmwOPxID09Hbm5uZg3bx5WrVqFBQsWSJvrwoULaGlpkXY8Cp+tgx5uxowZWLlyJVauXKl0Dhl3GSk6trmGtou2tjYcOnRI9RgJi0FLtm3bNvT396seI2ExaInOnDmDyspK1WMkNAYtic/nw8svv6x6jITHoCW4efMmVq9erfXP4EsUDNqiq1evYtmyZfwOb01oF/Rnn32G1tZW1WOE5euvv8aCBQtw7do11aPQEMrvDg5fDodDLFu2TOzbt09cuXJF9c2vERoaGsSKFSti+nfAO4VRL/UBj7fmzJkjNm/eLH744YeY/B7DcIRCIXH69Gmxdu1a4XQ6Y/4xM+jolmOgartISkrCvHnzsHjxYhQUFOCZZ55Bbm4uUlJSpJ/rzp07+PXXX3H8+HEcO3YMbW1t0s8xlqqqKhQXF8ftfLIEAgHMmjVL2fltF/RoXC4XcnJyMGfOHGRnZ8Pr9cLr9SI9PR2PPPII0tLS4PF4kJqaOhh+f38/+vv70dPTg46ODrS3t+PGjRu4cuUKmpub0dDQgMuXL0MI2//1JBQjgiYaoN27HERWMGgyCoMmozBoMgqDJqMwaDIKgyajMGgyCoMmozBoMgqDJqMwaDIKgyajMGgyCoMmozBoMgqDJqMwaDIKgyajMGgyCoMmozBoMooT//tRBkRG4A5NRmHQZBQGTUYZCJrX0WQCB3doMgqDJqMMDZqXHWRnDoA7NBmGQZNRhgfNyw6yo8FuuUOTUUYLmrs02cl/euUOTUYZK2ju0mQHIzp90A7NqElno/bJSw4yynhBc5cmHY3ZZTg7NKMmnTywx3AvORg16WDcDnkNTUaJJGju0qRSWP1FukMzalIh7O6iueRg1BRPEfVmNU5h8fVEY4mqTatfFHK3pliIuisZ73IwapLJUk+yY+QlCEVLSouy34fmbk3RkNZNLAPkbk3jkd5fPHZUhk3Dxay7eF8iMO7EFZfWVF7zMm7zxb2vfwFEgD5o3n4VRwAAAABJRU5ErkJggg==">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23000'/%3E%3Ctext x='90' y='120' text-anchor='middle' font-family='-apple-system,BlinkMacSystemFont,sans-serif' font-size='94' font-weight='700' fill='%23fff' letter-spacing='-4'%3ESL%3C/text%3E%3C/svg%3E">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{--bg:#fff;--bg2:#f5f5f3;--bg3:#ebebea;--txt:#1a1a1a;--txt2:#666;--txt3:#999;--border:#e5e5e5;--border2:#ccc;--success:#16a34a;--success-bg:#f0fdf4;--success-border:#bbf7d0;--info:#1d6fa5;--info-bg:#eff6ff;--info-border:#bfdbfe;--warn-bg:#faeeda;--warn-txt:#633806;--warn-border:#EF9F27;--danger:#dc2626;--danger-bg:#fef2f2;--purple-bg:#EEEDFE;--purple-txt:#3C3489;--green-bg:#EAF3DE;--green-txt:#27500A;--coral-bg:#FAECE7;--coral-txt:#712B13;--radius:8px;--radius-lg:12px}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#eaeae8;
+  --txt:#111;--txt2:#555;--txt3:#999;
+  --border:#e5e5e3;--border2:#d0d0ce;
+  --accent:#1B3A4B;--accent-light:#2A5267;
+  --teal:#5DCAA5;--teal-dark:#1D9E75;--teal-bg:#E8F8F1;--teal-txt:#085041;
+  --success:#1D9E75;--success-bg:#E8F8F1;--success-border:#9FE1CB;
+  --info:#378ADD;--info-bg:#EBF4FD;--info-border:#B5D4F4;
+  --warn-bg:#FFF4E0;--warn-txt:#633806;--warn-border:#EF9F27;
+  --danger:#dc2626;--danger-bg:#fef2f2;
+  --purple-bg:#EEEDFE;--purple-txt:#3C3489;
+  --green-bg:#EAF3DE;--green-txt:#27500A;
+  --coral-bg:#FAECE7;--coral-txt:#712B13;
+  --radius:12px;--radius-lg:16px;--radius-xl:20px;
+  --nav-height:72px;
+  --font:'DM Sans',-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.04);
+  --shadow:0 2px 8px rgba(0,0,0,0.06);
+  --shadow-lg:0 4px 16px rgba(0,0,0,0.08)
+}
+body{font-family:var(--font);background:var(--bg2);min-height:100vh;color:var(--txt);-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
+.app{max-width:430px;margin:0 auto;background:var(--bg2);min-height:100vh;display:flex;flex-direction:column;padding-bottom:calc(var(--nav-height) + 12px)}
 
-.filt{font-size:11px;font-weight:600;padding:4px 10px;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;color:var(--txt2);background:transparent;font-family:inherit}
-.filt.on{background:var(--txt);color:#fff;border-color:var(--txt)}
-.danger-btn{color:var(--danger,#dc2626)!important;border-color:var(--danger,#dc2626)!important}
-.edit-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
-.edit-row:last-child{border-bottom:none}
-.edit-row input{flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;background:var(--bg);color:var(--txt)}
-.del-btn{font-size:18px;color:var(--txt3);cursor:pointer;background:transparent;border:none;padding:0 4px;line-height:1;font-family:inherit}
-
-
-.fav-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);cursor:pointer;font-family:inherit;margin-bottom:6px;text-align:left}
-.fav-btn:active{background:var(--bg2)}
-.fav-name{font-size:13px;font-weight:500;color:var(--txt)}
-.fav-macros{font-size:11px;color:var(--txt2)}
-.fav-del{font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0 0 0 8px;line-height:1;font-family:inherit}
-.recent-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:9px 12px;border:0.5px solid var(--border);border-radius:var(--radius);background:transparent;cursor:pointer;font-family:inherit;margin-bottom:5px;text-align:left}
-.recent-btn:active{background:var(--bg2)}
-.ai-confirm-btn{padding:8px 14px;border-radius:var(--radius);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-right:6px;margin-top:6px}
-.ai-confirm-btn.primary{background:var(--txt);color:var(--bg);border-color:var(--txt)}
-.ai-confirm-btn.secondary{background:transparent;color:var(--txt2)}
-
-
-.prayer-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
-.prayer-item:last-child{border-bottom:none}
-.prayer-chk{width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.prayer-chk.answered{background:var(--success);border-color:var(--success)}
-.prayer-chk.answered::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block}
-.dana-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
-.dana-item:last-child{border-bottom:none}
-.dana-del{font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0;line-height:1;font-family:inherit}
-.faith-history-item{padding:8px 0;border-bottom:1px solid var(--border)}
-.faith-history-item:last-child{border-bottom:none}
-
-
-.mood-btn{width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.3);background:transparent;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s}
-.mood-btn:hover,.mood-btn.selected{background:#fff;color:#1a1a1a}
-.sheena-quick-btn{padding:10px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;text-align:center}
-.sheena-quick-btn:active{background:rgba(255,255,255,0.15)}
-#sheena-mic-btn.listening{background:#E24B4A;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg2);min-height:100vh;color:var(--txt)}
-.app{max-width:430px;margin:0 auto;background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
-.hdr{padding:1rem 1rem 0.5rem;background:var(--bg);border-bottom:1px solid var(--border)}
+/* HEADER — dark teal */
+.hdr{padding:0;background:linear-gradient(135deg,#1B3A4B 0%,#234B5E 100%)}
+.hdr-inner{padding:16px 20px 20px}
 .hdr-top{display:flex;justify-content:space-between;align-items:flex-start}
-.hdr-name{font-size:20px;font-weight:600;color:var(--txt)}
-.hdr-date{font-size:12px;color:var(--txt2);margin-top:2px}
-.day-pill{font-size:11px;font-weight:600;padding:3px 10px;border-radius:var(--radius);background:var(--info-bg);color:var(--info)}
-.prog-wrap{margin-top:10px}
-.prog-bar{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
-.prog-fill{height:100%;border-radius:2px;background:var(--success);transition:width 0.4s}
-.prog-lbl{font-size:11px;color:var(--txt3);margin-top:4px;text-align:right}
-.nav{display:flex;background:var(--bg);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch}
-.nav::-webkit-scrollbar{display:none}
-.nb{flex-shrink:0;padding:9px 10px;font-size:11px;font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--txt2);border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:-0.01em}
-.nb.on{color:var(--txt);border-bottom:2px solid var(--txt);font-weight:600}
-.tab{display:none;padding:1rem;flex:1;overflow-y:auto}
+.hdr-name{font-size:22px;font-weight:600;color:#fff;letter-spacing:-0.4px}
+.hdr-date{font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;font-weight:400}
+.day-pill{font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px;background:rgba(255,255,255,0.1);color:var(--teal);backdrop-filter:blur(4px)}
+#streak-badge{font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px;background:rgba(255,255,255,0.1);color:var(--teal);backdrop-filter:blur(4px)}
+.prog-wrap{margin-top:16px}
+.prog-bar{height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;background:var(--teal);transition:width 0.5s ease}
+.prog-lbl{font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px;display:flex;justify-content:space-between;font-weight:400}
+
+/* OLD NAV — hide it, we use bottom nav now */
+.nav{display:none!important}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:90;display:flex;justify-content:center}
+.bottom-nav-inner{max-width:430px;width:100%;padding:0 12px 6px;padding-bottom:max(6px,env(safe-area-inset-bottom))}
+.bottom-nav-bar{background:var(--accent);border-radius:var(--radius-xl);padding:8px 6px;display:flex;justify-content:space-around;align-items:center;box-shadow:0 -2px 20px rgba(0,0,0,0.15)}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;cursor:pointer;padding:4px 8px;font-family:var(--font);transition:all 0.15s}
+.bnav-item svg{width:20px;height:20px}
+.bnav-item span{font-size:9px;color:rgba(255,255,255,0.4);font-weight:500;letter-spacing:0.02em}
+.bnav-item.on span{color:var(--teal)}
+.bnav-item.on svg *[stroke]{stroke:var(--teal)}
+.bnav-sheena{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--teal) 0%,var(--teal-dark) 100%);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;margin-top:-22px;box-shadow:0 0 0 4px var(--accent),0 4px 12px rgba(29,158,117,0.3);transition:transform 0.15s}
+.bnav-sheena:active{transform:scale(0.95)}
+
+/* TABS — all tabs get bottom padding for nav */
+.tab{display:none;padding:16px;flex:1;overflow-y:auto;padding-bottom:20px}
 .tab.on{display:block}
-.sec{font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--txt3);text-transform:uppercase;margin:1rem 0 6px}
+
+/* SECTIONS & CARDS — premium feel */
+.sec{font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--txt3);text-transform:uppercase;margin:20px 0 10px;padding:0 2px}
 .sec:first-child{margin-top:0}
-.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.875rem 1rem;margin-bottom:8px}
-.row{display:flex;align-items:center;gap:10px}
-.chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
-.chk.on{background:var(--success);border-color:var(--success)}
+.card{background:var(--bg);border:none;border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+
+/* CHECKLIST ROWS */
+.row{display:flex;align-items:center;gap:14px}
+.chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--border2);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s ease}
+.chk:active{transform:scale(0.9)}
+.chk.on{background:var(--teal-dark);border-color:var(--teal-dark);box-shadow:0 2px 6px rgba(29,158,117,0.25)}
 .chk.on::after{content:'';width:10px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block}
 .ct{flex:1;min-width:0}
-.ct-title{font-size:14px;font-weight:500;color:var(--txt)}
-.ct-sub{font-size:12px;color:var(--txt2);margin-top:2px}
-.tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:var(--radius);flex-shrink:0;white-space:nowrap}
+.ct-title{font-size:14px;font-weight:500;color:var(--txt);line-height:1.3}
+.ct-sub{font-size:12px;color:var(--txt2);margin-top:3px;line-height:1.45}
+.tag{font-size:10px;font-weight:600;padding:4px 10px;border-radius:8px;flex-shrink:0;white-space:nowrap;letter-spacing:0.01em}
 .t-sun{background:var(--warn-bg);color:var(--warn-txt)}
 .t-spirit{background:var(--purple-bg);color:var(--purple-txt)}
 .t-food{background:var(--green-bg);color:var(--green-txt)}
 .t-fit{background:var(--coral-bg);color:var(--coral-txt)}
 .t-work{background:var(--bg3);color:var(--txt2)}
-.anchor{background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:var(--radius-lg);padding:0.875rem 1rem;margin-bottom:8px}
-.anchor-time{font-size:11px;font-weight:600;color:#854F0B}
-.anchor-title{font-size:14px;font-weight:600;color:#412402;margin-top:2px}
-.anchor-sub{font-size:12px;color:#854F0B;margin-top:3px;line-height:1.5}
-.kids-card{background:var(--info-bg);border:1px solid var(--info-border);border-radius:var(--radius-lg);padding:0.875rem 1rem;margin-bottom:8px}
-.kids-title{font-size:12px;font-weight:600;color:var(--info);margin-bottom:8px}
-.kids-event{display:flex;gap:8px;font-size:13px;color:var(--info);padding:3px 0}
-.kids-time{font-size:11px;opacity:0.7;min-width:85px;flex-shrink:0}
-.sun-pips{display:flex;gap:6px;margin-bottom:12px}
-.pip{flex:1;border-radius:var(--radius);padding:8px 4px;text-align:center;border:1px solid var(--border);cursor:pointer;transition:all 0.15s}
-.pip.on{background:var(--warn-bg);border-color:var(--warn-border)}
-.pip-icon{font-size:16px;line-height:1}
-.pip-lbl{font-size:9px;font-weight:600;color:var(--txt2);margin-top:2px}
+
+/* METRIC GRID */
+.met-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.met{background:var(--bg);border:none;border-radius:var(--radius-lg);padding:18px 14px;text-align:center;box-shadow:var(--shadow-sm)}
+.met-val{font-size:24px;font-weight:700;color:var(--txt);letter-spacing:-0.5px}
+.met-lbl{font-size:11px;color:var(--txt2);margin-top:4px;font-weight:500}
+.met-sub{font-size:10px;color:var(--txt3);margin-top:3px}
+
+/* INPUTS */
+.inp-row{display:flex;gap:8px;margin-top:8px}
+.inp-row input{flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;background:var(--bg);color:var(--txt);font-family:var(--font);transition:border-color 0.15s}
+.inp-row input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(93,202,165,0.12)}
+.inp-row button{padding:11px 18px;border:none;border-radius:var(--radius);background:var(--accent);font-size:13px;font-weight:600;cursor:pointer;color:#fff;font-family:var(--font);white-space:nowrap;transition:all 0.15s}
+.inp-row button:active{background:var(--accent-light);transform:scale(0.97)}
+.log-btn{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--bg);font-size:13px;font-weight:500;color:var(--txt);cursor:pointer;margin-bottom:6px;text-align:left;display:block;font-family:var(--font);transition:all 0.15s}
+.log-btn:active{background:var(--bg2);transform:scale(0.99)}
+
+/* FILTERS / PILLS */
+.filt{font-size:11px;font-weight:600;padding:7px 16px;border:1.5px solid var(--border);border-radius:20px;cursor:pointer;color:var(--txt2);background:transparent;font-family:var(--font);transition:all 0.15s}
+.filt.on{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 6px rgba(27,58,75,0.2)}
+.danger-btn{color:var(--danger)!important;border-color:var(--danger)!important}
+
+/* EDIT ROWS */
+.edit-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.edit-row:last-child{border-bottom:none}
+.edit-row input{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:12px;background:var(--bg);color:var(--txt);font-family:var(--font);transition:border-color 0.15s}
+.edit-row input:focus{outline:none;border-color:var(--teal)}
+.del-btn{font-size:18px;color:var(--txt3);cursor:pointer;background:transparent;border:none;padding:0 4px;line-height:1;font-family:var(--font);transition:color 0.15s}
+.del-btn:hover{color:var(--danger)}
+
+/* FOOD TAB */
+.fav-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--bg);cursor:pointer;font-family:var(--font);margin-bottom:6px;text-align:left;transition:all 0.15s}
+.fav-btn:active{background:var(--bg2);transform:scale(0.99)}
+.fav-name{font-size:13px;font-weight:500;color:var(--txt)}
+.fav-macros{font-size:11px;color:var(--txt2)}
+.fav-del{font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0 0 0 8px;line-height:1;transition:color 0.15s}
+.fav-del:hover{color:var(--danger)}
+.recent-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius);background:transparent;cursor:pointer;font-family:var(--font);margin-bottom:5px;text-align:left;transition:all 0.15s}
+.recent-btn:active{background:var(--bg2)}
+.ai-confirm-btn{padding:9px 16px;border-radius:var(--radius);border:1.5px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);margin-right:6px;margin-top:6px;transition:all 0.15s}
+.ai-confirm-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ai-confirm-btn.primary:active{background:var(--accent-light)}
+.ai-confirm-btn.secondary{background:transparent;color:var(--txt2)}
+.meal-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);font-size:13px}
+.meal-row:last-child{border-bottom:none}
+.empty-state{text-align:center;padding:28px 0;font-size:13px;color:var(--txt3)}
+
+/* WATER */
+.w-cups{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.cup{width:32px;height:32px;border-radius:var(--radius);border:2px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;color:var(--txt3)}
+.cup:active{transform:scale(0.9)}
+.cup.on{background:var(--teal-bg);border-color:var(--teal);color:var(--teal)}
+
+/* WEIGHT */
+.wt-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.wt-row:last-child{border-bottom:none}
+.dn{font-size:11px;padding:3px 8px;border-radius:6px;background:var(--success-bg);color:var(--success);font-weight:600}
+.up{font-size:11px;padding:3px 8px;border-radius:6px;background:var(--danger-bg);color:var(--danger);font-weight:600}
+.goal-bar{height:10px;background:var(--bg3);border-radius:5px;overflow:hidden;margin:8px 0}
+.goal-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--teal) 0%,var(--teal-dark) 100%);transition:width 0.5s ease}
+.goal-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--txt3)}
+.step-bar{height:6px;background:var(--bg3);border-radius:3px;margin-top:8px;overflow:hidden}
+.step-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal) 0%,var(--teal-dark) 100%);transition:width 0.4s ease}
+
+/* HOTWORX */
+.hx-week{display:flex;gap:6px}
+.hx-day{flex:1;border-radius:var(--radius);padding:12px 4px;text-align:center;font-size:11px;font-weight:500;border:1.5px solid var(--border);cursor:pointer;color:var(--txt2);transition:all 0.15s}
+.hx-day:active{transform:scale(0.95)}
+.hx-day.on{background:var(--teal-bg);color:var(--teal-txt);border-color:var(--teal);font-weight:700}
+.hx-day.today{border-width:2px;border-color:var(--accent)}
+
+/* SUN */
+.sun-pips{display:flex;gap:7px;margin-bottom:14px}
+.pip{flex:1;border-radius:var(--radius);padding:10px 4px;text-align:center;border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;background:var(--bg)}
+.pip:active{transform:scale(0.95)}
+.pip.on{background:var(--warn-bg);border-color:var(--warn-border);box-shadow:0 2px 8px rgba(239,159,39,0.15)}
+.pip-icon{font-size:18px;line-height:1}
+.pip-lbl{font-size:9px;font-weight:600;color:var(--txt2);margin-top:3px}
 .pip-time{font-size:9px;color:var(--txt3)}
 .pip.on .pip-lbl,.pip.on .pip-time{color:var(--warn-txt)}
-.met-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.met{background:var(--bg2);border-radius:var(--radius);padding:0.875rem;text-align:center}
-.met-val{font-size:24px;font-weight:700;color:var(--txt)}
-.met-lbl{font-size:11px;color:var(--txt2);margin-top:3px}
-.met-sub{font-size:10px;color:var(--txt3);margin-top:2px}
-.log-btn{width:100%;padding:10px 14px;border:1px solid var(--border2);border-radius:var(--radius);background:transparent;font-size:13px;font-weight:500;color:var(--txt);cursor:pointer;margin-bottom:6px;text-align:left;display:block;font-family:inherit}
-.log-btn:active{background:var(--bg2)}
-.log-btn:last-child{margin-bottom:0}
-.meal-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
-.meal-row:last-child{border-bottom:none}
-.w-cups{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.cup{width:30px;height:30px;border-radius:var(--radius);border:2px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;color:var(--txt3)}
-.cup.on{background:var(--info-bg);border-color:var(--info);color:var(--info)}
-.inp-row{display:flex;gap:8px;margin-top:8px}
-.inp-row input{flex:1;padding:9px 12px;border:1px solid var(--border2);border-radius:var(--radius);font-size:14px;background:var(--bg);color:var(--txt);font-family:inherit}
-.inp-row input:focus{outline:none;border-color:var(--info)}
-.inp-row button{padding:9px 14px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg);font-size:13px;font-weight:600;cursor:pointer;color:var(--txt);font-family:inherit;white-space:nowrap}
-.inp-row button:active{background:var(--bg2)}
-.wt-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
-.wt-row:last-child{border-bottom:none}
-.dn{font-size:11px;padding:2px 6px;border-radius:4px;background:var(--success-bg);color:var(--success);font-weight:600}
-.up{font-size:11px;padding:2px 6px;border-radius:4px;background:var(--danger-bg);color:var(--danger);font-weight:600}
-.goal-bar{height:10px;background:var(--bg3);border-radius:5px;overflow:hidden;margin:6px 0}
-.goal-fill{height:100%;border-radius:5px;background:var(--info);transition:width 0.5s}
-.goal-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--txt3)}
-.hx-week{display:flex;gap:5px}
-.hx-day{flex:1;border-radius:var(--radius);padding:9px 4px;text-align:center;font-size:11px;font-weight:500;border:1px solid var(--border);cursor:pointer;color:var(--txt2)}
-.hx-day.on{background:var(--warn-bg);color:var(--warn-txt);border-color:var(--warn-border);font-weight:700}
-.hx-day.today{border-width:2px;border-color:var(--txt)}
-.step-bar{height:6px;background:var(--bg3);border-radius:3px;margin-top:6px;overflow:hidden}
-.step-fill{height:100%;border-radius:3px;background:var(--info);transition:width 0.4s}
+.anchor{background:var(--warn-bg);border:none;border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+.anchor-time{font-size:11px;font-weight:600;color:#854F0B;letter-spacing:0.02em}
+.anchor-title{font-size:15px;font-weight:600;color:#412402;margin-top:3px}
+.anchor-sub{font-size:12px;color:#854F0B;margin-top:4px;line-height:1.55}
+
+/* KIDS */
+.kids-card{background:var(--bg);border:none;border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+.kids-title{font-size:11px;font-weight:600;color:var(--txt2);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em}
+.kids-event{display:flex;gap:10px;font-size:13px;color:var(--txt);padding:5px 0}
+.kids-time{font-size:11px;color:var(--txt2);min-width:85px;flex-shrink:0}
 
 /* GROCERY */
-.groc-nav{display:flex;gap:6px;margin-bottom:12px}
-.groc-nb{flex:1;padding:8px;text-align:center;font-size:12px;font-weight:600;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;color:var(--txt2);background:transparent;font-family:inherit}
-.groc-nb.on{background:var(--txt);color:#fff;border-color:var(--txt)}
-.groc-filters{display:flex;gap:6px;margin-bottom:10px}
-.filt{font-size:11px;font-weight:600;padding:4px 10px;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;color:var(--txt2);background:transparent;font-family:inherit}
-.filt.on{background:var(--txt);color:#fff;border-color:var(--txt)}
-.groc-cat-hdr{display:flex;justify-content:space-between;align-items:center;padding:8px 0 4px;border-bottom:1px solid var(--border)}
-.groc-cat-name{font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:0.06em}
+.groc-nav{display:flex;gap:6px;margin-bottom:14px}
+.groc-nb{flex:1;padding:11px;text-align:center;font-size:12px;font-weight:600;border:1.5px solid var(--border);border-radius:var(--radius);cursor:pointer;color:var(--txt2);background:transparent;font-family:var(--font);transition:all 0.15s}
+.groc-nb.on{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 6px rgba(27,58,75,0.2)}
+.groc-filters{display:flex;gap:6px;margin-bottom:12px}
+.groc-cat-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 0 8px}
+.groc-cat-name{font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.06em}
 .groc-cat-count{font-size:10px;color:var(--txt3)}
-.groc-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.groc-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
 .groc-item:last-child{border-bottom:none}
-.groc-chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
-.groc-chk.on{background:var(--success);border-color:var(--success)}
+.groc-chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.groc-chk:active{transform:scale(0.9)}
+.groc-chk.on{background:var(--teal-dark);border-color:var(--teal-dark)}
 .groc-chk.on::after{content:'';width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block}
-.groc-name{font-size:14px;color:var(--txt);flex:1}
+.groc-name{font-size:14px;color:var(--txt);flex:1;font-weight:400}
 .groc-name.done{text-decoration:line-through;color:var(--txt3)}
-.groc-type-pill{font-size:10px;padding:1px 6px;border-radius:3px;background:var(--bg3);color:var(--txt2)}
-.groc-type-pill.weekly{background:var(--info-bg);color:var(--info)}
-.groc-del{font-size:18px;color:var(--txt3);cursor:pointer;padding:0 4px;line-height:1;background:transparent;border:none;font-family:inherit}
-.cart-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);opacity:0.65}
+.groc-type-pill{font-size:10px;padding:3px 10px;border-radius:6px;background:var(--bg3);color:var(--txt2);font-weight:500}
+.groc-type-pill.weekly{background:var(--info-bg);color:#0C447C}
+.groc-del{font-size:18px;color:var(--txt3);cursor:pointer;padding:0 4px;line-height:1;background:transparent;border:none;transition:color 0.15s}
+.groc-del:hover{color:var(--danger)}
+.cart-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);opacity:0.55}
 .cart-item:last-child{border-bottom:none}
-.cart-chk{width:22px;height:22px;border-radius:50%;background:var(--success);flex-shrink:0}
+.cart-chk{width:22px;height:22px;border-radius:50%;background:var(--teal-dark);flex-shrink:0}
 .cart-name{font-size:13px;color:var(--txt2);text-decoration:line-through;flex:1}
-.cart-undo{font-size:12px;color:var(--info);cursor:pointer;border:none;background:transparent;font-weight:600;font-family:inherit}
-.add-sect{background:var(--bg2);border-radius:var(--radius-lg);padding:1rem;margin-bottom:12px}
-.add-sect-title{font-size:12px;font-weight:700;color:var(--txt2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em}
+.cart-undo{font-size:12px;color:var(--teal-dark);cursor:pointer;border:none;background:transparent;font-weight:600;font-family:var(--font)}
+.add-sect{background:var(--bg);border:none;border-radius:var(--radius-lg);padding:18px;margin-bottom:12px;box-shadow:var(--shadow-sm)}
+.add-sect-title{font-size:11px;font-weight:600;color:var(--txt3);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em}
 .add-selects{display:flex;gap:6px;margin-bottom:8px}
-.add-selects select{flex:1;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:12px;background:var(--bg);color:var(--txt);font-family:inherit}
-textarea.paste-area{width:100%;padding:10px;border:1px solid var(--border2);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);resize:vertical;min-height:90px;font-family:inherit;line-height:1.5}
-textarea.paste-area:focus{outline:none;border-color:var(--info)}
-.sync-badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:var(--radius);margin-left:8px}
+.add-selects select{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:12px;background:var(--bg);color:var(--txt);font-family:var(--font)}
+textarea.paste-area{width:100%;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);resize:vertical;min-height:90px;font-family:var(--font);line-height:1.5;transition:border-color 0.15s}
+textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(93,202,165,0.12)}
+.sync-badge{font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;margin-left:8px}
 .sync-ok{background:var(--success-bg);color:var(--success)}
 .sync-off{background:var(--bg3);color:var(--txt3)}
 .sync-err{background:var(--danger-bg);color:var(--danger)}
-.empty-state{text-align:center;padding:24px 0;font-size:13px;color:var(--txt3)}
-.danger-btn{color:var(--danger);border-color:var(--danger)}
-.info-box{background:var(--info-bg);border:1px solid var(--info-border);border-radius:var(--radius-lg);padding:0.875rem 1rem;margin-bottom:8px;font-size:13px;color:var(--info);line-height:1.6}
-.info-box strong{font-weight:700}
+.info-box{background:var(--info-bg);border:none;border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px;font-size:13px;color:#0C447C;line-height:1.6;box-shadow:var(--shadow-sm)}
+.info-box strong{font-weight:600}
+
+/* PRAYER / FAITH */
+.prayer-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);font-size:13px}
+.prayer-item:last-child{border-bottom:none}
+.prayer-chk{width:24px;height:24px;border-radius:50%;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.prayer-chk:active{transform:scale(0.9)}
+.prayer-chk.answered{background:var(--teal-dark);border-color:var(--teal-dark)}
+.prayer-chk.answered::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block}
+.faith-history-item{padding:12px 0;border-bottom:1px solid var(--border)}
+.faith-history-item:last-child{border-bottom:none}
+
+/* DANA */
+.dana-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.dana-item:last-child{border-bottom:none}
+.dana-del{font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0;line-height:1;transition:color 0.15s}
+.dana-del:hover{color:var(--danger)}
+
 /* POWER LIST */
-.pl-task{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.pl-task{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
 .pl-task:last-child{border-bottom:none}
-.pl-chk{width:24px;height:24px;border-radius:50%;border:2.5px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
-.pl-chk.on{background:var(--success);border-color:var(--success)}
+.pl-chk{width:26px;height:26px;border-radius:50%;border:2.5px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.pl-chk:active{transform:scale(0.9)}
+.pl-chk.on{background:var(--teal-dark);border-color:var(--teal-dark);box-shadow:0 2px 6px rgba(29,158,117,0.25)}
 .pl-chk.on::after{content:'';width:10px;height:6px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block}
-.pl-input{flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;background:var(--bg);color:var(--txt);font-family:inherit}
-.pl-input:focus{outline:none;border-color:var(--info)}
+.pl-input{flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;background:var(--bg);color:var(--txt);font-family:var(--font);transition:border-color 0.15s}
+.pl-input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(93,202,165,0.12)}
 .pl-input.done{text-decoration:line-through;color:var(--txt3)}
 .pl-verdict{display:flex;gap:10px;margin-top:12px}
-.pl-verdict-btn{flex:1;padding:14px;border-radius:var(--radius-lg);font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;border:2px solid var(--border)}
+.pl-verdict-btn{flex:1;padding:16px;border-radius:var(--radius-lg);font-size:20px;font-weight:700;cursor:pointer;font-family:var(--font);text-align:center;border:2px solid var(--border);transition:all 0.15s}
+.pl-verdict-btn:active{transform:scale(0.97)}
 .pl-verdict-btn.w{background:var(--success-bg);border-color:var(--success);color:var(--success)}
 .pl-verdict-btn.l{background:var(--danger-bg);border-color:var(--danger);color:var(--danger)}
-.pl-verdict-btn.selected{transform:scale(1.05)}
-.pl-streak-bar{display:flex;gap:3px;margin-top:8px}
-.pl-streak-day{flex:1;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.pl-streak-bar{display:flex;gap:4px;margin-top:8px}
+.pl-streak-day{flex:1;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
 .pl-streak-day.win{background:var(--success-bg);color:var(--success)}
 .pl-streak-day.loss{background:var(--danger-bg);color:var(--danger)}
 .pl-streak-day.empty{background:var(--bg3);color:var(--txt3)}
 
 /* CALENDAR */
-.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.cal-hdr-title{font-size:16px;font-weight:700;color:var(--txt)}
-.cal-nav-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:14px;color:var(--txt);display:flex;align-items:center;justify-content:center;font-family:inherit}
-.cal-nav-btn:active{background:var(--bg2)}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:12px}
+.cal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-hdr-title{font-size:18px;font-weight:600;color:var(--txt);letter-spacing:-0.3px}
+.cal-nav-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg);cursor:pointer;font-size:14px;color:var(--txt);display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:all 0.15s;box-shadow:var(--shadow-sm)}
+.cal-nav-btn:active{transform:scale(0.95);background:var(--bg2)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:14px}
 .cal-day-hdr{text-align:center;font-size:10px;font-weight:600;color:var(--txt3);padding:4px 0;text-transform:uppercase}
-.cal-day{text-align:center;padding:8px 2px;border-radius:var(--radius);cursor:pointer;position:relative;font-size:13px;color:var(--txt);min-height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.cal-day:active{background:var(--bg2)}
-.cal-day.other{color:var(--txt3);opacity:0.4}
-.cal-day.today{background:var(--txt);color:#fff;font-weight:700;border-radius:50%;width:36px;height:36px;margin:0 auto}
-.cal-day.selected{background:var(--info-bg);color:var(--info);font-weight:600}
-.cal-day.today.selected{background:var(--info);color:#fff}
-.cal-dot{width:4px;height:4px;border-radius:50%;background:var(--info);position:absolute;bottom:3px}
-.cal-day.today .cal-dot{background:#fff}
-.cal-event{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.cal-day{text-align:center;padding:8px 2px;border-radius:50%;cursor:pointer;position:relative;font-size:13px;color:var(--txt);min-height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.1s}
+.cal-day:active{transform:scale(0.92)}
+.cal-day.other{color:var(--txt3);opacity:0.35}
+.cal-day.today{background:var(--accent);color:#fff;font-weight:600;width:36px;height:36px;margin:0 auto;box-shadow:0 2px 6px rgba(27,58,75,0.2)}
+.cal-day.selected{background:var(--teal-bg);color:var(--teal-txt);font-weight:600}
+.cal-day.today.selected{background:var(--teal-dark);color:#fff}
+.cal-dot{width:5px;height:5px;border-radius:50%;background:var(--teal);position:absolute;bottom:2px}
+.cal-day.today .cal-dot{background:rgba(255,255,255,0.8)}
+.cal-event{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
 .cal-event:last-child{border-bottom:none}
 .cal-event-time{font-size:11px;font-weight:600;color:var(--txt2);min-width:60px;flex-shrink:0}
 .cal-event-title{font-size:13px;color:var(--txt);flex:1}
-.cal-event-del{font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0 4px;line-height:1;font-family:inherit}
-.cal-event-kid{background:var(--info-bg);border-left:3px solid var(--info);padding:8px 10px;border-radius:0 var(--radius) var(--radius) 0;margin-bottom:4px;font-size:12px;color:var(--info)}
-.cal-event-kid .cal-event-time{color:var(--info)}
+.cal-event-del{font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0 4px;line-height:1;transition:color 0.15s}
+.cal-event-del:hover{color:var(--danger)}
+.cal-event-kid{background:var(--info-bg);border-left:3px solid var(--info);padding:12px 14px;border-radius:0 var(--radius) var(--radius) 0;margin-bottom:5px;font-size:12px;color:#0C447C}
+.cal-event-sheena{background:var(--teal-bg);border-left:3px solid var(--teal);padding:12px 14px;border-radius:0 var(--radius) var(--radius) 0;margin-bottom:5px;font-size:12px;color:var(--teal-txt)}
+
+/* SHEENA OVERLAY */
+.mood-btn{width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);background:transparent;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all 0.2s}
+.mood-btn:hover,.mood-btn.selected{background:var(--teal);color:var(--accent);border-color:var(--teal);box-shadow:0 0 12px rgba(93,202,165,0.3)}
+.sheena-quick-btn{padding:12px 8px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font);text-align:center;transition:all 0.15s}
+.sheena-quick-btn:active{background:rgba(255,255,255,0.1);transform:scale(0.97)}
+#sheena-mic-btn.listening{background:#E24B4A;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
 </style>
+
 </head>
 <body>
 <div class="app">
 
 <div class="hdr">
-  <div class="hdr-top">
-    <div>
-      <div class="hdr-name">Sebren Life OS</div>
-      <div class="hdr-date" id="hdr-date"></div>
+  <div class="hdr-inner">
+    <div class="hdr-top">
+      <div>
+        <div class="hdr-name" id="hdr-greeting">Sebren Life OS</div>
+        <div class="hdr-date" id="hdr-date"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <div class="day-pill" id="day-pill"></div>
+        <span id="streak-badge">Day in progress</span>
+      </div>
     </div>
-    <div class="day-pill" id="day-pill"></div>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
-    <span id="streak-badge" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:8px;background:var(--bg3);color:var(--txt2)">Day in progress</span>
-  </div>
-  <div class="prog-wrap">
-    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-    <div class="prog-lbl" id="prog-lbl">0 of 11 done today</div>
+    <div class="prog-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="prog-lbl"><span id="prog-lbl">0 of 11 done today</span></div>
+    </div>
   </div>
 </div>
 
@@ -264,18 +339,18 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
 <div id="ptr-ind" style="text-align:center;height:0;overflow:hidden;font-size:12px;color:var(--txt3);background:var(--bg2);transition:height 0.15s">Pull down to refresh</div>
 <div id="tab-today" class="tab on">
   <div id="ai-briefing-card" style="margin-bottom:12px;display:none">
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:28px;height:28px;border-radius:50%;background:var(--txt);display:flex;align-items:center;justify-content:center">
+    <div style="background:var(--bg);border:none;border-radius:var(--radius-lg);padding:1.125rem;box-shadow:var(--shadow)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:30px;height:30px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="white" stroke-width="1.5"/><path d="M7 4v3.5l2 1.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
-          <span style="font-size:12px;font-weight:600;color:var(--txt)">Good morning, Fred</span>
+          <span style="font-size:13px;font-weight:600;color:var(--txt)">Good morning, Fred</span>
         </div>
-        <button onclick="refreshBriefing()" id="briefing-refresh-btn" style="font-size:11px;color:var(--txt3);background:transparent;border:none;cursor:pointer;font-family:inherit">Refresh</button>
+        <button onclick="refreshBriefing()" id="briefing-refresh-btn" style="font-size:11px;color:var(--txt3);background:transparent;border:none;cursor:pointer;font-family:inherit;font-weight:500">Refresh</button>
       </div>
-      <div id="ai-briefing-text" style="font-size:13px;color:var(--txt);line-height:1.7"></div>
-      <div id="ai-briefing-loading" style="font-size:13px;color:var(--txt2);line-height:1.7">Pulling your day together...</div>
+      <div id="ai-briefing-text" style="font-size:13px;color:var(--txt);line-height:1.75"></div>
+      <div id="ai-briefing-loading" style="font-size:13px;color:var(--txt2);line-height:1.75">Pulling your day together...</div>
     </div>
   </div>
   <div class="sec">Morning — do in order</div>
@@ -308,19 +383,19 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <div class="card" id="t-dinner"><div class="row"><div class="chk" onclick="chk(this,'t-dinner')"></div><div class="ct"><div class="ct-title">Dinner before sunset — eat outside</div><div class="ct-sub">Aim 7pm. No eating after sunset.</div></div><span class="tag t-food">before 7:40p</span></div></div>
   <div class="card" id="t-blue"><div class="row"><div class="chk" onclick="chk(this,'t-blue')"></div><div class="ct"><div class="ct-title">Blue light blockers + no screens</div><div class="ct-sub">Screens off 1 hr before bed. Bible instead of TV.</div></div><span class="tag t-spirit">9:30p</span></div></div>
 
-  <div id="weather-widget" style="margin-bottom:8px;display:none">
-    <div class="card" style="display:flex;align-items:center;gap:12px;padding:0.75rem 1rem">
-      <div id="wx-icon" style="font-size:28px;line-height:1">--</div>
+  <div id="weather-widget" style="margin-bottom:10px;display:none">
+    <div class="card" style="display:flex;align-items:center;gap:14px;padding:0.875rem 1.125rem">
+      <div id="wx-icon" style="font-size:30px;line-height:1">--</div>
       <div style="flex:1">
         <div style="display:flex;align-items:baseline;gap:6px">
-          <span id="wx-temp" style="font-size:22px;font-weight:700;color:var(--txt)">--°</span>
+          <span id="wx-temp" style="font-size:24px;font-weight:700;color:var(--txt);letter-spacing:-0.5px">--°</span>
           <span id="wx-desc" style="font-size:12px;color:var(--txt2)">Loading weather...</span>
         </div>
-        <div id="wx-detail" style="font-size:11px;color:var(--txt3);margin-top:2px"></div>
+        <div id="wx-detail" style="font-size:11px;color:var(--txt3);margin-top:3px"></div>
       </div>
       <div style="text-align:right">
-        <div id="wx-high-low" style="font-size:11px;color:var(--txt2)"></div>
-        <div id="wx-feels" style="font-size:11px;color:var(--txt3);margin-top:2px"></div>
+        <div id="wx-high-low" style="font-size:11px;color:var(--txt2);font-weight:500"></div>
+        <div id="wx-feels" style="font-size:11px;color:var(--txt3);margin-top:3px"></div>
       </div>
     </div>
   </div>
@@ -380,15 +455,14 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
       </div>
     </div>
   </div>
-  <div id="cal-debug" style="margin-top:12px;font-size:10px;color:var(--txt3);text-align:center;padding:8px"></div>
 </div>
 
 <!-- POWER LIST -->
 <div id="tab-power" class="tab">
-  <div style="background:#1a1a1a;border-radius:var(--radius-lg);padding:1rem;margin-bottom:12px;text-align:center">
-    <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;color:rgba(255,255,255,0.5);text-transform:uppercase">Andy Frisella's Power List</div>
-    <div style="font-size:22px;font-weight:700;color:#fff;margin-top:4px">5 Critical Tasks</div>
-    <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:4px">All 5 done = W. Anything less = L. No excuses.</div>
+  <div style="background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:14px;text-align:center;box-shadow:var(--shadow-lg)">
+    <div style="font-size:11px;font-weight:600;letter-spacing:0.12em;color:rgba(255,255,255,0.4);text-transform:uppercase">Andy Frisella's Power List</div>
+    <div style="font-size:24px;font-weight:700;color:#fff;margin-top:6px;letter-spacing:-0.5px">5 Critical Tasks</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:6px;line-height:1.5">All 5 done = W. Anything less = L. No excuses.</div>
   </div>
 
   <div class="card">
@@ -462,35 +536,35 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <div class="card"><div id="meal-list"><div class="empty-state">Nothing logged yet — add below</div></div></div>
 
   <div class="sec">AI coach — right now</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-    <button onclick="coachPrompt('craving')" style="padding:12px 8px;border-radius:var(--radius-lg);border:1.5px solid #E24B4A;background:#FCEBEB;cursor:pointer;font-family:inherit;text-align:center">
-      <div style="font-size:18px;margin-bottom:4px">🆘</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+    <button onclick="coachPrompt('craving')" style="padding:14px 8px;border-radius:var(--radius-lg);border:none;background:#FCEBEB;cursor:pointer;font-family:inherit;text-align:center;box-shadow:var(--shadow-sm);transition:transform 0.15s" ontouchstart="this.style.transform='scale(0.97)'" ontouchend="this.style.transform='scale(1)'">
+      <div style="font-size:20px;margin-bottom:5px">🆘</div>
       <div style="font-size:12px;font-weight:700;color:#A32D2D">I'm craving...</div>
-      <div style="font-size:10px;color:#A32D2D;margin-top:2px;opacity:0.8">Talk me off the edge</div>
+      <div style="font-size:10px;color:#A32D2D;margin-top:3px;opacity:0.7">Talk me off the edge</div>
     </button>
-    <button onclick="coachPrompt('eating-out')" style="padding:12px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border);background:var(--bg);cursor:pointer;font-family:inherit;text-align:center">
-      <div style="font-size:18px;margin-bottom:4px">🍽️</div>
+    <button onclick="coachPrompt('eating-out')" style="padding:14px 8px;border-radius:var(--radius-lg);border:none;background:var(--bg);cursor:pointer;font-family:inherit;text-align:center;box-shadow:var(--shadow-sm);transition:transform 0.15s" ontouchstart="this.style.transform='scale(0.97)'" ontouchend="this.style.transform='scale(1)'">
+      <div style="font-size:20px;margin-bottom:5px">🍽️</div>
       <div style="font-size:12px;font-weight:700;color:var(--txt)">Eating out</div>
-      <div style="font-size:10px;color:var(--txt2);margin-top:2px">Best options anywhere</div>
+      <div style="font-size:10px;color:var(--txt2);margin-top:3px">Best options anywhere</div>
     </button>
-    <button onclick="coachPrompt('starving')" style="padding:12px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border);background:var(--bg);cursor:pointer;font-family:inherit;text-align:center">
-      <div style="font-size:18px;margin-bottom:4px">😤</div>
+    <button onclick="coachPrompt('starving')" style="padding:14px 8px;border-radius:var(--radius-lg);border:none;background:var(--bg);cursor:pointer;font-family:inherit;text-align:center;box-shadow:var(--shadow-sm);transition:transform 0.15s" ontouchstart="this.style.transform='scale(0.97)'" ontouchend="this.style.transform='scale(1)'">
+      <div style="font-size:20px;margin-bottom:5px">😤</div>
       <div style="font-size:12px;font-weight:700;color:var(--txt)">Nothing to eat</div>
-      <div style="font-size:10px;color:var(--txt2);margin-top:2px">Emergency meal ideas</div>
+      <div style="font-size:10px;color:var(--txt2);margin-top:3px">Emergency meal ideas</div>
     </button>
-    <button onclick="coachPrompt('slipped')" style="padding:12px 8px;border-radius:var(--radius-lg);border:1.5px solid var(--border);background:var(--bg);cursor:pointer;font-family:inherit;text-align:center">
-      <div style="font-size:18px;margin-bottom:4px">💪</div>
+    <button onclick="coachPrompt('slipped')" style="padding:14px 8px;border-radius:var(--radius-lg);border:none;background:var(--bg);cursor:pointer;font-family:inherit;text-align:center;box-shadow:var(--shadow-sm);transition:transform 0.15s" ontouchstart="this.style.transform='scale(0.97)'" ontouchend="this.style.transform='scale(1)'">
+      <div style="font-size:20px;margin-bottom:5px">💪</div>
       <div style="font-size:12px;font-weight:700;color:var(--txt)">I slipped up</div>
-      <div style="font-size:10px;color:var(--txt2);margin-top:2px">Get back on track</div>
+      <div style="font-size:10px;color:var(--txt2);margin-top:3px">Get back on track</div>
     </button>
   </div>
 
   <div class="sec">AI macro lookup</div>
-  <div class="card" style="margin-bottom:8px">
-    <div style="font-size:12px;color:var(--txt2);margin-bottom:8px">Type any meal or restaurant order — AI finds the macros instantly</div>
-    <textarea id="ai-meal-input" placeholder="e.g. Jersey Mike&#39;s #13 on wheat&#10;Chick-fil-A #3 with large fries and unsweet tea&#10;grilled chicken 6oz with broccoli" style="width:100%;min-height:72px;padding:9px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;resize:none;line-height:1.5;margin-bottom:8px"></textarea>
-    <button id="ai-meal-btn" onclick="aiLookupMeal()" style="width:100%;padding:10px;background:var(--txt);color:var(--bg);border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Look up macros with AI</button>
-    <div id="ai-meal-result" style="display:none;margin-top:10px;padding:10px;background:var(--bg2);border-radius:var(--radius)"></div>
+  <div class="card" style="margin-bottom:10px">
+    <div style="font-size:12px;color:var(--txt2);margin-bottom:10px;line-height:1.5">Type any meal or restaurant order — AI finds the macros instantly</div>
+    <textarea id="ai-meal-input" placeholder="e.g. Jersey Mike&#39;s #13 on wheat&#10;Chick-fil-A #3 with large fries and unsweet tea&#10;grilled chicken 6oz with broccoli" style="width:100%;min-height:72px;padding:11px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;resize:none;line-height:1.5;margin-bottom:10px;transition:border-color 0.15s" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+    <button id="ai-meal-btn" onclick="aiLookupMeal()" style="width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s">Look up macros with AI</button>
+    <div id="ai-meal-result" style="display:none;margin-top:12px;padding:12px;background:var(--bg2);border-radius:var(--radius)"></div>
   </div>
 
   <div class="sec" style="display:flex;justify-content:space-between;align-items:center">
@@ -769,18 +843,18 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   </div>
 
   <div class="sec">Launch countdown</div>
-  <div class="card" style="text-align:center;padding:1.25rem">
-    <div style="font-size:36px;font-weight:700;color:var(--txt)" id="launch-days">—</div>
-    <div style="font-size:13px;color:var(--txt2);margin-top:4px">days until April 21 launch</div>
-    <div style="font-size:11px;color:var(--txt3);margin-top:8px" id="launch-sub"></div>
+  <div class="card" style="text-align:center;padding:1.5rem;background:linear-gradient(135deg,#111 0%,#1a1a1a 100%);box-shadow:var(--shadow-lg)">
+    <div style="font-size:42px;font-weight:700;color:#fff;letter-spacing:-1px" id="launch-days">—</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-top:5px">days until April 21 launch</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:8px" id="launch-sub"></div>
   </div>
 </div>
 <!-- FAITH TAB -->
 <div id="tab-faith" class="tab">
   <div class="sec">Morning devotional</div>
-  <div class="card" style="background:var(--purple-bg);border-color:#AFA9EC">
-    <div id="daily-verse-ref" style="font-size:11px;font-weight:600;color:var(--purple-txt);margin-bottom:4px">Verse of the day</div>
-    <div id="daily-verse-text" style="font-size:14px;color:var(--purple-txt);line-height:1.6;font-style:italic">Loading...</div>
+  <div class="card" style="background:var(--purple-bg);border:none;box-shadow:none">
+    <div id="daily-verse-ref" style="font-size:11px;font-weight:600;color:var(--purple-txt);margin-bottom:6px;letter-spacing:0.02em">Verse of the day</div>
+    <div id="daily-verse-text" style="font-size:14px;color:var(--purple-txt);line-height:1.65;font-style:italic">Loading...</div>
   </div>
 
   <div class="sec">Today's faith check-in</div>
@@ -819,9 +893,9 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
 <!-- DANA / MARRIAGE TAB -->
 <div id="tab-dana" class="tab">
   <div class="sec">Marriage intentionality</div>
-  <div class="card" style="background:#FBEAF0;border-color:#ED93B1;margin-bottom:8px">
-    <div style="font-size:13px;font-weight:600;color:#72243E;margin-bottom:4px">A great marriage doesn't happen by accident.</div>
-    <div style="font-size:12px;color:#993556;line-height:1.5">Use this space to stay intentional about Dana — small consistent actions matter more than grand gestures.</div>
+  <div class="card" style="background:#FBEAF0;border:none;margin-bottom:10px;box-shadow:none">
+    <div style="font-size:13px;font-weight:600;color:#72243E;margin-bottom:5px">A great marriage doesn't happen by accident.</div>
+    <div style="font-size:12px;color:#993556;line-height:1.55">Use this space to stay intentional about Dana — small consistent actions matter more than grand gestures.</div>
   </div>
 
   <div class="sec">This week's date night</div>
@@ -893,11 +967,11 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   <div class="card"><div id="prev-reviews" style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">No reviews yet — complete your first one above</div></div>
 </div>
 <!-- SHEENA FLOATING BUTTON -->
-<div id="sheena-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:100;overflow-y:auto;-webkit-overflow-scrolling:touch">
+<div id="sheena-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.94);z-index:100;overflow-y:auto;-webkit-overflow-scrolling:touch;backdrop-filter:blur(8px)">
   <div style="max-width:400px;margin:0 auto;padding:1.5rem 1.5rem 2rem;display:flex;flex-direction:column;align-items:center;min-height:100vh">
-    <div style="text-align:center;margin-bottom:1rem;padding-top:env(safe-area-inset-top,20px)">
-      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:4px">Sheena</div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.5)">Named by Braxton</div>
+    <div style="text-align:center;margin-bottom:1.25rem;padding-top:env(safe-area-inset-top,20px)">
+      <div style="font-size:16px;font-weight:600;color:#fff;letter-spacing:-0.2px">Sheena</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px">Named by Braxton</div>
     </div>
 
     <!-- Response area (shared between mood and voice) -->
@@ -943,10 +1017,55 @@ textarea.paste-area:focus{outline:none;border-color:var(--info)}
   </div>
 </div>
 
-<!-- SHEENA TRIGGER BUTTON -->
-<button onclick="openSheena()" id="sheena-btn" style="position:fixed;bottom:24px;right:20px;width:56px;height:56px;border-radius:50%;background:#1a1a1a;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:50;box-shadow:0 2px 12px rgba(0,0,0,0.3)">
-  <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="8" y="1" width="6" height="11" rx="3" fill="white"/><path d="M3 11c0 4.42 3.58 8 8 8s8-3.58 8-8" stroke="white" stroke-width="1.8" stroke-linecap="round" fill="none"/><line x1="11" y1="19" x2="11" y2="22" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
-</button>
+
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <div class="bottom-nav-bar">
+      <button class="bnav-item on" id="bn-today" onclick="bnav('today',this)">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4.5l2.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>Today</span>
+      </button>
+      <button class="bnav-item" id="bn-cal" onclick="bnav('cal',this)">
+        <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="3" y1="8" x2="17" y2="8" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span>Cal</span>
+      </button>
+      <button class="bnav-item" id="bn-food" onclick="bnav('food',this)">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M3 10a7 7 0 0114 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="1.5"/><path d="M6 13c0 1.66 1.79 3 4 3s4-1.34 4-3" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span>Food</span>
+      </button>
+      <button class="bnav-sheena" id="sheena-btn" onclick="openSheena()">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="8" y="1" width="6" height="11" rx="3" fill="#1B3A4B"/><path d="M3 11c0 4.42 3.58 8 8 8s8-3.58 8-8" stroke="#1B3A4B" stroke-width="2" stroke-linecap="round" fill="none"/><line x1="11" y1="19" x2="11" y2="22" stroke="#1B3A4B" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="bnav-item" id="bn-grocery" onclick="bnav('grocery',this)">
+        <svg viewBox="0 0 20 20" fill="none"><circle cx="7" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="15" cy="17" r="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M2 3h2.5l2 10h9.5l2-7H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        <span>Shop</span>
+      </button>
+      <button class="bnav-item" id="bn-more" onclick="toggleMoreMenu()">
+        <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        <span>More</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MORE MENU OVERLAY -->
+<div id="more-menu" style="display:none;position:fixed;bottom:80px;left:0;right:0;z-index:89">
+  <div style="max-width:430px;margin:0 auto;padding:0 12px">
+    <div style="background:var(--bg);border:none;border-radius:var(--radius-xl);padding:18px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.15)">
+      <button onclick="bnav('power')" style="display:flex;flex-direction:column;align-items:center;gap:5px;border:none;background:transparent;cursor:pointer;font-family:var(--font);padding:10px 4px;border-radius:var(--radius);transition:background 0.15s"><span style="font-size:22px">⚡</span><span style="font-size:10px;color:var(--txt2);font-weight:500">Power</span></button>
+      <button onclick="bnav('sun')" style="display:flex;flex-direction:column;align-items:center;gap:5px;border:none;background:transparent;cursor:pointer;font-family:var(--font);padding:10px 4px;border-radius:var(--radius);transition:background 0.15s"><span style="font-size:22px">☀️</span><span style="font-size:10px;color:var(--txt2);font-weight:500">Sun</span></button>
+      <button onclick="bnav('progress')" style="display:flex;flex-direction:column;align-items:center;gap:5px;border:none;background:transparent;cursor:pointer;font-family:var(--font);padding:10px 4px;border-radius:var(--radius);transition:background 0.15s"><span style="font-size:22px">⚖️</span><span style="font-size:10px;color:var(--txt2);font-weight:500">Weight</span></button>
+      <button onclick="bnav('work')" style="display:flex;flex-direction:column;align-items:center;gap:5px;border:none;background:transparent;cursor:pointer;font-family:var(--font);padding:10px 4px;border-radius:var(--radius);transition:background 0.15s"><span style="font-size:22px">💻</span><span style="font-size:10px;color:var(--txt2);font-weight:500">Work</span></button>
+      <button onclick="bnav('faith')" style="display:flex;flex-direction:column;align-items:center;gap:5px;border:none;background:transparent;cursor:pointer;font-family:var(--font);padding:10px 4px;border-radius:var(--radius);transition:background 0.15s"><span style="font-size:22px">🙏</span><span style="font-size:10px;color:var(--txt2);font-weight:500">Faith</span></button>
+      <button onclick="bnav('dana')" style="display:flex;flex-direction:column;align-items:center;gap:5px;border:none;background:transparent;cursor:pointer;font-family:var(--font);padding:10px 4px;border-radius:var(--radius);transition:background 0.15s"><span style="font-size:22px">❤️</span><span style="font-size:10px;color:var(--txt2);font-weight:500">Dana</span></button>
+      <button onclick="bnav('summary')" style="display:flex;flex-direction:column;align-items:center;gap:5px;border:none;background:transparent;cursor:pointer;font-family:var(--font);padding:10px 4px;border-radius:var(--radius);transition:background 0.15s"><span style="font-size:22px">📊</span><span style="font-size:10px;color:var(--txt2);font-weight:500">Summary</span></button>
+      <button onclick="bnav('review')" style="display:flex;flex-direction:column;align-items:center;gap:5px;border:none;background:transparent;cursor:pointer;font-family:var(--font);padding:10px 4px;border-radius:var(--radius);transition:background 0.15s"><span style="font-size:22px">📝</span><span style="font-size:10px;color:var(--txt2);font-weight:500">Review</span></button>
+      <button onclick="bnav('settings')" style="display:flex;flex-direction:column;align-items:center;gap:5px;border:none;background:transparent;cursor:pointer;font-family:var(--font);padding:10px 4px;border-radius:var(--radius);transition:background 0.15s"><span style="font-size:22px">⚙️</span><span style="font-size:10px;color:var(--txt2);font-weight:500">Edit</span></button>
+    </div>
+  </div>
+</div>
 </div><!-- end app -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -1252,11 +1371,11 @@ function buildKids(dow){
   lbl.style.display='block';
   let h='';
   if(calEventsToday.length){
-    h+='<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:0.875rem 1rem;margin-bottom:8px">';
-    h+='<div style="font-size:12px;font-weight:600;color:var(--txt);margin-bottom:8px">Calendar</div>';
+    h+='<div style="background:var(--bg);border:none;border-radius:var(--radius-lg);padding:1rem 1.125rem;margin-bottom:10px;box-shadow:var(--shadow-sm)">';
+    h+='<div style="font-size:11px;font-weight:600;color:var(--txt2);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em">Calendar</div>';
     calEventsToday.sort(function(a,b){return(a.time||'').localeCompare(b.time||'');});
     calEventsToday.forEach(function(e){
-      h+='<div style="display:flex;gap:8px;font-size:13px;color:var(--txt);padding:3px 0"><span style="font-size:11px;color:var(--txt2);min-width:70px;flex-shrink:0">'+(e.time||'')+'</span><span>'+e.title+'</span></div>';
+      h+='<div style="display:flex;gap:10px;font-size:13px;color:var(--txt);padding:4px 0"><span style="font-size:11px;color:var(--txt2);min-width:70px;flex-shrink:0;font-weight:500">'+(e.time||'')+'</span><span>'+e.title+'</span></div>';
     });
     h+='</div>';
   }
@@ -3629,13 +3748,6 @@ function initCalTab(){
   renderCalGrid();
   renderCalEvents();
   renderCalRecurring();
-  // Debug: show stored event count
-  var dbg=document.getElementById('cal-debug');
-  if(dbg){
-    var totalEvents=0;
-    Object.keys(calEvents).forEach(function(k){totalEvents+=calEvents[k].length;});
-    dbg.textContent='Debug: '+totalEvents+' events stored across '+Object.keys(calEvents).length+' days | Keys: '+Object.keys(calEvents).join(', ');
-  }
 }
 
 window.calNav=function(dir){
@@ -3739,7 +3851,13 @@ function renderCalEvents(){
   if(!events.length){el.innerHTML='<div class="empty-state">No events — add one below</div>';return;}
   el.innerHTML=events.map(function(e){
     if(e.isKid){
-      return '<div class="cal-event-kid"><span class="cal-event-time">'+e.time+'</span> '+e.title+'</div>';
+      return '<div class="cal-event-kid"><span style="font-weight:600;min-width:85px;display:inline-block">'+e.time+'</span> '+e.title+'</div>';
+    }
+    // Sheena-scheduled events (id starts with 's') get teal accent
+    var isSheena=e.id&&e.id.charAt(0)==='s';
+    if(isSheena){
+      var delBtn='<button class="cal-event-del" onclick="deleteCalEvent(\''+calSelectedDate+'\',\''+e.id+'\')" style="color:var(--teal-txt)">×</button>';
+      return '<div class="cal-event-sheena" style="display:flex;align-items:center;gap:10px"><span style="font-weight:600;min-width:60px;flex-shrink:0">'+(e.time||'')+'</span><span style="flex:1">'+e.title+'</span>'+delBtn+'</div>';
     }
     var delBtn=e.recurring?'':'<button class="cal-event-del" onclick="deleteCalEvent(\''+calSelectedDate+'\',\''+e.id+'\')">×</button>';
     return '<div class="cal-event"><span class="cal-event-time">'+(e.time||'')+'</span><span class="cal-event-title">'+e.title+'</span>'+delBtn+'</div>';
@@ -3875,6 +3993,51 @@ fetchWeather();
 checkWeeklyReview();
 loadConfig();
 init();
+
+// ── BOTTOM NAV ──────────────────────────────────────
+window.bnav=function(id,btn){
+  // Close more menu if open
+  var mm=document.getElementById('more-menu');
+  if(mm)mm.style.display='none';
+  // Switch tab using existing tab system
+  var fakeBtn=document.querySelector('.nb'); // just need any nb element
+  window.tab(id,fakeBtn);
+  // Update bottom nav active state
+  document.querySelectorAll('.bnav-item').forEach(function(b){b.classList.remove('on');});
+  var mainTabs=['today','cal','food','grocery'];
+  var bnId='bn-'+id;
+  var bnEl=document.getElementById(bnId);
+  if(bnEl)bnEl.classList.add('on');
+  else{
+    // It's a "more" tab - highlight "more" button
+    var moreBtn=document.getElementById('bn-more');
+    if(moreBtn)moreBtn.classList.add('on');
+  }
+};
+
+window.toggleMoreMenu=function(){
+  var mm=document.getElementById('more-menu');
+  if(!mm)return;
+  mm.style.display=mm.style.display==='none'?'block':'none';
+};
+
+// Close more menu when tapping outside
+document.addEventListener('click',function(e){
+  var mm=document.getElementById('more-menu');
+  if(!mm||mm.style.display==='none')return;
+  var moreBtn=document.getElementById('bn-more');
+  if(!mm.contains(e.target)&&e.target!==moreBtn&&!moreBtn.contains(e.target)){
+    mm.style.display='none';
+  }
+});
+
+// Update greeting based on time of day
+(function(){
+  var h=new Date().getHours();
+  var greeting=h<12?'Good morning, Fred':h<17?'Good afternoon, Fred':'Good evening, Fred';
+  var el=document.getElementById('hdr-greeting');
+  if(el)el.textContent=greeting;
+})();
 
 // ── TAB OVERRIDE ────────────────────────────────────
 const _origTab2=window.tab;
