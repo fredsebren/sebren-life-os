@@ -3097,16 +3097,19 @@ function openSheena(){
 // Pre-warm mic — triggers permission prompt early, keeps stream alive for session
 var _micStream=null;
 function preWarmMic(){
-  if(_micStream)return; // already warmed
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return;
+  if(_micStream)return;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    console.log('PREWARM: no getUserMedia');
+    return;
+  }
   try{
     navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
       _micStream=stream;
-      // Keep stream alive but muted — iOS won't re-prompt this session
-    }).catch(function(){
-      // User denied or not available — text input still works
+      console.log('PREWARM: mic granted');
+    }).catch(function(err){
+      console.log('PREWARM: mic denied — '+err.message);
     });
-  }catch(e){}
+  }catch(e){console.log('PREWARM: exception — '+e.message);}
 }
 
 function closeSheena(){
@@ -3207,6 +3210,11 @@ function playTone(freq, duration, delay, volume){
 }
 
 window.toggleListening = function(){
+  var dbg=document.getElementById('sheena-transcript');
+  function showDbg(msg){if(dbg){dbg.style.display='block';dbg.textContent=msg;}}
+
+  showDbg('DEBUG: mic tapped');
+
   if(sheenaListening){
     if(sheenaRecognition)sheenaRecognition.stop();
     sheenaListening=false;
@@ -3215,32 +3223,31 @@ window.toggleListening = function(){
     return;
   }
 
-  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
-    var t=document.getElementById('sheena-transcript');
-    if(t){t.textContent='Voice not supported — use the text box above.';t.style.display='block';}
+  var hasSR=('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+  showDbg('DEBUG: SpeechRecognition='+(hasSR?'YES':'NO')+' | getUserMedia='+(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia?'YES':'NO')+' | micStream='+(_micStream?'active':'null'));
+
+  if(!hasSR){
+    showDbg('Voice not supported in this browser — use the text box above.');
     return;
   }
-
-  // Show transcript area for voice
-  var transcriptEl=document.getElementById('sheena-transcript');
-  if(transcriptEl){transcriptEl.style.display='block';transcriptEl.textContent='';}
 
   // Play "listening" tone — two quick ascending notes
   playTone(600, 0.08, 0, 0.15);
   playTone(900, 0.08, 0.1, 0.15);
 
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  sheenaRecognition = new SR();
-  sheenaRecognition.continuous = false;
-  sheenaRecognition.interimResults = true;
-  sheenaRecognition.lang = 'en-US';
+  try{
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    sheenaRecognition = new SR();
+    sheenaRecognition.continuous = false;
+    sheenaRecognition.interimResults = true;
+    sheenaRecognition.lang = 'en-US';
 
-  sheenaRecognition.onresult = function(e){
-    var transcript = '';
-    for(var i=e.resultIndex;i<e.results.length;i++){
-      transcript += e.results[i][0].transcript;
-    }
-    document.getElementById('sheena-transcript').textContent=transcript;
+    sheenaRecognition.onresult = function(e){
+      var transcript = '';
+      for(var i=e.resultIndex;i<e.results.length;i++){
+        transcript += e.results[i][0].transcript;
+      }
+      document.getElementById('sheena-transcript').textContent=transcript;
     if(e.results[e.results.length-1].isFinal){
       sheenaListening=false;
       document.getElementById('sheena-mic-btn').classList.remove('listening');
@@ -3252,17 +3259,30 @@ window.toggleListening = function(){
     }
   };
 
-  sheenaRecognition.onerror = function(){
+  sheenaRecognition.onerror = function(evt){
     sheenaListening=false;
     document.getElementById('sheena-mic-btn').classList.remove('listening');
-    document.getElementById('sheena-mic-label').textContent='Tap to speak';
+    var errMsg=evt&&evt.error?evt.error:'unknown';
+    showDbg('DEBUG: speech error — '+errMsg);
+    document.getElementById('sheena-mic-label').textContent='Error: '+errMsg;
+  };
+
+  sheenaRecognition.onend = function(){
+    if(sheenaListening){
+      sheenaListening=false;
+      document.getElementById('sheena-mic-btn').classList.remove('listening');
+      showDbg('DEBUG: speech ended unexpectedly');
+    }
   };
 
   sheenaRecognition.start();
   sheenaListening=true;
   document.getElementById('sheena-mic-btn').classList.add('listening');
   document.getElementById('sheena-mic-label').textContent='Listening...';
-  document.getElementById('sheena-transcript').textContent='';
+  showDbg('DEBUG: recognition.start() called');
+  }catch(err){
+    showDbg('DEBUG: EXCEPTION — '+err.message);
+  }
 };
 
 function sendToSheena(userMessage){
