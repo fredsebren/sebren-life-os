@@ -1043,13 +1043,23 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
       </div>
     </div>
 
-    <!-- Voice input area -->
+    <!-- Voice + text input area -->
     <div id="sheena-voice-section" style="width:100%;display:none;text-align:center">
-      <div id="sheena-transcript" style="font-size:13px;color:rgba(255,255,255,0.6);min-height:30px;margin-bottom:1rem;font-style:italic;text-align:left;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px"></div>
-      <button id="sheena-mic-btn" onclick="toggleListening()" style="width:72px;height:72px;border-radius:50%;background:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="10" y="2" width="8" height="14" rx="4" fill="#1a1a1a"/><path d="M5 14c0 4.97 4.03 9 9 9s9-4.03 9-9" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" fill="none"/><line x1="14" y1="23" x2="14" y2="27" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <div id="sheena-mic-label" style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:1.5rem">Tap to speak</div>
+      <div id="sheena-transcript" style="font-size:13px;color:rgba(255,255,255,0.6);min-height:20px;margin-bottom:1rem;font-style:italic;text-align:left;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;display:none"></div>
+
+      <!-- Text input — always works -->
+      <div style="display:flex;gap:8px;margin-bottom:1rem;width:100%">
+        <input type="text" id="sheena-text-input" placeholder="Type to Sheena..." onkeydown="if(event.key==='Enter')sendSheenaText()" style="flex:1;padding:12px 14px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;font-family:inherit;outline:none" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'">
+        <button onclick="sendSheenaText()" style="padding:12px 16px;border-radius:var(--radius);border:none;background:var(--teal);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap">Send</button>
+      </div>
+
+      <!-- Mic button — only shows if speech recognition available -->
+      <div id="sheena-mic-wrap" style="margin-bottom:1rem">
+        <button id="sheena-mic-btn" onclick="toggleListening()" style="width:60px;height:60px;border-radius:50%;background:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem">
+          <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="10" y="2" width="8" height="14" rx="4" fill="#1a1a1a"/><path d="M5 14c0 4.97 4.03 9 9 9s9-4.03 9-9" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" fill="none"/><line x1="14" y1="23" x2="14" y2="27" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <div id="sheena-mic-label" style="font-size:11px;color:rgba(255,255,255,0.4)">or tap to speak</div>
+      </div>
 
       <!-- Quick action buttons -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-bottom:1rem">
@@ -3062,6 +3072,9 @@ function openSheena(){
   if(overlay) overlay.style.display='block';
   document.body.style.overflow='hidden';
 
+  // Pre-warm mic permission — request access now so it's ready when user taps mic
+  preWarmMic();
+
   // Check if mood already set today
   var cachedMood = null;
   try{
@@ -3081,11 +3094,28 @@ function openSheena(){
   }
 }
 
+// Pre-warm mic — triggers permission prompt early, keeps stream alive for session
+var _micStream=null;
+function preWarmMic(){
+  if(_micStream)return; // already warmed
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return;
+  try{
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+      _micStream=stream;
+      // Keep stream alive but muted — iOS won't re-prompt this session
+    }).catch(function(){
+      // User denied or not available — text input still works
+    });
+  }catch(e){}
+}
+
 function closeSheena(){
   var overlay = document.getElementById('sheena-overlay');
   if(overlay) overlay.style.display='none';
   document.body.style.overflow='';
   if(sheenaRecognition&&sheenaListening){sheenaRecognition.stop();sheenaListening=false;}
+  // Release mic stream
+  if(_micStream){try{_micStream.getTracks().forEach(function(t){t.stop();});}catch(e){}_micStream=null;}
 }
 
 window.setMood = function(n){
@@ -3123,24 +3153,57 @@ window.setMood = function(n){
 function showVoiceSection(){
   document.getElementById('sheena-mood-section').style.display='none';
   document.getElementById('sheena-voice-section').style.display='block';
+  // Hide mic button if speech recognition not available (iOS homescreen PWA)
+  var hasSpeech=('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+  var micWrap=document.getElementById('sheena-mic-wrap');
+  if(micWrap)micWrap.style.display=hasSpeech?'block':'none';
+  // Focus text input for quick typing
+  setTimeout(function(){
+    var inp=document.getElementById('sheena-text-input');
+    if(inp)inp.focus();
+  },100);
 }
+
+// Send text message to Sheena
+window.sendSheenaText=function(){
+  var inp=document.getElementById('sheena-text-input');
+  if(!inp)return;
+  var text=inp.value.trim();
+  if(!text)return;
+  inp.value='';
+  // Show what user typed in transcript area
+  var transcript=document.getElementById('sheena-transcript');
+  if(transcript){transcript.textContent=text;transcript.style.display='block';}
+  var responseEl=document.getElementById('sheena-response');
+  if(responseEl)responseEl.textContent='Thinking...';
+  sendToSheena(text);
+};
 
 // ── AUDIO TONES ─────────────────────────────────────
 var _audioCtx=null;
 function playTone(freq, duration, delay, volume){
-  try{
-    if(!_audioCtx) _audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-    var osc=_audioCtx.createOscillator();
-    var gain=_audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(_audioCtx.destination);
-    osc.type='sine';
-    osc.frequency.value=freq;
-    gain.gain.value=volume||0.12;
-    var start=_audioCtx.currentTime+(delay||0);
-    osc.start(start);
-    osc.stop(start+(duration||0.1));
-  }catch(e){}
+  // Wrapped in setTimeout so it NEVER blocks the calling code
+  setTimeout(function(){
+    try{
+      if(!_audioCtx){
+        var AC=window.AudioContext||window.webkitAudioContext;
+        if(!AC)return;
+        _audioCtx=new AC();
+      }
+      // Resume suspended context (iOS requires this after user gesture)
+      if(_audioCtx.state==='suspended')_audioCtx.resume();
+      var osc=_audioCtx.createOscillator();
+      var gain=_audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(_audioCtx.destination);
+      osc.type='sine';
+      osc.frequency.value=freq;
+      gain.gain.value=volume||0.12;
+      var start=_audioCtx.currentTime+(delay||0);
+      osc.start(start);
+      osc.stop(start+(duration||0.1));
+    }catch(e){/* never block speech recognition */}
+  },0);
 }
 
 window.toggleListening = function(){
@@ -3148,14 +3211,19 @@ window.toggleListening = function(){
     if(sheenaRecognition)sheenaRecognition.stop();
     sheenaListening=false;
     document.getElementById('sheena-mic-btn').classList.remove('listening');
-    document.getElementById('sheena-mic-label').textContent='Tap to speak';
+    document.getElementById('sheena-mic-label').textContent='or tap to speak';
     return;
   }
 
   if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
-    document.getElementById('sheena-transcript').textContent='Voice not supported in this browser. Try Chrome.';
+    var t=document.getElementById('sheena-transcript');
+    if(t){t.textContent='Voice not supported — use the text box above.';t.style.display='block';}
     return;
   }
+
+  // Show transcript area for voice
+  var transcriptEl=document.getElementById('sheena-transcript');
+  if(transcriptEl){transcriptEl.style.display='block';transcriptEl.textContent='';}
 
   // Play "listening" tone — two quick ascending notes
   playTone(600, 0.08, 0, 0.15);
