@@ -897,6 +897,22 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
     <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-top:5px">days until April 21 launch</div>
     <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:8px" id="launch-sub"></div>
   </div>
+
+  <div class="sec" style="display:flex;justify-content:space-between;align-items:center">
+    <span>Punch list</span>
+    <button onclick="toggleAddCompany()" style="font-size:11px;color:var(--info);background:transparent;border:none;cursor:pointer;font-family:inherit;font-weight:600">+ Add company</button>
+  </div>
+
+  <div id="add-company-form" style="display:none;margin-bottom:10px">
+    <div class="card">
+      <div class="inp-row" style="margin-top:0">
+        <input type="text" id="new-company-name" placeholder="Company name...">
+        <button onclick="addCompany()">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="punch-list-container"></div>
 </div>
 <!-- FAITH TAB -->
 <div id="tab-faith" class="tab">
@@ -1830,6 +1846,8 @@ window.setFilt=function(f,btn){
   renderGroc();
 };
 
+var editingGrocItemId=null;
+
 function renderGroc(){
   const items=grocItems.filter(i=>!i.done&&(grocFilt==='all'||i.type===grocFilt));
   const bycat={};
@@ -1844,14 +1862,56 @@ function renderGroc(){
     if(!bycat[cat]||!bycat[cat].length)return;
     html+=`<div class="groc-cat-hdr"><span class="groc-cat-name">${cat}</span><span class="groc-cat-count">${bycat[cat].length}</span></div>`;
     bycat[cat].forEach(item=>{
-      const typePill=`<span class="groc-type-pill ${item.type==='weekly'?'weekly':''}">${item.type}</span>`;
-      const qtyBadge=item.qty?`<span style="font-size:11px;font-weight:600;color:var(--accent);background:var(--bg3);padding:2px 7px;border-radius:6px;white-space:nowrap">${item.qty}</span>`:'';
-      html+=`<div class="groc-item"><div class="groc-chk" onclick="cartIt('${item.id}')"></div><span class="groc-name">${item.name}</span>${qtyBadge}${typePill}<button class="groc-del" onclick="delItem('${item.id}')">×</button></div>`;
+      if(editingGrocItemId===item.id){
+        // Inline edit mode
+        html+=`<div style="padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input type="text" id="edit-groc-name-${item.id}" value="${(item.name||'').replace(/"/g,'&quot;')}" style="flex:3;padding:8px 10px;border:1.5px solid var(--teal);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit">
+            <input type="text" id="edit-groc-qty-${item.id}" value="${(item.qty||'').replace(/"/g,'&quot;')}" placeholder="Qty" style="max-width:60px;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit;text-align:center">
+          </div>
+          <div style="display:flex;gap:6px">
+            <select id="edit-groc-cat-${item.id}" style="flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:12px;background:var(--bg);color:var(--txt);font-family:inherit">
+              ${CAT_ORDER.map(c=>'<option value="'+c+'"'+(c===item.cat?' selected':'')+'>'+c+'</option>').join('')}
+            </select>
+            <button onclick="saveGrocEdit('${item.id}')" style="padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Save</button>
+            <button onclick="cancelGrocEdit()" style="padding:8px 12px;background:transparent;color:var(--txt3);border:1.5px solid var(--border);border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:inherit">Cancel</button>
+          </div>
+        </div>`;
+      } else {
+        const typePill=`<span class="groc-type-pill ${item.type==='weekly'?'weekly':''}">${item.type}</span>`;
+        const qtyBadge=item.qty?`<span style="font-size:11px;font-weight:600;color:var(--accent);background:var(--bg3);padding:2px 7px;border-radius:6px;white-space:nowrap">${item.qty}</span>`:'';
+        html+=`<div class="groc-item"><div class="groc-chk" onclick="cartIt('${item.id}')"></div><span class="groc-name" style="cursor:pointer" onclick="startGrocEdit('${item.id}')">${item.name}</span>${qtyBadge}${typePill}<button class="groc-del" onclick="delItem('${item.id}')">×</button></div>`;
+      }
     });
   });
   if(!html)html='<div class="empty-state">List is empty — add items in the + Add tab</div>';
   document.getElementById('groc-sections').innerHTML=html;
 }
+
+window.startGrocEdit=function(id){
+  editingGrocItemId=id;
+  renderGroc();
+  setTimeout(function(){var el=document.getElementById('edit-groc-name-'+id);if(el)el.focus();},50);
+};
+
+window.saveGrocEdit=function(id){
+  var item=grocItems.find(function(i){return i.id===id;});
+  if(!item)return;
+  var name=document.getElementById('edit-groc-name-'+id).value.trim();
+  var qty=(document.getElementById('edit-groc-qty-'+id).value||'').trim();
+  var cat=document.getElementById('edit-groc-cat-'+id).value;
+  if(!name)return;
+  item.name=name;
+  item.qty=qty;
+  item.cat=cat;
+  editingGrocItemId=null;
+  saveGroc();
+};
+
+window.cancelGrocEdit=function(){
+  editingGrocItemId=null;
+  renderGroc();
+};
 
 function renderCart(){
   const el=document.getElementById('cart-list');
@@ -2659,6 +2719,8 @@ function initWork(){
   renderWorkBlocks();
   renderWorkFocus();
   renderLaunchCountdown();
+  loadPunchList();
+  renderPunchList();
 }
 
 function saveWork(){
@@ -2758,6 +2820,270 @@ function renderLaunchCountdown(){
     else sub.textContent='Launch day is here!';
   }
 }
+// ── WORK PUNCH LIST (Company Folders) ──────────────
+var punchData={companies:[]};
+var PUNCH_KEY='sebren-punch-list';
+var DEFAULT_CATEGORIES=['Growth','Business','Operations','Design'];
+
+function loadPunchList(){
+  try{var s=localStorage.getItem(PUNCH_KEY);if(s)punchData=JSON.parse(s);}catch(e){}
+  if(!punchData.companies)punchData.companies=[];
+}
+
+function savePunchList(){
+  try{localStorage.setItem(PUNCH_KEY,JSON.stringify(punchData));}catch(e){}
+}
+
+function renderPunchList(){
+  var container=document.getElementById('punch-list-container');
+  if(!container)return;
+  if(!punchData.companies.length){
+    container.innerHTML='<div class="card"><div class="empty-state">No companies yet — add one above or tell Sheena</div></div>';
+    return;
+  }
+  container.innerHTML=punchData.companies.map(function(company,ci){
+    // Overall stats
+    var totalTasks=0,doneTasks=0;
+    company.categories.forEach(function(cat){
+      cat.tasks.forEach(function(t){totalTasks++;if(t.done)doneTasks++;});
+    });
+    var pct=totalTasks?Math.round(doneTasks/totalTasks*100):0;
+
+    // Category sections
+    var catsHtml=company.categories.map(function(cat,ki){
+      var catTotal=cat.tasks.length;
+      var catDone=cat.tasks.filter(function(t){return t.done;}).length;
+      var catOpen=catTotal-catDone;
+
+      var tasksHtml=cat.tasks.map(function(task,ti){
+        return '<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)">' +
+          '<div class="pl-chk'+(task.done?' on':'')+'" onclick="togglePunchTask('+ci+','+ki+','+ti+')"></div>' +
+          '<span style="flex:1;font-size:13px;color:'+(task.done?'var(--txt3)':'var(--txt)')+';'+(task.done?'text-decoration:line-through;':'')+'cursor:pointer" onclick="startEditPunchTask('+ci+','+ki+','+ti+')">'+task.name+'</span>' +
+          '<button onclick="deletePunchTask('+ci+','+ki+','+ti+')" style="font-size:16px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0 4px;line-height:1;font-family:inherit">×</button>' +
+        '</div>';
+      }).join('');
+
+      return '<div style="margin-bottom:14px">' +
+        '<div class="sec-collapse" onclick="toggleSection(\'punch-cat-'+ci+'-'+ki+'\',this)" style="font-size:11px;font-weight:600;letter-spacing:0.06em;color:var(--txt3);text-transform:uppercase;margin:12px 0 6px;padding:0 2px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none">'+
+          cat.name+' <span style="display:flex;align-items:center;gap:6px"><span style="font-size:10px;font-weight:500;text-transform:none;letter-spacing:0">'+catOpen+' open</span><span class="sec-chevron">▾</span></span>' +
+        '</div>' +
+        '<div id="punch-cat-'+ci+'-'+ki+'" class="collapse-body">' +
+          tasksHtml +
+          '<div style="display:flex;gap:6px;margin-top:6px">' +
+            '<input type="text" id="new-punch-task-'+ci+'-'+ki+'" placeholder="Add to '+cat.name+'..." onkeydown="if(event.key===\'Enter\')addPunchTask('+ci+','+ki+')" style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13px;background:var(--bg);color:var(--txt);font-family:inherit">' +
+            '<button onclick="addPunchTask('+ci+','+ki+')" style="padding:8px 14px;border:none;border-radius:var(--radius);background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Add</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="card" style="margin-bottom:12px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
+        '<div style="font-size:15px;font-weight:600;color:var(--txt);letter-spacing:-0.2px">'+company.name+'</div>' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<span style="font-size:11px;color:var(--txt3);font-weight:500">'+doneTasks+'/'+totalTasks+'</span>' +
+          '<button onclick="deleteCompany('+ci+')" style="font-size:14px;color:var(--txt3);background:transparent;border:none;cursor:pointer;padding:0;line-height:1;font-family:inherit">×</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="goal-bar" style="margin:0 0 4px"><div class="goal-fill" style="width:'+pct+'%"></div></div>' +
+      '<div style="font-size:10px;color:var(--txt3);text-align:right;margin-bottom:8px">'+pct+'% complete</div>' +
+      catsHtml +
+    '</div>';
+  }).join('');
+}
+
+window.toggleAddCompany=function(){
+  var el=document.getElementById('add-company-form');
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+};
+
+window.addCompany=function(){
+  var inp=document.getElementById('new-company-name');
+  var name=(inp.value||'').trim();
+  if(!name)return;
+  punchData.companies.push({
+    name:name,
+    categories:DEFAULT_CATEGORIES.map(function(c){return {name:c,tasks:[]};})
+  });
+  inp.value='';
+  document.getElementById('add-company-form').style.display='none';
+  savePunchList();renderPunchList();
+};
+
+window.deleteCompany=function(ci){
+  if(!confirm('Delete "'+punchData.companies[ci].name+'" and all its tasks?'))return;
+  punchData.companies.splice(ci,1);
+  savePunchList();renderPunchList();
+};
+
+window.addPunchTask=function(ci,ki){
+  var inp=document.getElementById('new-punch-task-'+ci+'-'+ki);
+  var name=(inp.value||'').trim();
+  if(!name)return;
+  punchData.companies[ci].categories[ki].tasks.push({name:name,done:false,id:'pt'+Date.now()});
+  inp.value='';
+  savePunchList();renderPunchList();
+};
+
+window.togglePunchTask=function(ci,ki,ti){
+  punchData.companies[ci].categories[ki].tasks[ti].done=!punchData.companies[ci].categories[ki].tasks[ti].done;
+  savePunchList();renderPunchList();
+};
+
+window.deletePunchTask=function(ci,ki,ti){
+  punchData.companies[ci].categories[ki].tasks.splice(ti,1);
+  savePunchList();renderPunchList();
+};
+
+window.startEditPunchTask=function(ci,ki,ti){
+  var task=punchData.companies[ci].categories[ki].tasks[ti];
+  var newName=prompt('Edit task:',task.name);
+  if(newName!==null&&newName.trim()){
+    punchData.companies[ci].categories[ki].tasks[ti].name=newName.trim();
+    savePunchList();renderPunchList();
+  }
+};
+
+// Get punch list context for Sheena
+function getPunchListContext(){
+  if(!punchData.companies.length)return 'No work punch list items.';
+  return punchData.companies.map(function(c){
+    var parts=c.categories.map(function(cat){
+      var open=cat.tasks.filter(function(t){return !t.done;}).map(function(t){return t.name;});
+      if(!open.length)return null;
+      return cat.name+': '+open.join(', ');
+    }).filter(Boolean);
+    if(!parts.length)return c.name+': all tasks complete';
+    return c.name+' — '+parts.join('; ');
+  }).join(' | ');
+}
+
+// Process WORK_TASK action tags from Sheena
+function processWorkTaskTag(sheenaReply,actions){
+  var matches=sheenaReply.match(/\[WORK_TASK:[^\]]+\]/g);
+  if(!matches)return;
+  matches.forEach(function(m){
+    var inner=m.replace('[WORK_TASK:','').replace(']','');
+    var parts=inner.split('|').map(function(s){return s.trim();});
+    var action=parts[0]?parts[0].toLowerCase():'';
+    if(action==='add'&&parts.length>=3){
+      // [WORK_TASK:add|Company|Category|Task] or [WORK_TASK:add|Company|Task] (auto-detect category)
+      var companyName,catName,taskName;
+      if(parts.length>=4){companyName=parts[1];catName=parts[2];taskName=parts[3];}
+      else{companyName=parts[1];catName=guessTaskCategory(parts[2]);taskName=parts[2];}
+      var ci=findOrCreateCompany(companyName);
+      var ki=findOrCreateCategory(ci,catName);
+      punchData.companies[ci].categories[ki].tasks.push({name:taskName,done:false,id:'pt'+Date.now()});
+      savePunchList();
+      actions.push('📋 Added "'+taskName+'" to '+companyName+' → '+punchData.companies[ci].categories[ki].name);
+    } else if(action==='check'&&parts.length>=2){
+      var taskSearch=parts[parts.length-1];
+      var compSearch=parts.length>=3?parts[1]:null;
+      var found=findPunchTask(taskSearch,compSearch);
+      if(found){
+        found.task.done=true;
+        savePunchList();
+        actions.push('✅ Checked off "'+found.task.name+'"');
+      }
+    } else if(action==='uncheck'&&parts.length>=2){
+      var taskSearch=parts[parts.length-1];
+      var compSearch=parts.length>=3?parts[1]:null;
+      var found=findPunchTask(taskSearch,compSearch);
+      if(found){
+        found.task.done=false;
+        savePunchList();
+        actions.push('↩ Unchecked "'+found.task.name+'"');
+      }
+    } else if(action==='remove'&&parts.length>=2){
+      var taskSearch=parts[parts.length-1];
+      var compSearch=parts.length>=3?parts[1]:null;
+      var found=findPunchTask(taskSearch,compSearch);
+      if(found){
+        punchData.companies[found.ci].categories[found.ki].tasks.splice(found.ti,1);
+        savePunchList();
+        actions.push('🗑 Removed "'+found.task.name+'"');
+      }
+    } else if(action==='edit'&&parts.length>=3){
+      var oldName=parts[parts.length-2];
+      var newName=parts[parts.length-1];
+      var compSearch2=parts.length>=4?parts[1]:null;
+      var found=findPunchTask(oldName,compSearch2);
+      if(found){
+        found.task.name=newName;
+        savePunchList();
+        actions.push('✏️ Renamed to "'+newName+'"');
+      }
+    }
+  });
+}
+
+function guessTaskCategory(taskName){
+  var t=taskName.toLowerCase();
+  var growth=['email','ad ','ads','content','social','outreach','lead','reel','tiktok','instagram','facebook','post','campaign','seo','cold'];
+  var business=['llc','ein','bank','lemon','legal','privacy','terms','tos','license','tax','account','insurance','contract'];
+  var operations=['support','workflow','document','process','backup','deploy','onboard','train','hire'];
+  var design=['ui','ux','brand','creative','logo','sales page','landing','design','mockup','wireframe','font','color'];
+  if(growth.some(function(k){return t.includes(k);}))return 'Growth';
+  if(business.some(function(k){return t.includes(k);}))return 'Business';
+  if(operations.some(function(k){return t.includes(k);}))return 'Operations';
+  if(design.some(function(k){return t.includes(k);}))return 'Design';
+  return 'Growth'; // default
+}
+
+function findOrCreateCompany(name){
+  var lower=name.toLowerCase();
+  for(var i=0;i<punchData.companies.length;i++){
+    if(punchData.companies[i].name.toLowerCase()===lower)return i;
+  }
+  for(var i=0;i<punchData.companies.length;i++){
+    if(punchData.companies[i].name.toLowerCase().includes(lower)||lower.includes(punchData.companies[i].name.toLowerCase()))return i;
+  }
+  punchData.companies.push({
+    name:name,
+    categories:DEFAULT_CATEGORIES.map(function(c){return {name:c,tasks:[]};})
+  });
+  savePunchList();
+  return punchData.companies.length-1;
+}
+
+function findOrCreateCategory(ci,catName){
+  var lower=catName.toLowerCase();
+  for(var i=0;i<punchData.companies[ci].categories.length;i++){
+    if(punchData.companies[ci].categories[i].name.toLowerCase()===lower)return i;
+  }
+  for(var i=0;i<punchData.companies[ci].categories.length;i++){
+    if(punchData.companies[ci].categories[i].name.toLowerCase().includes(lower))return i;
+  }
+  punchData.companies[ci].categories.push({name:catName,tasks:[]});
+  savePunchList();
+  return punchData.companies[ci].categories.length-1;
+}
+
+function findPunchTask(taskName,companyName){
+  var tLower=taskName.toLowerCase();
+  for(var ci=0;ci<punchData.companies.length;ci++){
+    if(companyName&&!punchData.companies[ci].name.toLowerCase().includes(companyName.toLowerCase()))continue;
+    for(var ki=0;ki<punchData.companies[ci].categories.length;ki++){
+      for(var ti=0;ti<punchData.companies[ci].categories[ki].tasks.length;ti++){
+        if(punchData.companies[ci].categories[ki].tasks[ti].name.toLowerCase()===tLower)
+          return {ci:ci,ki:ki,ti:ti,task:punchData.companies[ci].categories[ki].tasks[ti]};
+      }
+    }
+  }
+  for(var ci=0;ci<punchData.companies.length;ci++){
+    if(companyName&&!punchData.companies[ci].name.toLowerCase().includes(companyName.toLowerCase()))continue;
+    for(var ki=0;ki<punchData.companies[ci].categories.length;ki++){
+      for(var ti=0;ti<punchData.companies[ci].categories[ki].tasks.length;ti++){
+        if(punchData.companies[ci].categories[ki].tasks[ti].name.toLowerCase().includes(tLower)||tLower.includes(punchData.companies[ci].categories[ki].tasks[ti].name.toLowerCase()))
+          return {ci:ci,ki:ki,ti:ti,task:punchData.companies[ci].categories[ki].tasks[ti]};
+      }
+    }
+  }
+  return null;
+}
+
+loadPunchList();
+
 // ── AI MORNING BRIEFING ──────────────────────────────
 var briefingGenerated = false;
 
@@ -3039,6 +3365,22 @@ Trigger: Fred says they need groceries or to add something to the list.
 Examples: "We need chicken and rice" → [GROCERY:chicken,rice]
 "Add protein powder to the list" → [GROCERY:protein powder]
 
+MANAGE WORK PUNCH LIST:
+[WORK_TASK:ACTION|COMPANY|CATEGORY|TASK]
+Actions: add, check, uncheck, remove, edit
+Categories per company: Growth, Business, Operations, Design
+Trigger: Fred mentions adding, completing, removing, or changing a work task on his punch list.
+Examples:
+"Add finalize cold email copy to Clasifi" → [WORK_TASK:add|Clasifi|Growth|Finalize cold email copy]
+"Add apply for EIN to Clasifi" → [WORK_TASK:add|Clasifi|Business|Apply for EIN]
+"Add update sales page to Clasifi" → [WORK_TASK:add|Clasifi|Design|Update sales page]
+"Check off the landing page task" → [WORK_TASK:check|Landing page]
+"Remove backup warning from Clasifi" → [WORK_TASK:remove|Clasifi|Backup warning]
+"Change EIN task to say EIN plus bank account" → [WORK_TASK:edit|EIN|EIN + business bank account]
+If Fred doesn't specify a category, auto-detect based on the task name (email/ads/social = Growth, legal/bank/LLC = Business, UI/branding = Design, support/process = Operations).
+If Fred doesn't specify a company, match the task across all companies.
+When Fred asks what to work on today, reference his punch list and suggest the highest-priority open items that fit his schedule.
+
 RULES:
 1. ALWAYS put ALL action tags at the VERY BEGINNING of your response, before any conversational text. This is critical — if you put tags at the end, they may get cut off.
 2. You can include MULTIPLE tags. If Fred says "I did Hotworx, got 9000 steps, and had a protein shake" → start with [HOTWORX:done] [STEPS:9000] [MEAL:180|30|Protein shake] then write your response.
@@ -3061,6 +3403,7 @@ ${weekCal}
 - Faith streak this week: ${faithDays}/7
 - Clasifi launch: ${daysToLaunch} days
 - Work focus: ${workFocus||'not set'}
+- Work punch list: ${getPunchListContext()}
 - Grocery day: ${isGrocery?'YES':'No'}
 - Upcoming dates: ${upcomingStr||'none in next 14 days'}
 - Extra context: ${extra||'none'}`
@@ -3296,9 +3639,9 @@ function sendToSheena(userMessage){
     if(text){
       // DEBUG: log raw response to see if tags are present
       console.log('SHEENA RAW:', text);
-      var tagCount=(text.match(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY):[^\]]+\]/g)||[]).length;
+      var tagCount=(text.match(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY|WORK_TASK):[^\]]+\]/g)||[]).length;
       // Strip all action tags from display/speech
-      var cleanText=text.replace(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY):[^\]]+\]/g,'').trim();
+      var cleanText=text.replace(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY|WORK_TASK):[^\]]+\]/g,'').trim();
       responseEl.textContent=cleanText;
       responseEl.scrollIntoView({behavior:'smooth',block:'start'});
       sheenaConversation=msgs.concat([{role:'assistant',content:text}]);
@@ -3452,6 +3795,9 @@ function processVoiceForActions(userMsg, sheenaReply){
       }
     }catch(e){}
   }
+
+  // ── WORK TASK ──────────────────────────────────────
+  processWorkTaskTag(sheenaReply,actions);
 
   // ── GROCERY ───────────────────────────────────────
   var grocMatch=sheenaReply.match(/\[GROCERY:([^\]]+)\]/);
