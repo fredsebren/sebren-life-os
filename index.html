@@ -75,6 +75,14 @@ body{font-family:var(--font);background:var(--bg2);min-height:100vh;color:var(--
 .sec:first-child{margin-top:0}
 .card{background:var(--bg);border:none;border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
 
+/* COLLAPSIBLE SECTIONS */
+.sec-collapse{cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;-webkit-user-select:none;padding-right:4px}
+.sec-collapse:active{opacity:0.6}
+.sec-chevron{font-size:13px;transition:transform 0.25s ease;display:inline-block}
+.sec-collapse.collapsed .sec-chevron{transform:rotate(-90deg)}
+.collapse-body{overflow:hidden;transition:max-height 0.3s ease,opacity 0.25s ease;max-height:2000px;opacity:1}
+.collapse-body.collapsed{max-height:0;opacity:0;margin:0}
+
 /* CHECKLIST ROWS */
 .row{display:flex;align-items:center;gap:14px}
 .chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--border2);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s ease}
@@ -328,16 +336,26 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
   <button class="nb" onclick="tab('settings',this)">Edit</button>
 </div>
 <!-- TODAY -->
-<div id="weather-bar" style="display:flex;align-items:center;gap:10px;padding:8px 1rem;background:var(--bg2);border-bottom:1px solid var(--border);font-size:13px;cursor:pointer" onclick="fetchWeather()">
-  <span id="weather-icon" style="font-size:20px">⛅</span>
-  <div style="flex:1">
-    <span id="weather-temp" style="font-weight:600;color:var(--txt)">--°F</span>
-    <span id="weather-desc" style="color:var(--txt2);margin-left:6px">The Woodlands, TX</span>
-  </div>
-  <span id="weather-feels" style="font-size:11px;color:var(--txt3)">tap to load</span>
-</div>
 <div id="ptr-ind" style="text-align:center;height:0;overflow:hidden;font-size:12px;color:var(--txt3);background:var(--bg2);transition:height 0.15s">Pull down to refresh</div>
 <div id="tab-today" class="tab on">
+  <!-- WEATHER — top of Today -->
+  <div id="weather-widget" style="margin-bottom:12px;display:none">
+    <div class="card" style="display:flex;align-items:center;gap:14px;padding:0.875rem 1.125rem">
+      <div id="wx-icon" style="font-size:30px;line-height:1">--</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <span id="wx-temp" style="font-size:24px;font-weight:700;color:var(--txt);letter-spacing:-0.5px">--°</span>
+          <span id="wx-desc" style="font-size:12px;color:var(--txt2)">Loading weather...</span>
+        </div>
+        <div id="wx-detail" style="font-size:11px;color:var(--txt3);margin-top:3px"></div>
+      </div>
+      <div style="text-align:right">
+        <div id="wx-high-low" style="font-size:11px;color:var(--txt2);font-weight:500"></div>
+        <div id="wx-feels" style="font-size:11px;color:var(--txt3);margin-top:3px"></div>
+      </div>
+    </div>
+  </div>
+
   <div id="ai-briefing-card" style="margin-bottom:12px;display:none">
     <div style="background:var(--bg);border:none;border-radius:var(--radius-lg);padding:1.125rem;box-shadow:var(--shadow)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -353,51 +371,41 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
       <div id="ai-briefing-loading" style="font-size:13px;color:var(--txt2);line-height:1.75">Pulling your day together...</div>
     </div>
   </div>
-  <div class="sec">Morning — do in order</div>
-  <div class="card" id="t-wake"><div class="row"><div class="chk" onclick="chk(this,'t-wake')"></div><div class="ct"><div class="ct-title">Wake up — no phone</div><div class="ct-sub">16 oz water immediately</div></div><span class="tag t-sun">6:30a</span></div></div>
-  <div class="card" id="t-sunrise"><div class="row"><div class="chk" onclick="chk(this,'t-sunrise')"></div><div class="ct"><div class="ct-title">Outside for sunrise</div><div class="ct-sub">7:12 — eyes to horizon, no sunglasses</div></div><span class="tag t-sun">7:12a</span></div></div>
-  <div class="card" id="t-spirit"><div class="row"><div class="chk" onclick="chk(this,'t-spirit')"></div><div class="ct"><div class="ct-title">Bible + prayer outside</div><div class="ct-sub">Read the Word during UVA window</div></div><span class="tag t-spirit">7:15–8a</span></div></div>
-  <div class="card" id="t-bfast"><div class="row"><div class="chk" onclick="chk(this,'t-bfast')"></div><div class="ct"><div class="ct-title">Breakfast outside — before 8am</div><div class="ct-sub">High protein. Before UVA window closes.</div></div><span class="tag t-food">before 8a</span></div></div>
 
-  <div class="sec">Daily checklist — any order</div>
-  <div class="card" id="t-hotworx"><div class="row"><div class="chk" onclick="chk(this,'t-hotworx')"></div><div class="ct"><div class="ct-title">Hotworx session</div><div class="ct-sub">Hot ISO (30 min) or Hot Cycle (15 min)</div></div><span class="tag t-fit">workout</span></div></div>
-
-  <div class="card" id="t-steps">
-    <div class="row">
-      <div class="chk" onclick="chk(this,'t-steps')"></div>
-      <div class="ct">
-        <div class="ct-title">10,000 steps</div>
-        <div class="inp-row" style="margin-top:6px">
-          <input type="number" id="steps-inp" placeholder="Enter steps" inputmode="numeric">
-          <button onclick="logSteps()">Log</button>
-        </div>
-        <div class="step-bar"><div class="step-fill" id="step-fill" style="width:0%"></div></div>
-        <div style="font-size:11px;color:var(--txt2);margin-top:4px" id="steps-lbl">0 / 10,000 steps</div>
-      </div>
-    </div>
+  <!-- MORNING — collapsible -->
+  <div class="sec sec-collapse" onclick="toggleSection('morning-items',this)">Morning — do in order <span class="sec-chevron">▾</span></div>
+  <div id="morning-items" class="collapse-body">
+    <div class="card" id="t-wake"><div class="row"><div class="chk" onclick="chk(this,'t-wake')"></div><div class="ct"><div class="ct-title">Wake up — no phone</div><div class="ct-sub">16 oz water immediately</div></div><span class="tag t-sun">6:30a</span></div></div>
+    <div class="card" id="t-sunrise"><div class="row"><div class="chk" onclick="chk(this,'t-sunrise')"></div><div class="ct"><div class="ct-title">Outside for sunrise</div><div class="ct-sub">7:12 — eyes to horizon, no sunglasses</div></div><span class="tag t-sun">7:12a</span></div></div>
+    <div class="card" id="t-spirit"><div class="row"><div class="chk" onclick="chk(this,'t-spirit')"></div><div class="ct"><div class="ct-title">Bible + prayer outside</div><div class="ct-sub">Read the Word during UVA window</div></div><span class="tag t-spirit">7:15–8a</span></div></div>
+    <div class="card" id="t-bfast"><div class="row"><div class="chk" onclick="chk(this,'t-bfast')"></div><div class="ct"><div class="ct-title">Breakfast outside — before 8am</div><div class="ct-sub">High protein. Before UVA window closes.</div></div><span class="tag t-food">before 8a</span></div></div>
   </div>
 
-  <div class="card" id="t-noon"><div class="row"><div class="chk" onclick="chk(this,'t-noon')"></div><div class="ct"><div class="ct-title">Outside at solar noon</div><div class="ct-sub">10+ min. Lunch outside counts.</div></div><span class="tag t-sun">1:30p</span></div></div>
-  <div class="card" id="t-work"><div class="row"><div class="chk" onclick="chk(this,'t-work')"></div><div class="ct"><div class="ct-title">Clasifi deep work</div><div class="ct-sub">Two focused blocks — 4+ hrs total</div></div><span class="tag t-work">work</span></div></div>
-  <div class="card" id="t-sunset"><div class="row"><div class="chk" onclick="chk(this,'t-sunset')"></div><div class="ct"><div class="ct-title">Outside for sunset</div><div class="ct-sub">7:40pm — signals wind-down</div></div><span class="tag t-sun">7:40p</span></div></div>
-  <div class="card" id="t-dinner"><div class="row"><div class="chk" onclick="chk(this,'t-dinner')"></div><div class="ct"><div class="ct-title">Dinner before sunset — eat outside</div><div class="ct-sub">Aim 7pm. No eating after sunset.</div></div><span class="tag t-food">before 7:40p</span></div></div>
-  <div class="card" id="t-blue"><div class="row"><div class="chk" onclick="chk(this,'t-blue')"></div><div class="ct"><div class="ct-title">Blue light blockers + no screens</div><div class="ct-sub">Screens off 1 hr before bed. Bible instead of TV.</div></div><span class="tag t-spirit">9:30p</span></div></div>
+  <!-- DAILY CHECKLIST — collapsible -->
+  <div class="sec sec-collapse" onclick="toggleSection('daily-items',this)">Daily checklist — any order <span class="sec-chevron">▾</span></div>
+  <div id="daily-items" class="collapse-body">
+    <div class="card" id="t-hotworx"><div class="row"><div class="chk" onclick="chk(this,'t-hotworx')"></div><div class="ct"><div class="ct-title">Hotworx session</div><div class="ct-sub">Hot ISO (30 min) or Hot Cycle (15 min)</div></div><span class="tag t-fit">workout</span></div></div>
 
-  <div id="weather-widget" style="margin-bottom:10px;display:none">
-    <div class="card" style="display:flex;align-items:center;gap:14px;padding:0.875rem 1.125rem">
-      <div id="wx-icon" style="font-size:30px;line-height:1">--</div>
-      <div style="flex:1">
-        <div style="display:flex;align-items:baseline;gap:6px">
-          <span id="wx-temp" style="font-size:24px;font-weight:700;color:var(--txt);letter-spacing:-0.5px">--°</span>
-          <span id="wx-desc" style="font-size:12px;color:var(--txt2)">Loading weather...</span>
+    <div class="card" id="t-steps">
+      <div class="row">
+        <div class="chk" onclick="chk(this,'t-steps')"></div>
+        <div class="ct">
+          <div class="ct-title">10,000 steps</div>
+          <div class="inp-row" style="margin-top:6px">
+            <input type="number" id="steps-inp" placeholder="Enter steps" inputmode="numeric">
+            <button onclick="logSteps()">Log</button>
+          </div>
+          <div class="step-bar"><div class="step-fill" id="step-fill" style="width:0%"></div></div>
+          <div style="font-size:11px;color:var(--txt2);margin-top:4px" id="steps-lbl">0 / 10,000 steps</div>
         </div>
-        <div id="wx-detail" style="font-size:11px;color:var(--txt3);margin-top:3px"></div>
-      </div>
-      <div style="text-align:right">
-        <div id="wx-high-low" style="font-size:11px;color:var(--txt2);font-weight:500"></div>
-        <div id="wx-feels" style="font-size:11px;color:var(--txt3);margin-top:3px"></div>
       </div>
     </div>
+
+    <div class="card" id="t-noon"><div class="row"><div class="chk" onclick="chk(this,'t-noon')"></div><div class="ct"><div class="ct-title">Outside at solar noon</div><div class="ct-sub">10+ min. Lunch outside counts.</div></div><span class="tag t-sun">1:30p</span></div></div>
+    <div class="card" id="t-work"><div class="row"><div class="chk" onclick="chk(this,'t-work')"></div><div class="ct"><div class="ct-title">Clasifi deep work</div><div class="ct-sub">Two focused blocks — 4+ hrs total</div></div><span class="tag t-work">work</span></div></div>
+    <div class="card" id="t-sunset"><div class="row"><div class="chk" onclick="chk(this,'t-sunset')"></div><div class="ct"><div class="ct-title">Outside for sunset</div><div class="ct-sub">7:40pm — signals wind-down</div></div><span class="tag t-sun">7:40p</span></div></div>
+    <div class="card" id="t-dinner"><div class="row"><div class="chk" onclick="chk(this,'t-dinner')"></div><div class="ct"><div class="ct-title">Dinner before sunset — eat outside</div><div class="ct-sub">Aim 7pm. No eating after sunset.</div></div><span class="tag t-food">before 7:40p</span></div></div>
+    <div class="card" id="t-blue"><div class="row"><div class="chk" onclick="chk(this,'t-blue')"></div><div class="ct"><div class="ct-title">Blue light blockers + no screens</div><div class="ct-sub">Screens off 1 hr before bed. Bible instead of TV.</div></div><span class="tag t-spirit">9:30p</span></div></div>
   </div>
   <div class="sec" id="kids-sec" style="display:none">Daily schedule</div>
   <div id="kids-block"></div>
@@ -1315,6 +1323,7 @@ function init(){
   renderMealQuickBtns();
   renderFavs();
   renderRecentMeals();
+  restoreCollapseState();
   initFirebase();
 }
 
@@ -1356,6 +1365,43 @@ window.tab=function(id,btn){
   document.getElementById('tab-'+id).classList.add('on');
   btn.classList.add('on');
 };
+
+// Collapsible sections
+window.toggleSection=function(bodyId,secEl){
+  var body=document.getElementById(bodyId);
+  if(!body)return;
+  var isCollapsed=body.classList.contains('collapsed');
+  if(isCollapsed){
+    body.classList.remove('collapsed');
+    secEl.classList.remove('collapsed');
+  } else {
+    body.classList.add('collapsed');
+    secEl.classList.add('collapsed');
+  }
+  // Persist state
+  try{
+    var state=JSON.parse(localStorage.getItem('sebren-collapse')||'{}');
+    state[bodyId]=!isCollapsed;
+    localStorage.setItem('sebren-collapse',JSON.stringify(state));
+  }catch(e){}
+};
+
+function restoreCollapseState(){
+  try{
+    var state=JSON.parse(localStorage.getItem('sebren-collapse')||'{}');
+    Object.keys(state).forEach(function(id){
+      if(state[id]){
+        var body=document.getElementById(id);
+        if(body){
+          body.classList.add('collapsed');
+          // Find the sec header that controls this body
+          var prev=body.previousElementSibling;
+          if(prev&&prev.classList.contains('sec-collapse'))prev.classList.add('collapsed');
+        }
+      }
+    });
+  }catch(e){}
+}
 
 // Check
 window.chk=function(el,id){
