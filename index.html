@@ -1126,7 +1126,6 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
   </div>
 </div>
 </div><!-- end app -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, doc, onSnapshot, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -4426,11 +4425,21 @@ window.startBarcodeScan=function(){
   if(scanEl)scanEl.style.display='block';
   if(resultEl)resultEl.style.display='none';
 
+  // Lazy-load html5-qrcode library on first scan
   if(typeof Html5Qrcode==='undefined'){
-    if(statusEl)statusEl.textContent='Scanner library not loaded — check connection';
+    if(statusEl)statusEl.textContent='Loading scanner...';
+    var script=document.createElement('script');
+    script.src='https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js';
+    script.onload=function(){initBarcodeScanner(statusEl);};
+    script.onerror=function(){if(statusEl)statusEl.textContent='Could not load scanner — check connection';};
+    document.head.appendChild(script);
     return;
   }
 
+  initBarcodeScanner(statusEl);
+};
+
+function initBarcodeScanner(statusEl){
   try{
     barcodeScanner=new Html5Qrcode('barcode-reader');
     barcodeScanActive=true;
@@ -4438,23 +4447,18 @@ window.startBarcodeScan=function(){
       {facingMode:'environment'},
       {fps:10,qrbox:{width:250,height:120},aspectRatio:1.5},
       function(decodedText){
-        // Success — stop scanning and look up the UPC
         if(!barcodeScanActive)return;
         barcodeScanActive=false;
         if(statusEl)statusEl.textContent='Found: '+decodedText+' — looking up...';
         stopBarcodeScanQuiet();
         lookupBarcode(decodedText);
       },
-      function(err){
-        // Ignore scan errors (no barcode found yet)
-      }
+      function(err){}
     ).catch(function(e){
       if(statusEl)statusEl.textContent='Camera error: '+e;
-      console.error('Barcode start error:',e);
     });
   }catch(e){
     if(statusEl)statusEl.textContent='Scanner error — try again';
-    console.error('Barcode init error:',e);
   }
 };
 
