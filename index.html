@@ -3098,18 +3098,12 @@ function openSheena(){
 var _micStream=null;
 function preWarmMic(){
   if(_micStream)return;
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    console.log('PREWARM: no getUserMedia');
-    return;
-  }
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return;
   try{
     navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
       _micStream=stream;
-      console.log('PREWARM: mic granted');
-    }).catch(function(err){
-      console.log('PREWARM: mic denied — '+err.message);
-    });
-  }catch(e){console.log('PREWARM: exception — '+e.message);}
+    }).catch(function(){});
+  }catch(e){}
 }
 
 function closeSheena(){
@@ -3210,10 +3204,7 @@ function playTone(freq, duration, delay, volume){
 }
 
 window.toggleListening = function(){
-  var dbg=document.getElementById('sheena-transcript');
-  function showDbg(msg){if(dbg){dbg.style.display='block';dbg.textContent=msg;}}
-
-  showDbg('DEBUG: mic tapped');
+  var transcriptEl=document.getElementById('sheena-transcript');
 
   if(sheenaListening){
     if(sheenaRecognition)sheenaRecognition.stop();
@@ -3224,12 +3215,13 @@ window.toggleListening = function(){
   }
 
   var hasSR=('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
-  showDbg('DEBUG: SpeechRecognition='+(hasSR?'YES':'NO')+' | getUserMedia='+(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia?'YES':'NO')+' | micStream='+(_micStream?'active':'null'));
 
   if(!hasSR){
-    showDbg('Voice not supported in this browser — use the text box above.');
+    if(transcriptEl){transcriptEl.textContent='Voice not supported — use the text box above.';transcriptEl.style.display='block';}
     return;
   }
+
+  if(transcriptEl){transcriptEl.style.display='block';transcriptEl.textContent='';}
 
   // Play "listening" tone — two quick ascending notes
   playTone(600, 0.08, 0, 0.15);
@@ -3263,15 +3255,18 @@ window.toggleListening = function(){
     sheenaListening=false;
     document.getElementById('sheena-mic-btn').classList.remove('listening');
     var errMsg=evt&&evt.error?evt.error:'unknown';
-    showDbg('DEBUG: speech error — '+errMsg);
-    document.getElementById('sheena-mic-label').textContent='Error: '+errMsg;
+    if(errMsg==='not-allowed'){
+      document.getElementById('sheena-mic-label').textContent='Mic blocked — use text';
+      if(transcriptEl){transcriptEl.textContent='Mic permission denied by your browser. Type your message above instead.';transcriptEl.style.display='block';}
+    } else {
+      document.getElementById('sheena-mic-label').textContent='or tap to speak';
+    }
   };
 
   sheenaRecognition.onend = function(){
     if(sheenaListening){
       sheenaListening=false;
       document.getElementById('sheena-mic-btn').classList.remove('listening');
-      showDbg('DEBUG: speech ended unexpectedly');
     }
   };
 
@@ -3279,9 +3274,8 @@ window.toggleListening = function(){
   sheenaListening=true;
   document.getElementById('sheena-mic-btn').classList.add('listening');
   document.getElementById('sheena-mic-label').textContent='Listening...';
-  showDbg('DEBUG: recognition.start() called');
   }catch(err){
-    showDbg('DEBUG: EXCEPTION — '+err.message);
+    if(transcriptEl){transcriptEl.textContent='Mic unavailable — type your message above.';transcriptEl.style.display='block';}
   }
 };
 
