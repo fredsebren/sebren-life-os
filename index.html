@@ -65,6 +65,7 @@ body{font-family:var(--font);background:var(--bg2);min-height:100vh;color:var(--
 .bnav-item.on svg *[stroke]{stroke:var(--teal)}
 .bnav-sheena{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--teal) 0%,var(--teal-dark) 100%);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;margin-top:-22px;box-shadow:0 0 0 4px var(--accent),0 4px 12px rgba(29,158,117,0.3);transition:transform 0.15s}
 .bnav-sheena:active{transform:scale(0.95)}
+.bnav-sheena.on{box-shadow:0 0 0 4px var(--accent),0 0 0 8px rgba(93,202,165,0.3),0 4px 12px rgba(29,158,117,0.3)}
 
 /* TABS — all tabs get bottom padding for nav */
 .tab{display:none;padding:16px;flex:1;overflow-y:auto;padding-bottom:20px}
@@ -296,6 +297,72 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
 #sheena-mic-btn.listening{background:#E24B4A;animation:pulse 1.5s infinite}
 #sheena-mic-btn.listening svg rect,#sheena-mic-btn.listening svg path,#sheena-mic-btn.listening svg line{fill:#fff;stroke:#fff}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
+/* ── SHEENA CHAT TAB ──────────────────────────────── */
+#tab-sheena{padding:0!important;display:none;flex-direction:column;height:calc(100vh - var(--nav-height) - 12px);overflow:hidden}
+#tab-sheena.on{display:flex!important}
+.chat-header{background:var(--accent);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.chat-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal) 0%,var(--teal-dark) 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chat-header-info{flex:1}
+.chat-header-name{font-size:15px;font-weight:600;color:#fff}
+.chat-header-sub{font-size:11px;color:rgba(255,255,255,0.45);margin-top:1px}
+.chat-status{font-size:10px;font-weight:600;color:var(--teal);background:rgba(255,255,255,0.1);padding:4px 10px;border-radius:10px}
+
+.chat-thread{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:4px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.chat-date-sep{text-align:center;font-size:10px;color:var(--txt3);margin:12px 0 8px;font-weight:500}
+.chat-date-sep:first-child{margin-top:0}
+
+/* Message bubbles */
+.chat-msg{display:flex;gap:8px;align-items:flex-end;max-width:88%;margin-bottom:2px;animation:chatIn 0.2s ease}
+@keyframes chatIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.chat-msg.sheena{align-self:flex-start}
+.chat-msg.user{align-self:flex-end;flex-direction:row-reverse}
+.chat-msg-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-dark));display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:2px}
+.chat-msg.user .chat-msg-avatar{display:none}
+.chat-bubble{padding:10px 14px;font-size:13px;line-height:1.6;border-radius:16px;word-wrap:break-word;overflow-wrap:break-word}
+.chat-msg.sheena .chat-bubble{background:var(--bg);color:var(--txt);border-bottom-left-radius:4px;box-shadow:var(--shadow-sm)}
+.chat-msg.user .chat-bubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.chat-msg-time{font-size:9px;color:var(--txt3);margin-top:2px;padding:0 4px}
+.chat-msg.user .chat-msg-time{text-align:right}
+
+/* Typing indicator */
+.chat-typing{display:flex;gap:8px;align-items:flex-end;max-width:88%;align-self:flex-start;margin-bottom:2px}
+.chat-typing .chat-bubble{display:flex;gap:4px;padding:12px 18px}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--txt3);animation:typingBounce 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:0.2s}
+.typing-dot:nth-child(3){animation-delay:0.4s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+
+/* Reminder cards in chat */
+.chat-reminder{align-self:center;background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:var(--radius);padding:10px 16px;font-size:12px;color:var(--warn-txt);text-align:center;margin:6px 0;max-width:92%;animation:chatIn 0.2s ease}
+.chat-reminder.info{background:var(--info-bg);border-color:var(--info-border);color:#0C447C}
+.chat-reminder a{color:inherit;font-weight:600;text-decoration:underline}
+
+/* Mood selector in chat */
+.chat-mood-card{align-self:center;background:var(--bg);border-radius:var(--radius-lg);padding:16px 20px;box-shadow:var(--shadow);text-align:center;margin:8px 0;max-width:92%;animation:chatIn 0.2s ease}
+.chat-mood-prompt{font-size:13px;color:var(--txt2);margin-bottom:10px}
+.chat-mood-btns{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.chat-mood-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--border2);background:var(--bg);color:var(--txt);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all 0.15s}
+.chat-mood-btn:active{transform:scale(0.92)}
+.chat-mood-btn.selected{background:var(--teal);color:var(--accent);border-color:var(--teal);box-shadow:0 0 10px rgba(93,202,165,0.3)}
+
+/* Quick action pills */
+.chat-quick-scroll{flex-shrink:0;overflow-x:auto;white-space:nowrap;padding:8px 16px;border-top:1px solid var(--border);background:var(--bg);-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+.chat-quick-scroll::-webkit-scrollbar{display:none}
+.chat-quick-pill{display:inline-block;padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:500;color:var(--txt2);background:var(--bg);cursor:pointer;font-family:var(--font);margin-right:6px;transition:all 0.15s;white-space:nowrap}
+.chat-quick-pill:active{background:var(--bg2);transform:scale(0.97)}
+.chat-quick-pill:last-child{margin-right:0}
+
+/* Input bar */
+.chat-input-bar{flex-shrink:0;display:flex;gap:8px;padding:10px 16px;padding-bottom:max(10px,env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--border);align-items:flex-end}
+.chat-input-bar input{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:22px;font-size:14px;background:var(--bg2);color:var(--txt);font-family:var(--font);outline:none;transition:border-color 0.15s;min-width:0}
+.chat-input-bar input:focus{border-color:var(--teal);background:var(--bg)}
+.chat-input-bar input::placeholder{color:var(--txt3)}
+.chat-send-btn{width:38px;height:38px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.1s}
+.chat-send-btn:active{transform:scale(0.92)}
+.chat-mic-btn{width:38px;height:38px;border-radius:50%;background:var(--bg2);border:1.5px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+.chat-mic-btn.listening{background:#E24B4A;border-color:#E24B4A;animation:pulse 1.5s infinite}
+.chat-mic-btn.listening svg *{fill:#fff;stroke:#fff}
 </style>
 
 </head>
@@ -696,7 +763,8 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
   <div id="gv-cart" style="display:none">
     <div class="info-box" style="margin-bottom:12px">Tap <strong>undo</strong> to put an item back on the list.</div>
     <div class="card"><div id="cart-list"><div class="empty-state">Cart is empty</div></div></div>
-    <button class="log-btn danger-btn" style="margin-top:8px" onclick="clearCart()">Clear cart — put all items back</button>
+    <button class="log-btn" style="margin-top:8px" onclick="clearCart()">Move all back to list</button>
+    <button class="log-btn danger-btn" style="margin-bottom:0" onclick="emptyCart()">Empty cart permanently</button>
   </div>
 
   <!-- ADD VIEW -->
@@ -1032,64 +1100,38 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
   <div class="sec">Previous reviews</div>
   <div class="card"><div id="prev-reviews" style="font-size:12px;color:var(--txt3);text-align:center;padding:8px 0">No reviews yet — complete your first one above</div></div>
 </div>
-<!-- SHEENA FLOATING BUTTON -->
-<div id="sheena-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.94);z-index:100;overflow-y:auto;-webkit-overflow-scrolling:touch;backdrop-filter:blur(8px)">
-  <div style="max-width:400px;margin:0 auto;padding:1.5rem 1.5rem 2rem;display:flex;flex-direction:column;align-items:center;min-height:100vh">
-    <div style="text-align:center;margin-bottom:1.25rem;padding-top:env(safe-area-inset-top,20px)">
-      <div style="font-size:16px;font-weight:600;color:#fff;letter-spacing:-0.2px">Sheena</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px">Named by Braxton</div>
+<!-- SHEENA CHAT TAB -->
+<div id="tab-sheena" class="tab">
+  <div class="chat-header">
+    <div class="chat-avatar">
+      <svg width="16" height="16" viewBox="0 0 28 28" fill="none"><rect x="10" y="2" width="8" height="14" rx="4" fill="#fff"/><path d="M5 14c0 4.97 4.03 9 9 9s9-4.03 9-9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>
     </div>
-
-    <!-- Response area (shared between mood and voice) -->
-    <div id="sheena-response" style="width:100%;font-size:15px;color:#fff;line-height:1.7;margin-bottom:1rem;min-height:40px;text-align:left"></div>
-
-    <!-- Mood check-in -->
-    <div id="sheena-mood-section" style="width:100%;margin-bottom:1rem;text-align:center">
-      <div id="sheena-mood-prompt" style="font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:1rem">How are you feeling today? Tap a number.</div>
-      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap" id="mood-btns">
-        <button onclick="setMood(1)" class="mood-btn">1</button>
-        <button onclick="setMood(2)" class="mood-btn">2</button>
-        <button onclick="setMood(3)" class="mood-btn">3</button>
-        <button onclick="setMood(4)" class="mood-btn">4</button>
-        <button onclick="setMood(5)" class="mood-btn">5</button>
-        <button onclick="setMood(6)" class="mood-btn">6</button>
-        <button onclick="setMood(7)" class="mood-btn">7</button>
-        <button onclick="setMood(8)" class="mood-btn">8</button>
-        <button onclick="setMood(9)" class="mood-btn">9</button>
-        <button onclick="setMood(10)" class="mood-btn">10</button>
-      </div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">Sheena</div>
+      <div class="chat-header-sub">Named by Braxton</div>
     </div>
+    <div class="chat-status">Online</div>
+  </div>
 
-    <!-- Voice + text input area -->
-    <div id="sheena-voice-section" style="width:100%;display:none;text-align:center">
-      <div id="sheena-transcript" style="font-size:13px;color:rgba(255,255,255,0.6);min-height:20px;margin-bottom:1rem;font-style:italic;text-align:left;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;display:none"></div>
+  <div class="chat-thread" id="chat-thread"></div>
 
-      <!-- Text input — always works -->
-      <div style="display:flex;gap:8px;margin-bottom:1rem;width:100%">
-        <input type="text" id="sheena-text-input" placeholder="Type to Sheena..." onkeydown="if(event.key==='Enter')sendSheenaText()" style="flex:1;padding:12px 14px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#fff;font-size:14px;font-family:inherit;outline:none" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'">
-        <button onclick="sendSheenaText()" style="padding:12px 16px;border-radius:var(--radius);border:none;background:var(--teal);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap">Send</button>
-      </div>
+  <div class="chat-quick-scroll" id="chat-quick-scroll">
+    <button class="chat-quick-pill" onclick="chatQuick('schedule')">📋 My schedule</button>
+    <button class="chat-quick-pill" onclick="chatQuick('debrief')">🌙 Evening debrief</button>
+    <button class="chat-quick-pill" onclick="chatQuick('craving')">🆘 Craving junk</button>
+    <button class="chat-quick-pill" onclick="chatQuick('bored')">😴 I'm bored</button>
+    <button class="chat-quick-pill" onclick="chatQuick('haircut')">⏰ Find a time</button>
+    <button class="chat-quick-pill" onclick="chatQuick('traffic')">🚗 Check route</button>
+  </div>
 
-      <!-- Mic button — only shows if speech recognition available -->
-      <div id="sheena-mic-wrap" style="margin-bottom:1rem">
-        <button id="sheena-mic-btn" onclick="toggleListening()" style="width:60px;height:60px;border-radius:50%;background:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem">
-          <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="10" y="2" width="8" height="14" rx="4" fill="#1a1a1a"/><path d="M5 14c0 4.97 4.03 9 9 9s9-4.03 9-9" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" fill="none"/><line x1="14" y1="23" x2="14" y2="27" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
-        <div id="sheena-mic-label" style="font-size:11px;color:rgba(255,255,255,0.4)">or tap to speak</div>
-      </div>
-
-      <!-- Quick action buttons -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-bottom:1rem">
-        <button onclick="sheenaQuick('bored')" class="sheena-quick-btn">I'm bored</button>
-        <button onclick="sheenaQuick('craving')" class="sheena-quick-btn">I'm craving junk</button>
-        <button onclick="sheenaQuick('schedule')" class="sheena-quick-btn">My schedule today</button>
-        <button onclick="sheenaQuick('debrief')" class="sheena-quick-btn">Evening debrief</button>
-        <button onclick="sheenaQuick('haircut')" class="sheena-quick-btn">Find me a time for...</button>
-        <button onclick="sheenaQuick('traffic')" class="sheena-quick-btn">Check my route</button>
-      </div>
-    </div>
-
-    <button onclick="closeSheena()" style="font-size:13px;color:rgba(255,255,255,0.4);background:transparent;border:none;cursor:pointer;font-family:inherit;margin-top:0.5rem">Close</button>
+  <div class="chat-input-bar">
+    <button class="chat-mic-btn" id="chat-mic-btn" onclick="chatToggleMic()">
+      <svg width="16" height="16" viewBox="0 0 28 28" fill="none"><rect x="10" y="2" width="8" height="14" rx="4" fill="var(--txt2)"/><path d="M5 14c0 4.97 4.03 9 9 9s9-4.03 9-9" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round" fill="none"/><line x1="14" y1="23" x2="14" y2="27" stroke="var(--txt2)" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <input type="text" id="chat-text-input" placeholder="Message Sheena..." onkeydown="if(event.key==='Enter')chatSend()">
+    <button class="chat-send-btn" onclick="chatSend()">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M3 10l14-7-7 14v-7H3z" fill="#fff"/></svg>
+    </button>
   </div>
 </div>
 
@@ -1111,7 +1153,7 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
         <svg viewBox="0 0 20 20" fill="none"><path d="M3 10a7 7 0 0114 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="2" y1="10" x2="18" y2="10" stroke="currentColor" stroke-width="1.5"/><path d="M6 13c0 1.66 1.79 3 4 3s4-1.34 4-3" stroke="currentColor" stroke-width="1.5"/></svg>
         <span>Food</span>
       </button>
-      <button class="bnav-sheena" id="sheena-btn" onclick="openSheena()">
+      <button class="bnav-sheena" id="sheena-btn" onclick="bnav('sheena',this)">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="8" y="1" width="6" height="11" rx="3" fill="#1B3A4B"/><path d="M3 11c0 4.42 3.58 8 8 8s8-3.58 8-8" stroke="#1B3A4B" stroke-width="2" stroke-linecap="round" fill="none"/><line x1="11" y1="19" x2="11" y2="22" stroke="#1B3A4B" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
       <button class="bnav-item" id="bn-grocery" onclick="bnav('grocery',this)">
@@ -1950,6 +1992,16 @@ window.delItem=function(id){
 
 window.clearCart=function(){
   cartItems.forEach(ci=>{const item=grocItems.find(i=>i.id===ci.id);if(item)item.done=false;});
+  cartItems=[];
+  saveGroc();
+};
+
+window.emptyCart=function(){
+  if(!confirm('Delete all '+cartItems.length+' items from cart permanently? They will NOT go back on your list.'))return;
+  // Remove the items from grocItems entirely
+  var cartIds={};
+  cartItems.forEach(function(ci){cartIds[ci.id]=true;});
+  grocItems=grocItems.filter(function(i){return !cartIds[i.id];});
   cartItems=[];
   saveGroc();
 };
@@ -3231,6 +3283,32 @@ var sheenaListening = false;
 var sheenaRecognition = null;
 var sheenaConversation = [];
 
+// ── AUDIO TONES ─────────────────────────────────────
+var _audioCtx=null;
+function playTone(freq, duration, delay, volume){
+  setTimeout(function(){
+    try{
+      if(!_audioCtx){var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;_audioCtx=new AC();}
+      if(_audioCtx.state==='suspended')_audioCtx.resume();
+      var osc=_audioCtx.createOscillator();var gain=_audioCtx.createGain();
+      osc.connect(gain);gain.connect(_audioCtx.destination);
+      osc.type='sine';osc.frequency.value=freq;gain.gain.value=volume||0.12;
+      var start=_audioCtx.currentTime+(delay||0);
+      osc.start(start);osc.stop(start+(duration||0.1));
+    }catch(e){}
+  },0);
+}
+
+var _fullTranscript='';
+
+// Pre-warm mic
+var _micStream=null;
+function preWarmMic(){
+  if(_micStream)return;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return;
+  try{navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){_micStream=stream;}).catch(function(){});}catch(e){}
+}
+
 function getDaysUntil(month, day){
   var now = new Date();
   var next = new Date(now.getFullYear(), month-1, day);
@@ -3410,276 +3488,466 @@ ${weekCal}
 - Extra context: ${extra||'none'}`
 }
 
-function openSheena(){
-  var overlay = document.getElementById('sheena-overlay');
-  if(overlay) overlay.style.display='block';
-  document.body.style.overflow='hidden';
+// ── SHEENA CHAT TAB ─────────────────────────────────
+var CHAT_HISTORY_KEY='sheena-chat-history';
+var CHAT_REMINDERS_KEY='sheena-reminders-fired';
+var chatHistory=[];
+var chatInitialized=false;
+var _reminderInterval=null;
 
-  // Pre-warm mic permission — request access now so it's ready when user taps mic
-  preWarmMic();
+function loadChatHistory(){
+  try{
+    var d=localStorage.getItem(CHAT_HISTORY_KEY);
+    if(d)chatHistory=JSON.parse(d);
+    // Prune older than 7 days
+    var cutoff=Date.now()-7*24*60*60*1000;
+    chatHistory=chatHistory.filter(function(m){return m.ts>=cutoff;});
+  }catch(e){chatHistory=[];}
+}
+
+function saveChatHistory(){
+  try{
+    // Keep last 200 messages max
+    if(chatHistory.length>200)chatHistory=chatHistory.slice(-200);
+    localStorage.setItem(CHAT_HISTORY_KEY,JSON.stringify(chatHistory));
+  }catch(e){}
+}
+
+function addChatMessage(role,text,type){
+  var msg={role:role,text:text,ts:Date.now(),type:type||'message'};
+  chatHistory.push(msg);
+  saveChatHistory();
+  renderChatMessage(msg,true);
+  scrollChatToBottom();
+}
+
+function renderChatMessage(msg,animate){
+  var thread=document.getElementById('chat-thread');
+  if(!thread)return;
+
+  // Check if we need a date separator
+  var msgDate=new Date(msg.ts);
+  var dateStr=formatChatDate(msgDate);
+  var lastSep=thread.querySelector('.chat-date-sep:last-of-type');
+  if(!lastSep||lastSep.textContent!==dateStr){
+    var sep=document.createElement('div');
+    sep.className='chat-date-sep';
+    sep.textContent=dateStr;
+    thread.appendChild(sep);
+  }
+
+  if(msg.type==='reminder'){
+    var card=document.createElement('div');
+    card.className='chat-reminder'+(msg.style==='info'?' info':'');
+    card.innerHTML=msg.text;
+    thread.appendChild(card);
+    return;
+  }
+
+  if(msg.type==='mood-card'){
+    // Don't re-render mood cards — they're interactive one-time
+    return;
+  }
+
+  if(msg.type==='actions'){
+    var actCard=document.createElement('div');
+    actCard.className='chat-reminder info';
+    actCard.textContent=msg.text;
+    thread.appendChild(actCard);
+    return;
+  }
+
+  var wrap=document.createElement('div');
+  wrap.className='chat-msg '+(msg.role==='user'?'user':'sheena');
+  if(!animate)wrap.style.animation='none';
+
+  var html='';
+  if(msg.role!=='user'){
+    html+='<div class="chat-msg-avatar"><svg width="12" height="12" viewBox="0 0 28 28" fill="none"><rect x="10" y="2" width="8" height="14" rx="4" fill="#fff"/><path d="M5 14c0 4.97 4.03 9 9 9s9-4.03 9-9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div>';
+  }
+  html+='<div><div class="chat-bubble">'+escapeHtml(msg.text)+'</div>';
+  html+='<div class="chat-msg-time">'+formatChatTime(msgDate)+'</div></div>';
+  wrap.innerHTML=html;
+  thread.appendChild(wrap);
+}
+
+function showTypingIndicator(){
+  var thread=document.getElementById('chat-thread');
+  if(!thread)return;
+  // Remove existing
+  var existing=thread.querySelector('.chat-typing');
+  if(existing)existing.remove();
+  var el=document.createElement('div');
+  el.className='chat-typing';
+  el.innerHTML='<div class="chat-msg-avatar"><svg width="12" height="12" viewBox="0 0 28 28" fill="none"><rect x="10" y="2" width="8" height="14" rx="4" fill="#fff"/><path d="M5 14c0 4.97 4.03 9 9 9s9-4.03 9-9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div><div class="chat-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+  thread.appendChild(el);
+  scrollChatToBottom();
+}
+
+function hideTypingIndicator(){
+  var thread=document.getElementById('chat-thread');
+  if(!thread)return;
+  var el=thread.querySelector('.chat-typing');
+  if(el)el.remove();
+}
+
+function scrollChatToBottom(){
+  var thread=document.getElementById('chat-thread');
+  if(thread)setTimeout(function(){thread.scrollTop=thread.scrollHeight;},50);
+}
+
+function formatChatDate(d){
+  var now=new Date();
+  var today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var msgDay=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  var diff=(today-msgDay)/(1000*60*60*24);
+  if(diff===0)return 'Today';
+  if(diff===1)return 'Yesterday';
+  return DAYS[d.getDay()]+', '+MONTHS[d.getMonth()]+' '+d.getDate();
+}
+
+function formatChatTime(d){
+  var h=d.getHours();var m=d.getMinutes();
+  var ampm=h>=12?'PM':'AM';
+  h=h%12||12;
+  return h+':'+(m<10?'0':'')+m+' '+ampm;
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function initChatTab(){
+  if(!chatInitialized){
+    loadChatHistory();
+    chatInitialized=true;
+  }
+  renderFullChatHistory();
 
   // Check if mood already set today
-  var cachedMood = null;
-  try{
-    var cm = localStorage.getItem('sheena-mood-'+getTodayStr());
-    if(cm) cachedMood = parseInt(cm);
-  }catch(e){}
+  var cachedMood=null;
+  try{var cm=localStorage.getItem('sheena-mood-'+getTodayStr());if(cm)cachedMood=parseInt(cm);}catch(e){}
 
-  if(cachedMood){
-    sheenaMood = cachedMood;
-    showVoiceSection();
-    document.getElementById('sheena-response').textContent='';
-  } else {
-    document.getElementById('sheena-mood-section').style.display='block';
-    document.getElementById('sheena-voice-section').style.display='none';
-    document.getElementById('sheena-mood-prompt').textContent='Hey Fred. How are you feeling today? Tap a number.';
-    document.getElementById('sheena-response').textContent='';
+  if(!cachedMood){
+    showMoodCardInChat();
   }
+
+  // Pre-warm mic
+  preWarmMic();
+
+  // Start reminder interval
+  startReminderChecker();
+
+  // Hide mic if no speech recognition
+  var hasSR=('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+  var micBtn=document.getElementById('chat-mic-btn');
+  if(micBtn)micBtn.style.display=hasSR?'flex':'none';
+
+  scrollChatToBottom();
 }
 
-// Pre-warm mic — triggers permission prompt early, keeps stream alive for session
-var _micStream=null;
-function preWarmMic(){
-  if(_micStream)return;
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return;
-  try{
-    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
-      _micStream=stream;
-    }).catch(function(){});
-  }catch(e){}
+function renderFullChatHistory(){
+  var thread=document.getElementById('chat-thread');
+  if(!thread)return;
+  thread.innerHTML='';
+  // Welcome message if empty
+  if(chatHistory.length===0){
+    var welcome=document.createElement('div');
+    welcome.className='chat-date-sep';
+    welcome.textContent='Today';
+    thread.appendChild(welcome);
+    var w=document.createElement('div');
+    w.className='chat-msg sheena';
+    w.style.animation='none';
+    w.innerHTML='<div class="chat-msg-avatar"><svg width="12" height="12" viewBox="0 0 28 28" fill="none"><rect x="10" y="2" width="8" height="14" rx="4" fill="#fff"/><path d="M5 14c0 4.97 4.03 9 9 9s9-4.03 9-9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg></div><div><div class="chat-bubble">Hey Fred! I\'m Sheena — your Life OS assistant. Talk to me about your schedule, meals, workouts, or anything on your mind. I\'m here all day.</div></div>';
+    thread.appendChild(w);
+    return;
+  }
+  chatHistory.forEach(function(msg){renderChatMessage(msg,false);});
 }
 
-function closeSheena(){
-  var overlay = document.getElementById('sheena-overlay');
-  if(overlay) overlay.style.display='none';
-  document.body.style.overflow='';
-  if(sheenaRecognition&&sheenaListening){sheenaRecognition.stop();sheenaListening=false;}
-  // Release mic stream
-  if(_micStream){try{_micStream.getTracks().forEach(function(t){t.stop();});}catch(e){}_micStream=null;}
+function showMoodCardInChat(){
+  var thread=document.getElementById('chat-thread');
+  if(!thread)return;
+  // Don't show if already in DOM
+  if(thread.querySelector('.chat-mood-card'))return;
+  var card=document.createElement('div');
+  card.className='chat-mood-card';
+  card.id='chat-mood-card';
+  var btnsHtml='';
+  for(var i=1;i<=10;i++){btnsHtml+='<button class="chat-mood-btn" onclick="chatSetMood('+i+')">'+i+'</button>';}
+  card.innerHTML='<div class="chat-mood-prompt">How are you feeling today?</div><div class="chat-mood-btns">'+btnsHtml+'</div>';
+  thread.appendChild(card);
+  scrollChatToBottom();
 }
 
-window.setMood = function(n){
-  sheenaMood = n;
-  try{localStorage.setItem('sheena-mood-'+getTodayStr(), n);}catch(e){}
-  // Update mood buttons
-  document.querySelectorAll('.mood-btn').forEach(function(b){b.classList.remove('selected');});
-  event.target.classList.add('selected');
-  document.getElementById('sheena-mood-prompt').textContent='';
+window.chatSetMood=function(n){
+  sheenaMood=n;
+  try{localStorage.setItem('sheena-mood-'+getTodayStr(),n);}catch(e){}
+  // Remove mood card
+  var card=document.getElementById('chat-mood-card');
+  if(card)card.remove();
+  // Add user's mood as a message
+  addChatMessage('user','Mood: '+n+'/10');
+  // Show thinking
+  showTypingIndicator();
 
-  // Generate mood-aware response
-  var responseEl = document.getElementById('sheena-response');
-  responseEl.textContent='Give me a sec...';
-
-  var context = buildSheenaContext('User just rated their mood '+n+'/10');
-  var moodExtra = n<=3 ? 'Their mood is low ('+n+'/10). Acknowledge it warmly, do not push hard. Give them one small manageable thing to do. Be gentle and encouraging. Weave in faith if it feels natural.' :
-    n<=6 ? 'Their mood is okay ('+n+'/10). Give them a practical morning briefing. What matters most today, where their best window is, one thing to prioritize.' :
+  var context=buildSheenaContext('User just rated their mood '+n+'/10');
+  var moodExtra=n<=3?'Their mood is low ('+n+'/10). Acknowledge it warmly, do not push hard. Give them one small manageable thing to do. Be gentle and encouraging. Weave in faith if it feels natural.':
+    n<=6?'Their mood is okay ('+n+'/10). Give them a practical morning briefing. What matters most today, where their best window is, one thing to prioritize.':
     'Their mood is great ('+n+'/10). Lean in. Capitalize on the energy. Challenge them to make today count. Be fired up with them.';
 
-  var msgs = sheenaConversation.length > 0 ? sheenaConversation : [{role:"user",content:context+"\n\n"+moodExtra+"\n\nGive a 2-4 sentence morning response. Natural, like a friend. Reference their actual data."}];
+  var msgs=[{role:"user",content:context+"\n\n"+moodExtra+"\n\nGive a 2-4 sentence morning response. Natural, like a friend. Reference their actual data."}];
 
   callClaude({max_tokens:500,messages:msgs})
   .then(function(data){
-    var text = data.content&&data.content[0]&&data.content[0].text;
+    hideTypingIndicator();
+    var text=data.content&&data.content[0]&&data.content[0].text;
     if(text){
-      responseEl.textContent = text;
-      sheenaConversation = [{role:"user",content:context+"\n\n"+moodExtra},{role:"assistant",content:text}];
-      speakText(text);
-      setTimeout(showVoiceSection, 500);
+      var cleanText=text.replace(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY|WORK_TASK):[^\]]+\]/g,'').trim();
+      addChatMessage('sheena',cleanText);
+      sheenaConversation=[{role:"user",content:context+"\n\n"+moodExtra},{role:"assistant",content:text}];
+      speakText(cleanText);
     }
   })
-  .catch(function(){responseEl.textContent='Having trouble connecting. Try again.';});
+  .catch(function(){hideTypingIndicator();addChatMessage('sheena','Having trouble connecting. Try again in a sec.');});
 };
 
-function showVoiceSection(){
-  document.getElementById('sheena-mood-section').style.display='none';
-  document.getElementById('sheena-voice-section').style.display='block';
-  // Hide mic button if speech recognition not available (iOS homescreen PWA)
-  var hasSpeech=('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
-  var micWrap=document.getElementById('sheena-mic-wrap');
-  if(micWrap)micWrap.style.display=hasSpeech?'block':'none';
-  // Focus text input for quick typing
-  setTimeout(function(){
-    var inp=document.getElementById('sheena-text-input');
-    if(inp)inp.focus();
-  },100);
-}
-
-// Send text message to Sheena
-window.sendSheenaText=function(){
-  var inp=document.getElementById('sheena-text-input');
+// ── CHAT SEND ───────────────────────────────────────
+window.chatSend=function(){
+  var inp=document.getElementById('chat-text-input');
   if(!inp)return;
   var text=inp.value.trim();
   if(!text)return;
   inp.value='';
-  // Show what user typed in transcript area
-  var transcript=document.getElementById('sheena-transcript');
-  if(transcript){transcript.textContent=text;transcript.style.display='block';}
-  var responseEl=document.getElementById('sheena-response');
-  if(responseEl)responseEl.textContent='Thinking...';
-  sendToSheena(text);
+  inp.blur();
+  chatSendMessage(text);
 };
 
-// ── AUDIO TONES ─────────────────────────────────────
-var _audioCtx=null;
-function playTone(freq, duration, delay, volume){
-  // Wrapped in setTimeout so it NEVER blocks the calling code
-  setTimeout(function(){
-    try{
-      if(!_audioCtx){
-        var AC=window.AudioContext||window.webkitAudioContext;
-        if(!AC)return;
-        _audioCtx=new AC();
-      }
-      // Resume suspended context (iOS requires this after user gesture)
-      if(_audioCtx.state==='suspended')_audioCtx.resume();
-      var osc=_audioCtx.createOscillator();
-      var gain=_audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(_audioCtx.destination);
-      osc.type='sine';
-      osc.frequency.value=freq;
-      gain.gain.value=volume||0.12;
-      var start=_audioCtx.currentTime+(delay||0);
-      osc.start(start);
-      osc.stop(start+(duration||0.1));
-    }catch(e){/* never block speech recognition */}
-  },0);
+function chatSendMessage(text){
+  addChatMessage('user',text);
+  showTypingIndicator();
+
+  var context=buildSheenaContext('');
+  var msgs;
+  if(sheenaConversation.length===0){
+    msgs=[{role:"user",content:context+"\n\nUser says: "+text}];
+  } else {
+    msgs=sheenaConversation.concat([{role:'user',content:text}]);
+  }
+
+  callClaude({max_tokens:500,messages:msgs})
+  .then(function(data){
+    hideTypingIndicator();
+    var raw=data.content&&data.content[0]&&data.content[0].text;
+    if(raw){
+      console.log('SHEENA RAW:',raw);
+      var cleanText=raw.replace(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY|WORK_TASK):[^\]]+\]/g,'').trim();
+      addChatMessage('sheena',cleanText);
+      sheenaConversation=msgs.concat([{role:'assistant',content:raw}]);
+      if(sheenaConversation.length>10)sheenaConversation=sheenaConversation.slice(-10);
+      speakText(cleanText);
+      // Process action tags
+      processVoiceForActions(text,raw);
+    } else {
+      addChatMessage('sheena','Got a response but no text — try again.');
+    }
+  })
+  .catch(function(err){hideTypingIndicator();addChatMessage('sheena','Error: '+(err.message||'connection failed'));});
 }
 
-var _fullTranscript='';
+// ── CHAT QUICK ACTIONS ──────────────────────────────
+window.chatQuick=function(type){
+  var prompts={
+    'bored': "I'm bored and feeling like opening a time-wasting app. What should I do instead?",
+    'craving': "I'm craving something sweet or junky right now. Talk me off the edge.",
+    'schedule': "What does my day look like? Walk me through it.",
+    'debrief': "Let's do my evening debrief. Ask me how my day went.",
+    'haircut': "I need to schedule something — help me find the best time in my schedule this week.",
+    'traffic': "I need to leave for an appointment soon. Check traffic conditions for The Woodlands area and tell me if I should leave early."
+  };
+  var msg=prompts[type]||type;
+  chatSendMessage(msg);
+};
 
-window.toggleListening = function(){
-  var transcriptEl=document.getElementById('sheena-transcript');
-  var micBtn=document.getElementById('sheena-mic-btn');
-  var micLabel=document.getElementById('sheena-mic-label');
+// ── CHAT MIC (voice) ────────────────────────────────
+window.chatToggleMic=function(){
+  var micBtn=document.getElementById('chat-mic-btn');
+  var inp=document.getElementById('chat-text-input');
 
   if(sheenaListening){
-    // STOP listening — send what we have
     sheenaListening=false;
     if(sheenaRecognition){try{sheenaRecognition.stop();}catch(e){}}
     micBtn.classList.remove('listening');
-
     var finalText=_fullTranscript.trim();
     if(finalText){
-      micLabel.textContent='Thinking...';
-      playTone(700, 0.12, 0, 0.1);
-      playTone(500, 0.12, 0.1, 0.1);
-      sendToSheena(finalText);
-    } else {
-      micLabel.textContent='or tap to speak';
+      playTone(700,0.12,0,0.1);
+      playTone(500,0.12,0.1,0.1);
+      chatSendMessage(finalText);
     }
+    if(inp)inp.placeholder='Message Sheena...';
     _fullTranscript='';
     return;
   }
 
   var hasSR=('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+  if(!hasSR){addChatMessage('sheena','Voice not available on this device — type your message instead.');return;}
 
-  if(!hasSR){
-    if(transcriptEl){transcriptEl.textContent='Voice not supported — use the text box above.';transcriptEl.style.display='block';}
-    return;
-  }
-
-  if(transcriptEl){transcriptEl.style.display='block';transcriptEl.textContent='';}
   _fullTranscript='';
+  if(inp)inp.placeholder='Listening — tap mic to send...';
 
-  playTone(600, 0.08, 0, 0.15);
-  playTone(900, 0.08, 0.1, 0.15);
+  playTone(600,0.08,0,0.15);
+  playTone(900,0.08,0.1,0.15);
 
   try{
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    sheenaRecognition = new SR();
-    sheenaRecognition.continuous = true;
-    sheenaRecognition.interimResults = true;
-    sheenaRecognition.lang = 'en-US';
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    sheenaRecognition=new SR();
+    sheenaRecognition.continuous=true;
+    sheenaRecognition.interimResults=true;
+    sheenaRecognition.lang='en-US';
 
-    sheenaRecognition.onresult = function(e){
-      var interim='';
-      var final='';
+    sheenaRecognition.onresult=function(e){
+      var interim='';var final='';
       for(var i=0;i<e.results.length;i++){
-        if(e.results[i].isFinal){
-          final+=e.results[i][0].transcript;
-        } else {
-          interim+=e.results[i][0].transcript;
-        }
+        if(e.results[i].isFinal){final+=e.results[i][0].transcript;}
+        else{interim+=e.results[i][0].transcript;}
       }
       _fullTranscript=final;
-      if(transcriptEl)transcriptEl.textContent=(final+interim).trim()||'Listening...';
+      if(inp)inp.value=(final+interim).trim();
     };
 
-    sheenaRecognition.onerror = function(evt){
+    sheenaRecognition.onerror=function(evt){
       var errMsg=evt&&evt.error?evt.error:'unknown';
       if(errMsg==='not-allowed'){
-        sheenaListening=false;
-        micBtn.classList.remove('listening');
-        micLabel.textContent='Mic blocked — use text';
-        if(transcriptEl){transcriptEl.textContent='Mic permission denied by your browser. Type your message above instead.';transcriptEl.style.display='block';}
+        sheenaListening=false;micBtn.classList.remove('listening');
+        if(inp)inp.placeholder='Mic blocked — type instead';
       } else if(errMsg!=='no-speech'&&errMsg!=='aborted'){
-        sheenaListening=false;
-        micBtn.classList.remove('listening');
-        micLabel.textContent='or tap to speak';
+        sheenaListening=false;micBtn.classList.remove('listening');
+        if(inp)inp.placeholder='Message Sheena...';
       }
     };
 
-    sheenaRecognition.onend = function(){
-      // If still supposed to be listening (browser auto-stopped), restart
-      if(sheenaListening){
-        try{sheenaRecognition.start();}catch(e){
-          sheenaListening=false;
-          micBtn.classList.remove('listening');
-          micLabel.textContent='or tap to speak';
-        }
-      }
+    sheenaRecognition.onend=function(){
+      if(sheenaListening){try{sheenaRecognition.start();}catch(e){sheenaListening=false;micBtn.classList.remove('listening');if(inp)inp.placeholder='Message Sheena...';}}
     };
 
     sheenaRecognition.start();
     sheenaListening=true;
     micBtn.classList.add('listening');
-    micLabel.textContent='Listening — tap mic to send';
   }catch(err){
-    if(transcriptEl){transcriptEl.textContent='Mic unavailable — type your message above.';transcriptEl.style.display='block';}
+    if(inp)inp.placeholder='Mic unavailable — type instead';
   }
 };
 
-function sendToSheena(userMessage){
-  var responseEl = document.getElementById('sheena-response');
-  responseEl.textContent='...';
-
-  var context = buildSheenaContext('');
-  var msgs;
-  if(sheenaConversation.length===0){
-    msgs=[{role:"user",content:context+"\n\nUser says: "+userMessage}];
-  } else {
-    msgs = sheenaConversation.concat([{role:'user',content:userMessage}]);
-  }
-
-  callClaude({max_tokens:500,messages:msgs})
-  .then(function(data){
-    var text=data.content&&data.content[0]&&data.content[0].text;
-    if(text){
-      // DEBUG: log raw response to see if tags are present
-      console.log('SHEENA RAW:', text);
-      var tagCount=(text.match(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY|WORK_TASK):[^\]]+\]/g)||[]).length;
-      // Strip all action tags from display/speech
-      var cleanText=text.replace(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY|WORK_TASK):[^\]]+\]/g,'').trim();
-      responseEl.textContent=cleanText;
-      responseEl.scrollIntoView({behavior:'smooth',block:'start'});
-      sheenaConversation=msgs.concat([{role:'assistant',content:text}]);
-      if(sheenaConversation.length>10)sheenaConversation=sheenaConversation.slice(-10);
-      speakText(cleanText);
-      // Reset mic label
-      var micLabel=document.getElementById('sheena-mic-label');
-      if(micLabel)micLabel.textContent='Tap to speak';
-      // Auto-process: check for calendar scheduling + grocery items
-      processVoiceForActions(userMessage, text);
-    } else {
-      responseEl.textContent='Got a response but no text — try again.';
-    }
-  })
-  .catch(function(err){responseEl.textContent='Error: '+(err.message||'connection failed');});
+// ── 15-MINUTE REMINDER SYSTEM (zero API calls) ─────
+function startReminderChecker(){
+  if(_reminderInterval)return;
+  checkReminders(); // check immediately
+  _reminderInterval=setInterval(checkReminders,60000); // then every 60 seconds
 }
 
+function checkReminders(){
+  var now=new Date();
+  var todayStr=getTodayStr();
+  var firedKey='sheena-reminders-'+todayStr;
+  var fired={};
+  try{var f=localStorage.getItem(firedKey);if(f)fired=JSON.parse(f);}catch(e){}
+
+  // Check calendar events
+  var events=[];
+  try{
+    var calData=JSON.parse(localStorage.getItem('sebren-cal')||'{}');
+    if(calData[todayStr])events=events.concat(calData[todayStr]);
+  }catch(e){}
+  // Check kids schedule
+  var dow=now.getDay();
+  if(KIDS[dow]){
+    KIDS[dow].forEach(function(k){
+      events.push({time:k.t.split('–')[0].split('—')[0].trim(),title:k.n});
+    });
+  }
+  // Check recurring events
+  try{
+    var recurring=JSON.parse(localStorage.getItem('sebren-recurring')||'[]');
+    recurring.forEach(function(r){if(parseInt(r.day)===dow)events.push({time:r.time,title:r.title});});
+  }catch(e){}
+
+  events.forEach(function(evt){
+    if(!evt.time)return;
+    var evtTime=parseTimeToMinutes(evt.time);
+    if(evtTime<0)return;
+    var nowMins=now.getHours()*60+now.getMinutes();
+    var diff=evtTime-nowMins;
+    // Fire at 15 minutes before
+    if(diff>=14&&diff<=16){
+      var remId=evt.title+'-'+evt.time;
+      if(!fired[remId]){
+        fired[remId]=true;
+        try{localStorage.setItem(firedKey,JSON.stringify(fired));}catch(e){}
+        var reminderText='⏰ '+evt.title+' in 15 minutes'+(evt.time?' — '+evt.time:'');
+        chatHistory.push({role:'system',text:reminderText,ts:Date.now(),type:'reminder'});
+        saveChatHistory();
+        // Only render if we're on the chat tab
+        var chatTab=document.getElementById('tab-sheena');
+        if(chatTab&&chatTab.classList.contains('on')){
+          var thread=document.getElementById('chat-thread');
+          if(thread){
+            var card=document.createElement('div');
+            card.className='chat-reminder';
+            card.textContent=reminderText;
+            thread.appendChild(card);
+            scrollChatToBottom();
+          }
+        }
+        // Try web notification
+        fireWebNotification(evt.title+' in 15 minutes',evt.time);
+        // Play alert tone
+        playTone(800,0.15,0,0.2);playTone(1000,0.15,0.15,0.2);playTone(800,0.15,0.3,0.15);
+      }
+    }
+  });
+}
+
+function parseTimeToMinutes(timeStr){
+  if(!timeStr)return -1;
+  var s=timeStr.toLowerCase().replace(/\s/g,'');
+  // Handle formats: "3:00p", "3:00pm", "3pm", "15:00", "leave 11:45a"
+  s=s.replace(/^leave/,'').trim();
+  var match=s.match(/(\d{1,2}):?(\d{2})?\s*(a|am|p|pm)?/i);
+  if(!match)return -1;
+  var h=parseInt(match[1]);
+  var m=match[2]?parseInt(match[2]):0;
+  var ampm=match[3]?match[3].charAt(0).toLowerCase():'';
+  if(ampm==='p'&&h<12)h+=12;
+  if(ampm==='a'&&h===12)h=0;
+  if(h>23||m>59)return -1;
+  return h*60+m;
+}
+
+function fireWebNotification(title,time){
+  if(!('Notification' in window))return;
+  if(Notification.permission==='granted'){
+    try{new Notification('Life OS — '+title,{body:time||'Coming up soon',icon:'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="45" fill="%235DCAA5"/%3E%3C/svg%3E'});}catch(e){}
+  } else if(Notification.permission!=='denied'){
+    Notification.requestPermission();
+  }
+}
+
+// Request notification permission early
+if('Notification' in window && Notification.permission==='default'){
+  // Wait for user gesture — will prompt on first chat interaction
+  var _notifRequested=false;
+  document.addEventListener('click',function(){
+    if(!_notifRequested&&Notification.permission==='default'){
+      _notifRequested=true;
+      Notification.requestPermission();
+    }
+  },{once:true});
+}
+
+// ── LEGACY COMPAT — keep processVoiceForActions working ──
+// Redirect action feedback to chat instead of transcript element
 function processVoiceForActions(userMsg, sheenaReply){
-  var transcript=document.getElementById('sheena-transcript');
   var actions=[];
   var lower=userMsg.toLowerCase();
 
@@ -3831,8 +4099,8 @@ function processVoiceForActions(userMsg, sheenaReply){
   }
 
   // ── SHOW ACTIONS ──────────────────────────────────
-  if(actions.length&&transcript){
-    transcript.textContent=actions.join(' · ');
+  if(actions.length){
+    addChatMessage('system',actions.join(' · '),'actions');
   }
 
   // ── FALLBACKS (no tags found) ─────────────────────
@@ -3842,7 +4110,7 @@ function processVoiceForActions(userMsg, sheenaReply){
     var foodHit=false;foodWords.forEach(function(t){if(lower.includes(t))foodHit=true;});
     if(foodHit){
       callClaude({max_tokens:100,system:'Extract a meal and estimate macros. ALWAYS estimate calories on the HIGH side (round up 10-15%) and protein on the LOW side. For chain restaurants, use published nutrition data. Return ONLY JSON: {"meal":"name","calories":number,"protein":number} or null. No other text.',messages:[{role:'user',content:userMsg}]})
-      .then(function(d){try{var p=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());if(p&&p.meal&&p.calories>0){window.meal(p.meal,String(p.calories),p.protein||0);var tc=(S.meals||[]).reduce(function(a,m){return a+m.cal;},0);if(transcript)transcript.textContent='🍽 '+p.meal+' ('+p.calories+' cal) — Day: '+tc;}}catch(e){}}).catch(function(){});
+      .then(function(d){try{var p=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());if(p&&p.meal&&p.calories>0){window.meal(p.meal,String(p.calories),p.protein||0);var tc=(S.meals||[]).reduce(function(a,m){return a+m.cal;},0);addChatMessage('system','🍽 '+p.meal+' ('+p.calories+' cal) — Day: '+tc,'actions');}}catch(e){}}).catch(function(){});
     }
     // Schedule fallback
     var schedWords=['schedule','appointment','haircut','dentist','doctor','meeting','add to calendar','book a','has a','at 10','at 11','at 12','at 1','at 2','at 3','at 4','at 5','at 6','at 7','at 8','at 9','april','may','june','july','august','monday','tuesday','wednesday','thursday','friday','saturday','sunday','tomorrow','next week','this week'];
@@ -3850,22 +4118,22 @@ function processVoiceForActions(userMsg, sheenaReply){
     if(schedHit){
       var td=new Date();var tds=td.getFullYear()+'-'+(td.getMonth()+1)+'-'+td.getDate();
       callClaude({max_tokens:100,system:'Extract calendar event. Today is '+tds+'. Return ONLY JSON: {"date":"YYYY-M-D","time":"H:MMa","title":"name"} or null. Year is 2026.',messages:[{role:'user',content:userMsg}]})
-      .then(function(d){try{var e=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());if(e&&e.date&&e.title){sheenaAddCalEvent(e.date,e.time||'',e.title);if(transcript)transcript.textContent='📅 '+(e.time?e.time+' — ':'')+e.title;if(e.date===getTodayStr())buildKids(new Date().getDay());}}catch(e){}}).catch(function(){});
+      .then(function(d){try{var e=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());if(e&&e.date&&e.title){sheenaAddCalEvent(e.date,e.time||'',e.title);addChatMessage('system','📅 '+(e.time?e.time+' — ':'')+e.title,'actions');if(e.date===getTodayStr())buildKids(new Date().getDay());}}catch(e){}}).catch(function(){});
     }
     // Steps fallback
     var stepsHit=lower.match(/(\d[\d,]*)\s*steps/);
-    if(stepsHit){var sv=parseInt(stepsHit[1].replace(/,/g,''));if(sv>0&&sv<100000){S.stepCount=sv;var spct=Math.min(100,Math.round(sv/10000*100));var sef=document.getElementById('step-fill');if(sef)sef.style.width=spct+'%';var sel=document.getElementById('steps-lbl');if(sel)sel.textContent=sv.toLocaleString()+' / 10,000 steps';if(sv>=10000){var sc=document.querySelector('#t-steps .chk');if(sc&&!sc.classList.contains('on')){sc.classList.add('on');S.checks['t-steps']=true;updateProg();}}saveLocal();if(transcript)transcript.textContent='👟 '+sv.toLocaleString()+' steps';}}
+    if(stepsHit){var sv=parseInt(stepsHit[1].replace(/,/g,''));if(sv>0&&sv<100000){S.stepCount=sv;var spct=Math.min(100,Math.round(sv/10000*100));var sef=document.getElementById('step-fill');if(sef)sef.style.width=spct+'%';var sel=document.getElementById('steps-lbl');if(sel)sel.textContent=sv.toLocaleString()+' / 10,000 steps';if(sv>=10000){var sc=document.querySelector('#t-steps .chk');if(sc&&!sc.classList.contains('on')){sc.classList.add('on');S.checks['t-steps']=true;updateProg();}}saveLocal();addChatMessage('system','👟 '+sv.toLocaleString()+' steps','actions');}}
     // Weight fallback
     var wtHit=lower.match(/(?:weigh|weight|weighed|scale).*?(\d{3}\.?\d?)/);
-    if(wtHit){var wv=parseFloat(wtHit[1]);if(wv>100&&wv<500){if(!S.weights)S.weights=[];var wdd=new Date();S.weights.unshift({date:(wdd.getMonth()+1)+'/'+wdd.getDate(),val:wv});renderWeights();saveLocal();if(transcript)transcript.textContent='⚖️ '+wv+' lbs';}}
+    if(wtHit){var wv=parseFloat(wtHit[1]);if(wv>100&&wv<500){if(!S.weights)S.weights=[];var wdd=new Date();S.weights.unshift({date:(wdd.getMonth()+1)+'/'+wdd.getDate(),val:wv});renderWeights();saveLocal();addChatMessage('system','⚖️ '+wv+' lbs','actions');}}
     // Hotworx fallback
-    if(lower.includes('hotworx')||lower.includes('hot iso')||lower.includes('hot cycle')){var hdd=new Date().getDay();if(!S.hxDays)S.hxDays={};if(!S.hxDays[hdd]){S.hxDays[hdd]=true;var hhe=document.getElementById('hx-'+hdd);if(hhe)hhe.classList.add('on');saveLocal();if(transcript)transcript.textContent='🔥 Hotworx logged';}}
+    if(lower.includes('hotworx')||lower.includes('hot iso')||lower.includes('hot cycle')){var hdd=new Date().getDay();if(!S.hxDays)S.hxDays={};if(!S.hxDays[hdd]){S.hxDays[hdd]=true;var hhe=document.getElementById('hx-'+hdd);if(hhe)hhe.classList.add('on');saveLocal();addChatMessage('system','🔥 Hotworx logged','actions');}}
     // Grocery fallback
     var grocWords=['we need','out of','add to grocery','get some','pick up','buy some'];
     var grocHit=false;grocWords.forEach(function(t){if(lower.includes(t))grocHit=true;});
     if(grocHit){
       callClaude({max_tokens:100,system:'Extract grocery items. Return ONLY a JSON array of names or []. No other text.',messages:[{role:'user',content:userMsg}]})
-      .then(function(d){try{var it=JSON.parse(d.content[0].text);if(it&&it.length){it.forEach(function(item){grocItems.push({id:'v'+Date.now()+Math.random().toString(36).slice(2,5),name:item,cat:guessCategory(item),type:'weekly',done:false});});saveGroc();if(transcript)transcript.textContent='🛒 '+it.join(', ');}}catch(e){}}).catch(function(){});
+      .then(function(d){try{var it=JSON.parse(d.content[0].text);if(it&&it.length){it.forEach(function(item){grocItems.push({id:'v'+Date.now()+Math.random().toString(36).slice(2,5),name:item,cat:guessCategory(item),type:'weekly',done:false});});saveGroc();addChatMessage('system','🛒 '+it.join(', '),'actions');}}catch(e){}}).catch(function(){});
     }
   }
 }
@@ -3883,19 +4151,6 @@ function speakText(text){
   if(femaleVoice)utt.voice=femaleVoice;
   window.speechSynthesis.speak(utt);
 }
-
-window.sheenaQuick = function(type){
-  var prompts={
-    'bored': "I'm bored and feeling like opening a time-wasting app. What should I do instead?",
-    'craving': "I'm craving something sweet or junky right now. Talk me off the edge.",
-    'schedule': "What does my day look like? Walk me through it.",
-    'debrief': "Let's do my evening debrief. Ask me how my day went.",
-    'haircut': "I need to schedule something — help me find the best time in my schedule this week.",
-    'traffic': "I need to leave for an appointment soon. Check traffic conditions for The Woodlands area and tell me if I should leave early."
-  };
-  document.getElementById('sheena-transcript').textContent=prompts[type]||'';
-  sendToSheena(prompts[type]||type);
-};
 
 // Load voices when available
 if('speechSynthesis' in window){
@@ -4951,8 +5206,10 @@ function resetBarcodeUI(){
 
 // ── MASTER INIT ─────────────────────────────────────
 // Expose functions needed by HTML onclick in module context
-window.openSheena=openSheena;
-window.closeSheena=closeSheena;
+window.chatSend=window.chatSend;
+window.chatQuick=window.chatQuick;
+window.chatToggleMic=window.chatToggleMic;
+window.chatSetMood=window.chatSetMood;
 window.fetchWeather=fetchWeather;
 window.startBarcodeScan=window.startBarcodeScan;
 window.stopBarcodeScan=window.stopBarcodeScan;
@@ -4975,14 +5232,22 @@ window.bnav=function(id,btn){
   window.tab(id,fakeBtn);
   // Update bottom nav active state
   document.querySelectorAll('.bnav-item').forEach(function(b){b.classList.remove('on');});
+  // Remove sheena active state too
+  var sheenaBtn=document.getElementById('sheena-btn');
+  if(sheenaBtn)sheenaBtn.classList.remove('on');
   var mainTabs=['today','cal','food','grocery'];
-  var bnId='bn-'+id;
-  var bnEl=document.getElementById(bnId);
-  if(bnEl)bnEl.classList.add('on');
-  else{
-    // It's a "more" tab - highlight "more" button
-    var moreBtn=document.getElementById('bn-more');
-    if(moreBtn)moreBtn.classList.add('on');
+  if(id==='sheena'){
+    if(sheenaBtn)sheenaBtn.classList.add('on');
+    initChatTab();
+  } else {
+    var bnId='bn-'+id;
+    var bnEl=document.getElementById(bnId);
+    if(bnEl)bnEl.classList.add('on');
+    else{
+      // It's a "more" tab - highlight "more" button
+      var moreBtn=document.getElementById('bn-more');
+      if(moreBtn)moreBtn.classList.add('on');
+    }
   }
 };
 
@@ -5022,12 +5287,17 @@ window.tab=function(id,btn){
   if(id==='power')initPowerList();
   if(id==='cal')initCalTab();
   if(id==='review')initReviewTab();
+  if(id==='sheena')initChatTab();
 };
 
-// Kick off briefing + dates after everything loaded
+// Kick off briefing + dates + reminders after everything loaded
 setTimeout(function(){
   initBriefing();
   checkImportantDates();
+  // Start reminder checker globally (runs even when not on chat tab)
+  loadChatHistory();
+  chatInitialized=true;
+  startReminderChecker();
 }, 100);
 
 
