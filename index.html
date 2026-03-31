@@ -618,10 +618,26 @@ textarea.paste-area:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0
   <div class="sec">Recent meals</div>
   <div id="recent-meals-list" style="margin-bottom:8px"></div>
 
-  <div class="sec">Water — 8 cups</div>
+  <div class="sec">Water — 96 oz goal</div>
   <div class="card">
+    <div style="display:flex;gap:6px;margin-bottom:12px" id="vessel-picker">
+      <button class="vessel-btn on" id="vessel-stanley" onclick="selectVessel('stanley')" style="flex:1;padding:10px 6px;border-radius:var(--radius);border:1.5px solid var(--teal);background:var(--teal-bg);cursor:pointer;font-family:inherit;text-align:center;transition:all 0.15s">
+        <div style="font-size:16px;margin-bottom:2px">🥤</div>
+        <div style="font-size:11px;font-weight:600;color:var(--teal-txt)">Stanley</div>
+        <div style="font-size:10px;color:var(--teal-txt);opacity:0.7">30oz</div>
+      </button>
+      <button class="vessel-btn" id="vessel-yeti" onclick="selectVessel('yeti')" style="flex:1;padding:10px 6px;border-radius:var(--radius);border:1.5px solid var(--border);background:var(--bg);cursor:pointer;font-family:inherit;text-align:center;transition:all 0.15s">
+        <div style="font-size:16px;margin-bottom:2px">🧊</div>
+        <div style="font-size:11px;font-weight:600;color:var(--txt)">Yeti</div>
+        <div style="font-size:10px;color:var(--txt2)">36oz</div>
+      </button>
+    </div>
     <div class="w-cups" id="w-cups"></div>
-    <div style="font-size:12px;color:var(--txt2);margin-top:10px" id="water-lbl">0 of 8 cups</div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px">
+      <span style="font-size:12px;color:var(--txt2)" id="water-lbl">0 / 96 oz</span>
+      <span style="font-size:11px;color:var(--txt3)" id="water-fills-lbl">0 of 4 fills</span>
+    </div>
+    <div class="goal-bar" style="margin-top:6px"><div class="goal-fill" id="water-fill-bar" style="width:0%"></div></div>
   </div>
 </div>
 
@@ -1459,26 +1475,113 @@ function buildKids(dow){
   block.innerHTML=h;
 }
 
-// Water
+// Water — vessel-aware tracking
+var VESSELS={
+  stanley:{name:'Stanley',oz:30,icon:'🥤'},
+  yeti:{name:'Yeti',oz:36,icon:'🧊'}
+};
+var WATER_GOAL=96;
+var activeVessel='stanley';
+
+function getVesselFills(vesselKey){
+  var oz=VESSELS[vesselKey].oz;
+  return Math.ceil(WATER_GOAL/oz);
+}
+
+function loadVesselChoice(){
+  try{var v=localStorage.getItem('sebren-vessel');if(v&&VESSELS[v])activeVessel=v;}catch(e){}
+}
+
+function saveVesselChoice(){
+  try{localStorage.setItem('sebren-vessel',activeVessel);}catch(e){}
+}
+
+window.selectVessel=function(key){
+  if(!VESSELS[key])return;
+  activeVessel=key;
+  saveVesselChoice();
+  // Update picker UI
+  document.querySelectorAll('#vessel-picker button').forEach(function(btn){
+    btn.style.borderColor='var(--border)';
+    btn.style.background='var(--bg)';
+    btn.querySelectorAll('div')[1].style.color='var(--txt)';
+    btn.querySelectorAll('div')[2].style.color='var(--txt2)';
+  });
+  var active=document.getElementById('vessel-'+key);
+  if(active){
+    active.style.borderColor='var(--teal)';
+    active.style.background='var(--teal-bg)';
+    active.querySelectorAll('div')[1].style.color='var(--teal-txt)';
+    active.querySelectorAll('div')[2].style.color='var(--teal-txt)';
+  }
+  // Reset water state for new vessel (keep count if same day)
+  S.water=[];
+  saveLocal();
+  buildWater();
+  updateWaterLabel();
+};
+
 function buildWater(){
+  loadVesselChoice();
+  var fills=getVesselFills(activeVessel);
   const el=document.getElementById('w-cups');
+  if(!el)return;
   el.innerHTML='';
-  for(let i=0;i<8;i++){
+  for(let i=0;i<fills;i++){
     const d=document.createElement('div');
     d.className='cup';d.id='cup-'+i;
-    d.innerHTML='<svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M1.5 3.5h9l-1.2 9H2.7l-1.2-9z" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>';
+    d.style.width='40px';d.style.height='40px';
+    d.innerHTML='<span style="font-size:16px;line-height:1">'+VESSELS[activeVessel].icon+'</span>';
     d.onclick=()=>toggleCup(i);
     el.appendChild(d);
+  }
+  // Restore state
+  (S.water||[]).forEach(function(i){
+    var cupEl=document.getElementById('cup-'+i);
+    if(cupEl)cupEl.classList.add('on');
+  });
+  updateWaterLabel();
+  // Update vessel picker highlight
+  document.querySelectorAll('#vessel-picker button').forEach(function(btn){
+    btn.style.borderColor='var(--border)';
+    btn.style.background='var(--bg)';
+    var divs=btn.querySelectorAll('div');
+    if(divs[1])divs[1].style.color='var(--txt)';
+    if(divs[2])divs[2].style.color='var(--txt2)';
+  });
+  var activeBtn=document.getElementById('vessel-'+activeVessel);
+  if(activeBtn){
+    activeBtn.style.borderColor='var(--teal)';
+    activeBtn.style.background='var(--teal-bg)';
+    var divs=activeBtn.querySelectorAll('div');
+    if(divs[1])divs[1].style.color='var(--teal-txt)';
+    if(divs[2])divs[2].style.color='var(--teal-txt)';
   }
 }
 
 function toggleCup(i){
+  var fills=getVesselFills(activeVessel);
   const el=document.getElementById('cup-'+i);
-  const idx=S.water.indexOf(i);
+  if(!el)return;
+  const idx=(S.water||[]).indexOf(i);
   if(idx>-1){S.water.splice(idx,1);el.classList.remove('on')}
-  else{S.water.push(i);el.classList.add('on')}
-  document.getElementById('water-lbl').textContent=S.water.length+' of 8 cups';
+  else{if(!S.water)S.water=[];S.water.push(i);el.classList.add('on')}
+  updateWaterLabel();
   saveLocal();
+}
+
+function updateWaterLabel(){
+  var fills=getVesselFills(activeVessel);
+  var oz=VESSELS[activeVessel].oz;
+  var count=(S.water||[]).length;
+  var totalOz=count*oz;
+  var pct=Math.min(100,Math.round(totalOz/WATER_GOAL*100));
+  var lbl=document.getElementById('water-lbl');
+  if(lbl)lbl.textContent=totalOz+' / '+WATER_GOAL+' oz';
+  var flbl=document.getElementById('water-fills-lbl');
+  if(flbl)flbl.textContent=count+' of '+fills+' fills';
+  var bar=document.getElementById('water-fill-bar');
+  if(bar)bar.style.width=pct+'%';
 }
 
 // Meals
