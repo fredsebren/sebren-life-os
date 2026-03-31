@@ -4351,9 +4351,18 @@ function processVoiceForActions(userMsg, sheenaReply){
       callClaude({max_tokens:100,system:'Extract a meal and estimate macros. ALWAYS estimate calories on the HIGH side (round up 10-15%) and protein on the LOW side. For chain restaurants, use published nutrition data. Return ONLY JSON: {"meal":"name","calories":number,"protein":number} or null. No other text.',messages:[{role:'user',content:userMsg}]})
       .then(function(d){try{var p=JSON.parse(d.content[0].text.replace(/```json|```/g,'').trim());if(p&&p.meal&&p.calories>0){window.meal(p.meal,String(p.calories),p.protein||0);var tc=(S.meals||[]).reduce(function(a,m){return a+m.cal;},0);addChatMessage('system','🍽 '+p.meal+' ('+p.calories+' cal) — Day: '+tc,'actions');}}catch(e){}}).catch(function(){});
     }
-    // Schedule fallback
-    var schedWords=['schedule','appointment','haircut','dentist','doctor','meeting','add to calendar','book a','has a','at 10','at 11','at 12','at 1','at 2','at 3','at 4','at 5','at 6','at 7','at 8','at 9','april','may','june','july','august','monday','tuesday','wednesday','thursday','friday','saturday','sunday','tomorrow','next week','this week'];
-    var schedHit=false;schedWords.forEach(function(t){if(lower.includes(t))schedHit=true;});
+    // Schedule fallback — only fire when user is ADDING/SCHEDULING, not asking about existing events
+    var schedAddWords=['schedule','add to calendar','book a','set up','plan a','move my','reschedule'];
+    var schedContextWords=['appointment','haircut','dentist','doctor','meeting'];
+    var schedTimeWords=['at 10','at 11','at 12','at 1','at 2','at 3','at 4','at 5','at 6','at 7','at 8','at 9'];
+    var schedDateWords=['april','may','june','july','august','monday','tuesday','wednesday','thursday','friday','saturday','sunday','tomorrow','next week','this week'];
+    // Must have an add-intent word, OR a context word + date/time word (not just a context word alone)
+    var hasAddIntent=false;schedAddWords.forEach(function(t){if(lower.includes(t))hasAddIntent=true;});
+    var hasContext=false;schedContextWords.forEach(function(t){if(lower.includes(t))hasContext=true;});
+    var hasTimeDate=false;schedTimeWords.concat(schedDateWords).forEach(function(t){if(lower.includes(t))hasTimeDate=true;});
+    // Skip if user is just asking about an event (contains "when", "what time", "do i have", "is there")
+    var isQuestion=/\b(when|what time|do i have|is there|is my|where is|remind me about)\b/i.test(lower);
+    var schedHit=!isQuestion&&(hasAddIntent||(hasContext&&hasTimeDate));
     if(schedHit){
       var td=new Date();var tds=td.getFullYear()+'-'+(td.getMonth()+1)+'-'+td.getDate();
       callClaude({max_tokens:100,system:'Extract calendar event. Today is '+tds+'. Return ONLY JSON: {"date":"YYYY-M-D","time":"H:MMa","title":"name"} or null. Year is 2026.',messages:[{role:'user',content:userMsg}]})
@@ -5265,6 +5274,15 @@ function sheenaAddCalEvent(dateStr, time, title){
     dateStr=yr+'-'+mo+'-'+dy;
   }
   if(!calEvents[dateStr])calEvents[dateStr]=[];
+  // Duplicate detection — don't add if same title already exists on this date
+  var titleLower=(title||'').toLowerCase().trim();
+  var isDuplicate=calEvents[dateStr].some(function(e){
+    return (e.title||'').toLowerCase().trim()===titleLower;
+  });
+  if(isDuplicate){
+    console.log('CAL EVENT SKIPPED (duplicate):', dateStr, time, title);
+    return false;
+  }
   calEvents[dateStr].push({time:time||'',title:title,id:'s'+Date.now()});
   saveCalData();
   console.log('CAL EVENT SAVED:', dateStr, time, title, 'All events:', JSON.stringify(calEvents));
