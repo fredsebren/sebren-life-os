@@ -3242,6 +3242,102 @@ var sheenaListening = false;
 var sheenaRecognition = null;
 var sheenaConversation = [];
 
+// ── SHEENA MEMORY PERSISTENCE ────────────────────────
+// Stores the date string of the current conversation day
+var sheenaHistoryDate = null;
+
+function saveSheenaHistory(){
+  try{
+    var toSave = sheenaConversation;
+    if(toSave.length>20) toSave = toSave.slice(-20);
+    localStorage.setItem('sheena-history', JSON.stringify(toSave));
+    localStorage.setItem('sheena-history-date', getTodayStr());
+  }catch(e){console.warn('Sheena save failed',e);}
+}
+
+function loadSheenaHistory(){
+  try{
+    var raw = localStorage.getItem('sheena-history');
+    var savedDate = localStorage.getItem('sheena-history-date');
+    if(!raw) return [];
+    var today = getTodayStr();
+    // If history is from a previous day, trigger rollover
+    if(savedDate && savedDate !== today){
+      var oldMessages = JSON.parse(raw);
+      if(Array.isArray(oldMessages) && oldMessages.length > 0){
+        // Compress yesterday's conversation into a daily summary
+        compressAndSaveDailySummary(savedDate, oldMessages);
+      }
+      // Clear raw history — new day, clean slate
+      localStorage.removeItem('sheena-history');
+      localStorage.setItem('sheena-history-date', today);
+      return [];
+    }
+    var parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(e){return [];}
+}
+
+// ── DAILY SUMMARY COMPRESSION (TIER 2) ──────────────
+function compressAndSaveDailySummary(dateStr, messages){
+  try{
+    // Build a readable summary from the raw messages
+    var lines = messages.map(function(m){
+      return (m.role==='user'?'Fred':'Sheena')+': '+m.content;
+    });
+    var transcript = lines.join('\n');
+    // Truncate if huge (keep first ~3000 chars to stay within reason)
+    if(transcript.length > 3000) transcript = transcript.substring(0, 3000) + '...(truncated)';
+
+    // Use AI to compress into a daily summary (fire and forget)
+    var summaryPrompt = 'Below is a transcript of Fred\'s conversation with his AI assistant Sheena on ' + dateStr + '. Write a concise daily summary (3-5 sentences max) capturing: what Fred accomplished, any meals/calories/weight logged, schedule changes, mood, work done, and anything important that came up. Write in third person past tense. Only include facts from the transcript — do not invent anything.\n\nTRANSCRIPT:\n' + transcript;
+
+    callClaude({max_tokens:300, messages:[{role:'user', content:summaryPrompt}]})
+    .then(function(data){
+      var text = data.content && data.content[0] && data.content[0].text;
+      if(text){
+        saveDailySummary(dateStr, text.trim());
+        console.log('Sheena daily summary saved for', dateStr);
+      }
+    })
+    .catch(function(e){
+      // Fallback: save a raw excerpt instead of AI summary
+      var fallback = messages.slice(0, 6).map(function(m){
+        return (m.role==='user'?'Fred':'Sheena')+': '+m.content.substring(0,100);
+      }).join(' | ');
+      saveDailySummary(dateStr, '[raw] '+fallback);
+      console.warn('Sheena summary AI failed, saved raw fallback', e);
+    });
+  }catch(e){console.warn('compressAndSaveDailySummary failed', e);}
+}
+
+function saveDailySummary(dateStr, summary){
+  try{
+    var all = JSON.parse(localStorage.getItem('sheena-daily-summaries')||'{}');
+    all[dateStr] = summary;
+    // Prune summaries older than 90 days
+    var cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 90);
+    var cutoffStr = cutoff.getFullYear()+'-'+(cutoff.getMonth()+1)+'-'+cutoff.getDate();
+    Object.keys(all).forEach(function(k){
+      if(k < cutoffStr) delete all[k];
+    });
+    localStorage.setItem('sheena-daily-summaries', JSON.stringify(all));
+  }catch(e){console.warn('saveDailySummary failed', e);}
+}
+
+function getRecentDailySummaries(count){
+  try{
+    var all = JSON.parse(localStorage.getItem('sheena-daily-summaries')||'{}');
+    var keys = Object.keys(all).sort().reverse().slice(0, count||7);
+    if(!keys.length) return '';
+    return keys.map(function(k){ return k+': '+all[k]; }).join('\n');
+  }catch(e){return '';}
+}
+
+// Restore conversation from localStorage (triggers rollover if new day)
+sheenaConversation = loadSheenaHistory();
+
 function getDaysUntil(month, day){
   var now = new Date();
   var next = new Date(now.getFullYear(), month-1, day);
@@ -3418,6 +3514,10 @@ ${weekCal}
 - Work punch list: ${getPunchListContext()}
 - Grocery day: ${isGrocery?'YES':'No'}
 - Upcoming dates: ${upcomingStr||'none in next 14 days'}
+
+RECENT DAYS (summaries from previous days — use these for long-term memory, patterns, and continuity):
+${getRecentDailySummaries(7)||'No previous day summaries yet.'}
+
 - Extra context: ${extra||'none'}`
 }
 
@@ -3486,14 +3586,27 @@ window.setMood = function(n){
     n<=6 ? 'Their mood is okay ('+n+'/10). Give them a practical morning briefing. What matters most today, where their best window is, one thing to prioritize.' :
     'Their mood is great ('+n+'/10). Lean in. Capitalize on the energy. Challenge them to make today count. Be fired up with them.';
 
-  var msgs = sheenaConversation.length > 0 ? sheenaConversation : [{role:"user",content:context+"\n\n"+moodExtra+"\n\nGive a 2-4 sentence morning response. Natural, like a friend. Reference their actual data."}];
+  // Include any restored conversation history so Sheena remembers past sessions
+  var moodPrompt = context+"\n\n"+moodExtra;
+  if(sheenaConversation.length>0){
+    var histSummary = sheenaConversation.map(function(m){
+      return (m.role==='user'?'Fred':'Sheena')+': '+m.content;
+    }).join('\n');
+    moodPrompt = context+"\n\n[Recent conversation history]\n"+histSummary+"\n\n"+moodExtra;
+  }
+  moodPrompt += "\n\nGive a 2-4 sentence morning response. Natural, like a friend. Reference their actual data.";
+  var msgs = [{role:"user",content:moodPrompt}];
 
   callClaude({max_tokens:500,messages:msgs})
   .then(function(data){
     var text = data.content&&data.content[0]&&data.content[0].text;
     if(text){
       responseEl.textContent = text;
-      sheenaConversation = [{role:"user",content:context+"\n\n"+moodExtra},{role:"assistant",content:text}];
+      // Append mood exchange to history (not clobber it)
+      sheenaConversation.push({role:"user",content:"[Mood check-in: "+n+"/10]"});
+      sheenaConversation.push({role:"assistant",content:text});
+      if(sheenaConversation.length>20)sheenaConversation=sheenaConversation.slice(-20);
+      saveSheenaHistory();
       speakText(text);
       setTimeout(showVoiceSection, 500);
     }
@@ -3656,11 +3769,17 @@ function sendToSheena(userMessage){
   responseEl.textContent='...';
 
   var context = buildSheenaContext('');
+
+  // Always inject fresh context + conversation history + new user message
+  // Flattened into a single user message to avoid role-alternation issues with the API
   var msgs;
   if(sheenaConversation.length===0){
     msgs=[{role:"user",content:context+"\n\nUser says: "+userMessage}];
   } else {
-    msgs = sheenaConversation.concat([{role:'user',content:userMessage}]);
+    var histSummary = sheenaConversation.map(function(m){
+      return (m.role==='user'?'Fred':'Sheena')+': '+m.content;
+    }).join('\n');
+    msgs=[{role:"user",content:context+"\n\n[Recent conversation history]\n"+histSummary+"\n\n[Now continuing — Fred just said:]\n"+userMessage}];
   }
 
   callClaude({max_tokens:500,messages:msgs})
@@ -3674,8 +3793,13 @@ function sendToSheena(userMessage){
       var cleanText=text.replace(/\[(SCHEDULE|MEAL|STEPS|WEIGHT|HOTWORX|FAITH|WORK|CHECK|POWERLIST|GROCERY|WORK_TASK):[^\]]+\]/g,'').trim();
       responseEl.textContent=cleanText;
       responseEl.scrollIntoView({behavior:'smooth',block:'start'});
-      sheenaConversation=msgs.concat([{role:'assistant',content:text}]);
-      if(sheenaConversation.length>10)sheenaConversation=sheenaConversation.slice(-10);
+      // Save to conversation history (store raw user msg + assistant reply, not the giant context block)
+      sheenaConversation.push({role:'user',content:userMessage});
+      sheenaConversation.push({role:'assistant',content:text});
+      // Trim to last 20 messages (~10 exchanges / ~7 days rolling)
+      if(sheenaConversation.length>20)sheenaConversation=sheenaConversation.slice(-20);
+      // Persist to localStorage
+      saveSheenaHistory();
       speakText(cleanText);
       // Reset mic label
       var micLabel=document.getElementById('sheena-mic-label');
